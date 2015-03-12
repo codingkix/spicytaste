@@ -1,4 +1,4 @@
-angular.module('dishServcie', [])
+angular.module('spicyTaste')
     .factory('DishService', function($http) {
 
         //create a new object
@@ -22,6 +22,11 @@ angular.module('dishServcie', [])
         //update a dish
         dishFactory.update = function(dish_id, dish) {
             return $http.put('/api/dishes/' + dish_id, dish);
+        }
+
+        //delete a dish
+        dishFactory.delete = function(dish_id) {
+            return $http.delete('/api/dishes/' + dish_id);
         }
 
         return dishFactory;

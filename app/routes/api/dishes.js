@@ -18,17 +18,17 @@ router.route('/dishes')
     .post(function(req, res, next) {
         var dish = new Dish(); // create a new instance of the dish model
         dish.name = req.body.name; // set the dish name (comes from the request)
-        dish.tags = req.body.tags; // set the dish tags (comes from the request)
-        dish.images = req.body.images; // set the dish images (comes from the request)
-
-        console.log("dish added: " + JSON.stringify(req.body));
+        dish.tags = req.body.tags.split(','); // set the dish tags (comes from the request)
+        dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
 
         dish.save(function(err, dish) {
             if (err) {
                 res.send(err);
             } else {
                 // return the saved dish
-                res.status(201).json(dish);
+                res.status(201).json({
+                    message: 'Dish created!'
+                });
             }
         });
     });
@@ -50,8 +50,8 @@ router.route('/dishes/:dish_id')
             if (err) res.send(err);
 
             dish.name = req.body.name;
-            dish.tags = req.body.tags;
-            dish.images = req.body.images;
+            dish.tags = req.body.tags.split(',');
+            dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
 
             dish.save(function(err) {
                 if (err) res.send(err);
@@ -61,5 +61,16 @@ router.route('/dishes/:dish_id')
                 });
             });
         });
+    })
+    //delete the dish with the id
+    .delete(function(req, res) {
+        Dish.remove({
+            _id: req.params.dish_id
+        }, function(err, dish) {
+            if (err) res.send(err);
+            res.json({
+                message: "Dish deleted"
+            });
+        })
     })
 module.exports = router;

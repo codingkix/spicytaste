@@ -1,4 +1,3 @@
 angular.module('spicyTaste', [
-    'dishService',
-    'dishController'
+    'ngRoute'
 ]);

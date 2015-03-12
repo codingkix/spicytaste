@@ -6,7 +6,10 @@ var DishSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    images: [],
+    imageUrl: {
+        type: String,
+        required: true
+    },
     tags: [],
     createdDate: {
         type: Date,
