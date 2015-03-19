@@ -7,11 +7,8 @@ angular.module('spicyTaste')
                 if (response.status === 'connected') {
                     // Logged into your app and Facebook.
                     FB.api('/me', function(response) {
-                        console.log('FB.api /me response: ', response);
-
                         UserService.socialLogin(response.email, CONSTANTS.FACEBOOK).then(function(user) {
-                            console.log('fbLogin: ', user);
-
+                            user.loginType = CONSTANTS.FACEBOOK;
                             $scope.$emit('login', user);
                             $location.path('/');
                         })

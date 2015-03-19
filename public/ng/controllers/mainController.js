@@ -1,13 +1,17 @@
 angular.module('spicyTaste')
-    .controller('MainController', function($scope, UserService) {
+    .controller('MainController', function($scope, UserService, CONSTANTS) {
         var vm = this;
 
         $scope.$on('login', function(_, user) {
-            console.log('MainController login event called.');
             vm.currentUser = user;
         })
 
-        $scope.logout = function() {
+        vm.logout = function() {
+            if (vm.currentUser.loginType == CONSTANTS.FACEBOOK) {
+                FB.logout(function(response) {
+
+                });
+            }
             vm.currentUser = null;
             UserService.logout();
         };
