@@ -1,5 +1,5 @@
 module.exports = {
-	'port': process.env.PORT || 5050,
-	'database': 'mongodb://localhost/spicytaste',
-	'secret': 'spicytastesecrete'
+    'port': process.env.PORT || 5050,
+    'database': 'mongodb://localhost/spicytaste',
+    'secret': 'spicytastesecrete'
 };

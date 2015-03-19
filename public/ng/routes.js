@@ -27,5 +27,11 @@ angular.module('spicyTaste')
                 controller: 'DishEditController',
                 controllerAs: 'dishManage'
             })
+            //login user
+            .when('/login', {
+                templateUrl: 'ng/views/pages/user/login.html',
+                controller: 'LoginController',
+                controllerAs: 'login'
+            })
 
-    })
+    });

@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-// configure our app to handle CORS requests
+// configure app to handle CORS requests
 app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
