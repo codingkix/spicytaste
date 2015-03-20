@@ -1,6 +1,64 @@
-<ul>
-    <li><a ng-click="login.fbLogin()" href="#">facebook login</a>
-    </li>
-    <li><a href="#">wechat login</a>
-    </li>
-</ul>
+<form id="formLogin" ng-if="!login.showSignUpForm" class="form-horizontal" ng-submit="login.login()">
+    <h2>Login</h2>
+    <a href="#" ng-click="login.showSignUpForm = true">You can sign up a new account here.</a>
+
+    <div class="form-group">
+        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputEmail" placeholder="Email" ng-model="login.email">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-10">
+            <input type="password" class="form-control" id="inputPassword" placeholder="Password" ng-model="login.password">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+    </div>
+    <hr class="divider" />
+    <p>Or you can login with Facebook</p>
+
+    <ul>
+        <li><a ng-click="login.fbLogin()" href="#">facebook login</a>
+        </li>
+        <li><a href="#">wechat login</a>
+        </li>
+    </ul>
+</form>
+
+
+<form id="formSignUp" ng-if="login.showSignUpForm" class="form-horizontal" ng-submit="login.signUp()">
+    <h2>Sign Up</h2>
+    <a href="#" ng-click="login.showSignUpForm = false">Go login if you already have an account</a>
+    <p>You can sign up with an email:</p>
+    <div class="form-group">
+        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputEmail" placeholder="Email" ng-model="login.email">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-10">
+            <input type="password" class="form-control" id="inputPassword" placeholder="Password" ng-model="login.password">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+    </div>
+    <hr class="divider" />
+    <p>Or you can login with Facebook</p>
+
+    <ul>
+        <li><a ng-click="login.fbLogin()" href="#">facebook login</a>
+        </li>
+        <li><a href="#">wechat login</a>
+        </li>
+    </ul>
+</form>

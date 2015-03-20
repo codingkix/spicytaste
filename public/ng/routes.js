@@ -33,5 +33,12 @@ angular.module('spicyTaste')
                 controller: 'LoginController',
                 controllerAs: 'login'
             })
+            // //signup user
+            // .when('/signup', {
+            //     templateUrl: 'ng/views/pages/user/signup.html',
+            //     controller: "SignUpController",
+            //     controllerAs: 'signup'
+            // })
+
 
     });

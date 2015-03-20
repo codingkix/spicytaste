@@ -1,6 +1,9 @@
 angular.module('spicyTaste')
     .controller('LoginController', function($scope, UserService, $location, CONSTANTS) {
         var vm = this;
+        vm.email = "";
+        vm.password = "";
+        vm.showSignUpForm = false;
 
         vm.fbLogin = function() {
             FB.login(function(response) {
@@ -22,6 +25,27 @@ angular.module('spicyTaste')
                 }
             }, {
                 scope: 'public_profile,email'
+            });
+        }
+
+        vm.login = function() {
+            UserService.login(vm.email, vm.password).then(function(user) {
+                user.loginType = CONSTANTS.EMAIL;
+                $scope.$emit('login', user);
+                $location.path('/');
+            });
+        }
+
+        vm.signUp = function() {
+            var newUser = {
+                email: vm.email,
+                password: vm.password,
+                social: CONSTANTS.EMAIL
+            };
+
+            UserService.create(newUser).then(function(user) {
+                $scope.$emit('login', user);
+                $location.path('/');
             });
         }
     });
