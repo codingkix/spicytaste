@@ -11,6 +11,10 @@ var DishSchema = mongoose.Schema({
         required: true
     },
     tags: [],
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment'
+    }],
     createdDate: {
         type: Date,
         required: true,

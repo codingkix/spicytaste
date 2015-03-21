@@ -29,5 +29,10 @@ angular.module('spicyTaste')
             return $http.delete('/api/dishes/' + dish_id);
         }
 
+        //add a comment
+        dishFactory.addComment = function(dish_id, comment) {
+            return $http.post('/api/dishes/' + dish_id + '/comments', comment);
+        }
+
         return dishFactory;
     });

@@ -26,6 +26,31 @@ angular.module('spicyTaste')
                 });
             });
         };
+
+    })
+    //controller applied to dish detail page
+    .controller('DishDetailController', function($location, $rootScope, $routeParams, DishService) {
+        var vm = this;
+        vm.dish = null;
+        vm.content = "";
+
+        //get the dish by id
+        DishService.get($routeParams.dish_id).success(function(data) {
+            vm.dish = data;
+        });
+
+        vm.addComment = function() {
+            if (!$rootScope.user) {
+                return $location.path('/login');
+            }
+            DishService.addComment(vm.dish._id, {
+                content: vm.content
+            }).success(function(comment) {
+                vm.dish.comments.push(comment);
+            });
+
+            vm.content = "";
+        };
     })
     //controller applied to dish creation page
     .controller('DishCreateController', function(DishService) {

@@ -1,6 +1,26 @@
 var express = require('express');
 var router = express.Router();
 var Dish = require('../../models/dish');
+var User = require('../../models/user');
+var Comment = require('../../models/comment');
+var jwt = require('jwt-simple');
+var config = require('../../../config');
+
+//preload dish object on routes with ":dish_id"
+router.param('dish_id', function(req, res, next, dish_id) {
+    var query = Dish.findById(dish_id);
+
+    query.exec(function(err, dish) {
+        if (err) return next(err);
+        if (!dish) {
+            return next(new Error("dish not found."));
+        }
+
+        req.dish = dish;
+        return next();
+    });
+});
+
 
 // on routes that end in /api/dishes
 // ----------------------------------------------------
@@ -38,7 +58,7 @@ router.route('/dishes')
 router.route('/dishes/:dish_id')
     //get the dish with the id
     .get(function(req, res) {
-        Dish.findById(req.params.dish_id, function(err, dish) {
+        req.dish.populate('comments', function(err, dish) {
             if (err) res.send(err);
 
             res.status(200).json(dish);
@@ -46,19 +66,16 @@ router.route('/dishes/:dish_id')
     })
     //update the dish with the id
     .put(function(req, res) {
-        Dish.findById(req.params.dish_id, function(err, dish) {
+        var dish = req.dish;
+        dish.name = req.body.name;
+        dish.tags = req.body.tags.split(',');
+        dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
+
+        dish.save(function(err) {
             if (err) res.send(err);
 
-            dish.name = req.body.name;
-            dish.tags = req.body.tags.split(',');
-            dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
-
-            dish.save(function(err) {
-                if (err) res.send(err);
-
-                res.json({
-                    message: 'Dish updated!'
-                });
+            res.json({
+                message: 'Dish updated!'
             });
         });
     })
@@ -72,5 +89,38 @@ router.route('/dishes/:dish_id')
                 message: "Dish deleted"
             });
         })
-    })
+    });
+
+// on routes that end in /api/dishes/:dish_id/comments
+// ----------------------------------------------------
+router.post('/dishes/:dish_id/comments', function(req, res) {
+    var comment = new Comment({
+        content: req.body.content
+    });
+
+    if (!req.headers['x-auth']) {
+        console.log(req.headers['x-auth']);
+        res.sendStatus(401);
+    }
+
+    var auth = jwt.decode(req.headers['x-auth'], config.secret);
+    User.findOne({
+        email: auth.email
+    }, function(err, user) {
+        if (err) res.send(err);
+        comment.author = user;
+        comment.dish = req.dish;
+
+        comment.save(function(err, comment) {
+            if (err) return res.send(err);
+            req.dish.comments.push(comment);
+            req.dish.save(function(err, dish) {
+                if (err) return res.send(err);
+
+                res.json(comment);
+            });
+        });
+    });
+});
+
 module.exports = router;

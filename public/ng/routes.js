@@ -15,15 +15,21 @@ angular.module('spicyTaste')
                 controller: 'DishListController',
                 controllerAs: 'dishList'
             })
+            //show dish detail page
+            .when('/dishes/:dish_id', {
+                templateUrl: 'ng/views/pages/dish/detail.html',
+                controller: 'DishDetailController',
+                controllerAs: 'detail'
+            })
             //create a new dish page
-            .when('/dishes/create', {
-                templateUrl: 'ng/views/pages/dish/single.html',
+            .when('/admin/dishes/create', {
+                templateUrl: 'ng/views/pages/admin/dish/single.html',
                 controller: 'DishCreateController',
                 controllerAs: 'dishManage'
             })
             //edit a dish page
-            .when('/dishes/:dish_id', {
-                templateUrl: 'ng/views/pages/dish/single.html',
+            .when('/admin/dishes/:dish_id', {
+                templateUrl: 'ng/views/pages/admin/dish/single.html',
                 controller: 'DishEditController',
                 controllerAs: 'dishManage'
             })
@@ -33,12 +39,4 @@ angular.module('spicyTaste')
                 controller: 'LoginController',
                 controllerAs: 'login'
             })
-            // //signup user
-            // .when('/signup', {
-            //     templateUrl: 'ng/views/pages/user/signup.html',
-            //     controller: "SignUpController",
-            //     controllerAs: 'signup'
-            // })
-
-
     });

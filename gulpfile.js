@@ -6,6 +6,7 @@ var ngAnnotate = require('gulp-ng-annotate');
 var stylus = require('gulp-stylus');
 var nodemon = require('gulp-nodemon');
 var livereload = require('gulp-livereload');
+var childProcess = require('child_process');
 
 //script task
 gulp.task('js', function() {
@@ -51,6 +52,10 @@ gulp.task('watch:html', function() {
 
 //server task
 gulp.task('dev:server', function() {
+    childProcess.exec('mongod', function(err, stdout, stderr) {
+        console.log(stdout);
+    });
+
     nodemon({
         script: 'server.js',
         ext: 'js',

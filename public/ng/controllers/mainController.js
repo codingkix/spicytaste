@@ -1,9 +1,9 @@
 angular.module('spicyTaste')
-    .controller('MainController', function($scope, UserService, CONSTANTS) {
+    .controller('MainController', function($scope, $rootScope, UserService, CONSTANTS) {
         var vm = this;
 
         $scope.$on('login', function(_, user) {
-            vm.currentUser = user;
+            $rootScope.user = vm.currentUser = user;
         })
 
         vm.logout = function() {
@@ -13,6 +13,8 @@ angular.module('spicyTaste')
                 });
             }
             vm.currentUser = null;
+            $rootScope.user = null;
+
             UserService.logout();
         };
 

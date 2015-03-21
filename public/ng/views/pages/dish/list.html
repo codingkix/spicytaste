@@ -1,7 +1,9 @@
 <div class="row">
     <div ng-repeat="dish in dishList.dishes" class="col-sm-6 col-md-4">
         <div class="thumbnail">
-            <img src="{{dish.imageUrl}}" alt="{{dish.name}}">
+            <a href="/dishes/{{dish._id}}">
+                <img src="{{dish.imageUrl}}" alt="{{dish.name}}">
+            </a>
             <div class="caption">
                 <h4>{{dish.name}}</h4>
                 <p>
