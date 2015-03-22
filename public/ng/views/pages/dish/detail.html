@@ -1,16 +1,29 @@
-<div class="thumbnail">
+<div style="width: 400px" class="thumbnail center-block">
     <img src="{{detail.dish.imageUrl}}">
+    <div class="caption">{{detail.dish.name}}
+        <p><span ng-repeat="tag in detail.dish.tags" class="label label-info">{{tag}}</span>
+    </div>
 </div>
+<hr class="divider">
 <form class="form-horizontal" ng-submit="detail.addComment()">
     <div class="form-group">
-        <label for="inputContent" class="col-sm-2 control-label">评论</label>
+        <label for="inputContent" class="col-sm-2 control-label">Comment</label>
         <div class="col-sm-10">
             <textarea class="form-control" rows=3 ng-model="detail.content"></textarea>
         </div>
     </div>
     <div ng-if="detail.content.length > 0" class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-primary">发布</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </div>
 </form>
+<hr class="divider">
+<div ng-repeat="comment in detail.dish.comments">
+    <div class="row">
+        <label class="col-xs-6">By: {{comment.author.email}}</label>
+        <label class="col-xs-6">{{comment.createdDate}}</label>
+    </div>
+    <div class="row">{{comment.content}}</div>
+    <hr/>
+</div>

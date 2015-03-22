@@ -10,14 +10,18 @@ var config = require('../../../config');
 router.param('dish_id', function(req, res, next, dish_id) {
     var query = Dish.findById(dish_id);
 
-    query.exec(function(err, dish) {
+    query.populate('comments').exec(function(err, dish) {
         if (err) return next(err);
         if (!dish) {
             return next(new Error("dish not found."));
         }
 
-        req.dish = dish;
-        return next();
+        Comment.populate(dish.comments, {
+            path: 'author'
+        }, function(err, data) {
+            req.dish = dish;
+            return next();
+        });
     });
 });
 
@@ -58,11 +62,7 @@ router.route('/dishes')
 router.route('/dishes/:dish_id')
     //get the dish with the id
     .get(function(req, res) {
-        req.dish.populate('comments', function(err, dish) {
-            if (err) res.send(err);
-
-            res.status(200).json(dish);
-        });
+        res.json(req.dish);
     })
     //update the dish with the id
     .put(function(req, res) {
