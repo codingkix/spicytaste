@@ -17,7 +17,7 @@ router.param('dish_id', function(req, res, next, dish_id) {
         }
 
         Comment.populate(dish.comments, {
-            path: 'author'
+            path: 'author replyTo'
         }, function(err, data) {
             req.dish = dish;
             return next();
@@ -68,7 +68,7 @@ router.route('/dishes/:dish_id')
     .put(function(req, res) {
         var dish = req.dish;
         dish.name = req.body.name;
-        dish.tags = req.body.tags.split(',');
+        dish.tags = req.body.tags;
         dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
 
         dish.save(function(err) {
@@ -103,6 +103,13 @@ router.post('/dishes/:dish_id/comments', function(req, res) {
         res.sendStatus(401);
     }
 
+    if (req.body.replyTo) {
+        User.findById(req.body.replyTo).exec(function(err, user) {
+            if (err) res.send(err);
+            comment.replyTo = user;
+        });
+    }
+
     var auth = jwt.decode(req.headers['x-auth'], config.secret);
     User.findOne({
         email: auth.email
@@ -116,8 +123,12 @@ router.post('/dishes/:dish_id/comments', function(req, res) {
             req.dish.comments.push(comment);
             req.dish.save(function(err, dish) {
                 if (err) return res.send(err);
-
-                res.json(comment);
+                Comment.populate(comment, {
+                    path: 'author replyTo'
+                }, function(err, comment) {
+                    if (err) res.send(err);
+                    res.json(comment);
+                })
             });
         });
     });

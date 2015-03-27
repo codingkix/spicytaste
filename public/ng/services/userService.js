@@ -2,25 +2,23 @@ angular.module('spicyTaste')
     .factory('UserService', function($http, CONSTANTS) {
         var userFactory = {};
         //social login
-        userFactory.socialLogin = function(email, origin) {
+        userFactory.socialLogin = function(socialUser) {
+            console.log("socialUser: ", socialUser);
 
-            return userFactory.getByEmail(email).then(function(data) {
-                console.log("getByEmail: ", data);
+            return userFactory.searchBy('email=' + socialUser.email).then(function(data) {
 
                 if (!data.success) {
                     //not found, then create
-                    var newUser = {
-                        email: email,
-                        password: CONSTANTS.SOCIAL_PASS,
-                        social: origin
-                    };
-                    return userFactory.create(newUser);
+                    return userFactory.create(socialUser);
                 } else {
-                    //found one with email
+                    //found the user with email
                     //update the linked social if not added
-                    var user = data.user;
-                    if (user.linkedSocial.indexOf(origin) < 0) {
-                        user.linkedSocial.push(origin);
+                    var user = data.users[0];
+                    if (user.linkedSocial.indexOf(socialUser.linkedSocial) < 0) {
+                        user.linkedSocial.push(socialUser.linkedSocial);
+                        user.userName = socialUser.userName;
+                        user.photoUrl = socialUser.photoUrl;
+
                         return userFactory.update(user).then(function() {
                             return userFactory.login(user.email, CONSTANTS.SOCIAL_PASS);
                         });
@@ -56,9 +54,16 @@ angular.module('spicyTaste')
             });
         }
 
-        //get user by email
-        userFactory.getByEmail = function(email) {
-            return $http.get('/api/users/' + email).then(function(response) {
+        //search user by field
+        userFactory.searchBy = function(query) {
+            return $http.get('/api/users?' + query).then(function(response) {
+                return response.data;
+            });
+        }
+
+        //get user by id
+        userFactory.getById = function(user_id) {
+            return $http.get('/api/users/' + user_id).then(function(response) {
                 return response.data;
             });
         }

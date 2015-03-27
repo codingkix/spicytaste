@@ -21,6 +21,12 @@ angular.module('spicyTaste')
                 controller: 'DishDetailController',
                 controllerAs: 'detail'
             })
+            //list admin dish page
+            .when('/admin/dishes/list', {
+                templateUrl: 'ng/views/pages/admin/dish/list.html',
+                controller: 'DishListController',
+                controllerAs: 'dishList'
+            })
             //create a new dish page
             .when('/admin/dishes/create', {
                 templateUrl: 'ng/views/pages/admin/dish/single.html',

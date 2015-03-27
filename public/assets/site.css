@@ -1,3 +1,8 @@
-.test {
-  color: #f00;
+.sm-profile-photo {
+  width: 48px;
+  height: 48px;
+}
+.xs-profile-photo {
+  width: 36px;
+  height: 36px;
 }

@@ -10,7 +10,7 @@ router.post('/auth', function(req, res) {
 
     User.findOne({
         email: req.body.email
-    }, function(err, user) {
+    }, 'password email', function(err, user) {
         if (err) {
             return res.send(err);
         }

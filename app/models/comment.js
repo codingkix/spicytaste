@@ -10,6 +10,10 @@ var CommentSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dish'
     },
+    replyTo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     createdDate: {
         type: Date,
         default: Date.now

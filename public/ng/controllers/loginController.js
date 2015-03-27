@@ -1,8 +1,9 @@
 angular.module('spicyTaste')
-    .controller('LoginController', function($scope, UserService, $location, CONSTANTS) {
+    .controller('LoginController', function($scope, UserService, $location, CONSTANTS, md5) {
         var vm = this;
         vm.email = "";
         vm.password = "";
+        vm.userName = "";
         vm.showSignUpForm = false;
 
         vm.fbLogin = function() {
@@ -10,7 +11,15 @@ angular.module('spicyTaste')
                 if (response.status === 'connected') {
                     // Logged into your app and Facebook.
                     FB.api('/me', function(response) {
-                        UserService.socialLogin(response.email, CONSTANTS.FACEBOOK).then(function(user) {
+                        console.log('fb user: ', response);
+                        var fbUser = {
+                            userName: response.name,
+                            email: response.email,
+                            password: CONSTANTS.SOCIAL_PASS,
+                            photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
+                            linkedSocial: CONSTANTS.FACEBOOK
+                        }
+                        UserService.socialLogin(fbUser).then(function(user) {
                             user.loginType = CONSTANTS.FACEBOOK;
                             $scope.$emit('login', user);
                             $location.path('/');
@@ -38,9 +47,11 @@ angular.module('spicyTaste')
 
         vm.signUp = function() {
             var newUser = {
+                userName: vm.userName,
                 email: vm.email,
                 password: vm.password,
-                social: CONSTANTS.EMAIL
+                photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(vm.email),
+                linkedSocial: CONSTANTS.EMAIL
             };
 
             UserService.create(newUser).then(function(user) {

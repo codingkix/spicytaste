@@ -1,7 +1,6 @@
 <form id="formLogin" ng-if="!login.showSignUpForm" class="form-horizontal" ng-submit="login.login()">
     <h2>Login</h2>
     <a href="#" ng-click="login.showSignUpForm = true">You can sign up a new account here.</a>
-
     <div class="form-group">
         <label for="inputEmail" class="col-sm-2 control-label">Email</label>
         <div class="col-sm-10">
@@ -21,7 +20,6 @@
     </div>
     <hr class="divider" />
     <p>Or you can login with Facebook</p>
-
     <ul>
         <li><a ng-click="login.fbLogin()" href="#">facebook login</a>
         </li>
@@ -29,12 +27,16 @@
         </li>
     </ul>
 </form>
-
-
 <form id="formSignUp" ng-if="login.showSignUpForm" class="form-horizontal" ng-submit="login.signUp()">
     <h2>Sign Up</h2>
     <a href="#" ng-click="login.showSignUpForm = false">Go login if you already have an account</a>
     <p>You can sign up with an email:</p>
+    <div class="form-group">
+        <label for="inputUserName" class="col-sm-2 control-label">UserName</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputUserName" placeholder="user name" ng-model="login.userName">
+        </div>
+    </div>
     <div class="form-group">
         <label for="inputEmail" class="col-sm-2 control-label">Email</label>
         <div class="col-sm-10">
@@ -54,7 +56,6 @@
     </div>
     <hr class="divider" />
     <p>Or you can login with Facebook</p>
-
     <ul>
         <li><a ng-click="login.fbLogin()" href="#">facebook login</a>
         </li>

@@ -10,11 +10,7 @@
                     <span class="label label-info" ng-repeat="tag in dish.tags">{{tag}}</span>
                 </p>
                 <p>
-                    <a href="#" class="btn btn-default" role="button">like</a>
-                    <a href="#" class="btn btn-default" role="button">share</a>
-                </p>
-                <p>
-                    <a href="/dishes/{{dish._id}}" class="btn btn-info" role="button">edit</a>
+                    <a href="/admin/dishes/{{dish._id}}" class="btn btn-info" role="button">edit</a>
                     <a href="#" ng-click="dishList.deleteDish(dish._id)" class="btn btn-danger" role="button">delete</a>
                 </p>
             </div>

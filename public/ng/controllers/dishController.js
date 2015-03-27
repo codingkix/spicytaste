@@ -29,10 +29,10 @@ angular.module('spicyTaste')
 
     })
     //controller applied to dish detail page
-    .controller('DishDetailController', function($location, $rootScope, $routeParams, DishService) {
+    .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, DishService, UserService) {
         var vm = this;
         vm.dish = null;
-        vm.content = "";
+        init();
 
         //get the dish by id
         DishService.get($routeParams.dish_id).success(function(data) {
@@ -43,14 +43,28 @@ angular.module('spicyTaste')
             if (!$rootScope.user) {
                 return $location.path('/login');
             }
-            DishService.addComment(vm.dish._id, {
-                content: vm.content
-            }).success(function(comment) {
+
+            DishService.addComment(vm.dish._id, vm.newComment).success(function(comment) {
                 vm.dish.comments.push(comment);
             });
 
-            vm.content = "";
+            init();
         };
+
+        vm.reply = function(user) {
+            vm.newComment.replyTo = user._id;
+            vm.commentTitle = '@' + user.userName;
+            $scope.focusOnComment = true;
+        };
+
+        function init() {
+            $scope.focusOnComment = false;
+            vm.newComment = {
+                content: '',
+                replyTo: null,
+            };
+            vm.commentTitle = 'Comment';
+        }
     })
     //controller applied to dish creation page
     .controller('DishCreateController', function(DishService) {
@@ -70,7 +84,7 @@ angular.module('spicyTaste')
         };
     })
     //controller applied to dish edit page
-    .controller('DishEditController', function($routeParams, DishService) {
+    .controller('DishEditController', function($routeParams, DishService, $location) {
         var vm = this;
 
         vm.type = "edit";
@@ -87,7 +101,6 @@ angular.module('spicyTaste')
             DishService.update($routeParams.dish_id, vm.dish).success(function(data) {
                 vm.processing = false;
 
-                vm.dish = {};
                 vm.message = data.message;
             })
         }

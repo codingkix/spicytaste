@@ -7,12 +7,12 @@
 <hr class="divider">
 <form class="form-horizontal" ng-submit="detail.addComment()">
     <div class="form-group">
-        <label for="inputContent" class="col-sm-2 control-label">Comment</label>
+        <label for="inputContent" class="col-sm-2 control-label">{{detail.commentTitle}}:</label>
         <div class="col-sm-10">
-            <textarea class="form-control" rows=3 ng-model="detail.content"></textarea>
+            <textarea class="form-control" rows=3 ng-model="detail.newComment.content" focus-on="focusOnComment"></textarea>
         </div>
     </div>
-    <div ng-if="detail.content.length > 0" class="form-group">
+    <div ng-if="detail.newComment.content.length > 0" class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
@@ -20,10 +20,17 @@
 </form>
 <hr class="divider">
 <div ng-repeat="comment in detail.dish.comments">
-    <div class="row">
-        <label class="col-xs-6">By: {{comment.author.email}}</label>
-        <label class="col-xs-6">{{comment.createdDate}}</label>
-    </div>
-    <div class="row">{{comment.content}}</div>
+    <dl class="dl-horizontal">
+        <dt>
+            <a href="#" ng-click="detail.reply(comment.author)">
+                <img ng-src="{{comment.author.photoUrl}}" alt="{{comment.author.userName}}" title="@{{comment.author.userName}}" class="sm-profile-photo"></a>
+        </dt>
+        <dd>
+            <blockquote>
+                <p><strong ng-if="comment.replyTo">@{{comment.replyTo.userName}}: </strong>{{comment.content}}</p>
+                <footer>{{comment.createdDate | date: 'short'}}</footer>
+            </blockquote>
+        </dd>
+    </dl>
     <hr/>
 </div>

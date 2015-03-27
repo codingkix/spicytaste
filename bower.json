@@ -1,0 +1,23 @@
+{
+  "name": "spicytaste",
+  "version": "0.0.0",
+  "homepage": "https://github.com/codingkix/spicytaste",
+  "description": "spicytaste web app",
+  "moduleType": [
+    "node"
+  ],
+  "authors": [
+    "junchao zhang"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-md5": "~0.1.7"
+  }
+}
