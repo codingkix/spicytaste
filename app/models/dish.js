@@ -11,6 +11,9 @@ var DishSchema = mongoose.Schema({
         required: true
     },
     tags: [],
+    blog: String,
+    ingredients: [],
+    instructions: [],
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'

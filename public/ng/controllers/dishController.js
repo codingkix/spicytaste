@@ -41,7 +41,10 @@ angular.module('spicyTaste')
 
         vm.addComment = function() {
             if (!$rootScope.user) {
-                return $location.path('/login');
+                var returnUrl = $location.url();
+                return $location.path('/login').search({
+                    returnUrl: returnUrl
+                });
             }
 
             DishService.addComment(vm.dish._id, vm.newComment).success(function(comment) {
@@ -70,18 +73,36 @@ angular.module('spicyTaste')
     .controller('DishCreateController', function(DishService) {
         var vm = this;
 
-        vm.type = "create";
+        init();
 
         vm.save = function() {
             vm.processing = true;
-            vm.message = '';
 
             DishService.create(vm.dish).success(function(data) {
-                vm.processing = false;
-                vm.dish = {};
+                init();
                 vm.message = data.message;
             });
         };
+
+        vm.addInstruction = function() {
+            vm.dish.instructions.push(vm.newInstruction);
+            vm.newInstruction = '';
+        }
+
+        vm.removeInstruction = function(index) {
+            vm.dish.instructions.splice(index, 1);
+        }
+
+        function init() {
+            vm.type = 'create';
+            vm.dish = {
+                instructions: []
+            };
+            vm.newInstruction = '';
+            vm.message = '';
+            vm.processing = false;
+            vm.dish.instructions.length = 0;
+        }
     })
     //controller applied to dish edit page
     .controller('DishEditController', function($routeParams, DishService, $location) {

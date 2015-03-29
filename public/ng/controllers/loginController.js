@@ -22,7 +22,6 @@ angular.module('spicyTaste')
                         UserService.socialLogin(fbUser).then(function(user) {
                             user.loginType = CONSTANTS.FACEBOOK;
                             $scope.$emit('login', user);
-                            $location.path('/');
                         })
 
                     });
@@ -41,7 +40,6 @@ angular.module('spicyTaste')
             UserService.login(vm.email, vm.password).then(function(user) {
                 user.loginType = CONSTANTS.EMAIL;
                 $scope.$emit('login', user);
-                $location.path('/');
             });
         }
 
@@ -56,7 +54,6 @@ angular.module('spicyTaste')
 
             UserService.create(newUser).then(function(user) {
                 $scope.$emit('login', user);
-                $location.path('/');
             });
         }
     });
