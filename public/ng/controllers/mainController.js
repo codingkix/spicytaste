@@ -4,8 +4,10 @@ angular.module('spicyTaste')
 
         $scope.$on('login', function(_, user) {
             $rootScope.user = vm.currentUser = user;
+
             var returnUrl = $location.search().returnUrl;
             if (returnUrl) {
+                console.log('return url: ', returnUrl);
                 $location.path(returnUrl).search({
                     returnUrl: null
                 });

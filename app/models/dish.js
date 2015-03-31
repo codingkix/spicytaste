@@ -4,12 +4,12 @@ var mongoose = require('mongoose');
 var DishSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true
+        require: true
     },
     imageUrl: {
-        type: String,
-        required: true
+        type: String
     },
+    photos: [],
     tags: [],
     blog: String,
     ingredients: [],

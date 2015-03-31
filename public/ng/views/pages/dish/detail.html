@@ -1,7 +1,28 @@
-<div style="width: 400px" class="thumbnail center-block">
-    <img src="{{detail.dish.imageUrl}}">
+<div style="width: 600px" class="thumbnail center-block">
+    <img ng-src="{{detail.dish.imageUrl}}">
     <div class="caption">{{detail.dish.name}}
         <p><span ng-repeat="tag in detail.dish.tags" class="label label-info">{{tag}}</span>
+    </div>
+    <a href="#divRecipe">The Receipe</a>
+</div>
+<div>
+    <p>{{detail.dish.blog}}</p>
+</div>
+<div ng-repeat="photo in detail.dish.photos" class="thumbnail">
+    <img ng-src="{{photo}}">
+</div>
+<div id="divRecipe" class="panel panel-default">
+    <div class="panel-body">
+        <h3>Ingredients</h3>
+        <ul>
+            <li ng-repeat="item in detail.dish.ingredients">{{item}}</li>
+        </ul>
+        <h3>Instructions</h3>
+        <ul>
+            <li ng-repeat="line in detail.dish.instructions">
+                {{line}}
+            </li>
+        </ul>
     </div>
 </div>
 <hr class="divider">
@@ -19,7 +40,7 @@
     </div>
 </form>
 <hr class="divider">
-<div ng-repeat="comment in detail.dish.comments">
+<div ng-repeat="comment in detail.dish.comments | orderBy: '-createdDate'">
     <dl class="dl-horizontal">
         <dt>
             <a href="#" ng-click="detail.reply(comment.author)">

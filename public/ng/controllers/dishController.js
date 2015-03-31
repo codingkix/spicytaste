@@ -27,6 +27,16 @@ angular.module('spicyTaste')
             });
         };
 
+        vm.addDish = function() {
+            vm.processing = true;
+
+            DishService.create({
+                name: 'new dish'
+            }).success(function(data) {
+                $location.path('/admin/dish/' + data.dish._id);
+            });
+        }
+
     })
     //controller applied to dish detail page
     .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, DishService, UserService) {
@@ -70,19 +80,46 @@ angular.module('spicyTaste')
         }
     })
     //controller applied to dish creation page
-    .controller('DishCreateController', function(DishService) {
+    .controller('DishCreateController', function($location, DishService) {
         var vm = this;
 
-        init();
+        vm.dish = {
+            name: 'new dish'
+        };
 
         vm.save = function() {
             vm.processing = true;
 
             DishService.create(vm.dish).success(function(data) {
-                init();
-                vm.message = data.message;
+                $location.path('/admin/dish/' + data.dish._id);
             });
         };
+
+
+
+        function init() {
+            vm.type = 'create';
+            vm.dish = {
+                instructions: [],
+                photo: []
+            };
+            vm.newInstruction = '';
+            vm.newPhoto = '';
+            vm.message = '';
+            vm.processing = false;
+            vm.dish.instructions.length = 0;
+            vm.dish.photos.length = 0;
+        }
+    })
+    //controller applied to dish edit page
+    .controller('DishEditController', function($routeParams, DishService, $location) {
+        var vm = this;
+        init();
+
+        //get the dish by id
+        DishService.get($routeParams.dish_id).success(function(data) {
+            vm.dish = data;
+        });
 
         vm.addInstruction = function() {
             vm.dish.instructions.push(vm.newInstruction);
@@ -93,36 +130,30 @@ angular.module('spicyTaste')
             vm.dish.instructions.splice(index, 1);
         }
 
-        function init() {
-            vm.type = 'create';
-            vm.dish = {
-                instructions: []
-            };
-            vm.newInstruction = '';
-            vm.message = '';
-            vm.processing = false;
-            vm.dish.instructions.length = 0;
+        vm.addPhoto = function() {
+            console.log("newPhoto: ", vm.newPhoto);
+            vm.dish.photos.push(vm.newPhoto);
+            console.log("dish:", vm.dish);
+            vm.newPhoto = '';
         }
-    })
-    //controller applied to dish edit page
-    .controller('DishEditController', function($routeParams, DishService, $location) {
-        var vm = this;
 
-        vm.type = "edit";
-
-        //get the dish by id
-        DishService.get($routeParams.dish_id).success(function(data) {
-            vm.dish = data;
-        });
+        vm.removePhoto = function(index) {
+            vm.dish.photos.splice(index, 1);
+        }
 
         vm.save = function() {
             vm.processing = true;
-            vm.message = '';
 
             DishService.update($routeParams.dish_id, vm.dish).success(function(data) {
-                vm.processing = false;
-
+                init();
                 vm.message = data.message;
             })
+        }
+
+        function init() {
+            vm.newPhoto = '';
+            vm.newInstruction = '';
+            vm.message = '';
+            vm.processing = false;
         }
     });

@@ -42,10 +42,6 @@ router.route('/dishes')
     .post(function(req, res, next) {
         var dish = new Dish(); // create a new instance of the dish model
         dish.name = req.body.name; // set the dish name (comes from the request)
-        dish.tags = req.body.tags; // set the dish tags (comes from the request)
-        dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
-        dish.ingredients = req.body.ingredients;
-        dish.instructions = req.body.instructions;
 
         dish.save(function(err, dish) {
             if (err) {
@@ -70,8 +66,12 @@ router.route('/dishes/:dish_id')
     .put(function(req, res) {
         var dish = req.dish;
         dish.name = req.body.name;
-        dish.tags = req.body.tags;
+        dish.tags = req.body.tags; // set the dish tags (comes from the request)
         dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
+        dish.blog = req.body.blog;
+        dish.ingredients = req.body.ingredients;
+        dish.instructions = req.body.instructions;
+        dish.photos = req.body.photos;
 
         dish.save(function(err) {
             if (err) res.send(err);
