@@ -11,7 +11,7 @@ angular.module('spicyTaste')
             })
             //show all dishes page
             .when('/dishes', {
-                templateUrl: 'ng/views/pages/dish/list.html',
+                templateUrl: 'ng/views/pages/dish/all.html',
                 controller: 'DishListController',
                 controllerAs: 'dishList'
             })

@@ -1,9 +1,11 @@
 <div style="width: 600px" class="thumbnail center-block">
     <img ng-src="{{detail.dish.imageUrl}}">
-    <div class="caption">{{detail.dish.name}}
-        <p><span ng-repeat="tag in detail.dish.tags" class="label label-info">{{tag}}</span>
+    <div class="caption">
+        <h4>{{detail.dish.name}}</h4>
+        <p><span ng-repeat="tag in detail.dish.tags" class="label label-info">{{tag}}</span></p>
+        <p><a href="#" class="btn" ng-class="{'btn-default': !detail.dish.isCollected, 'btn-warning': detail.dish.isCollected}" ng-disabled="detail.dish.isCollected" ng-click="detail.collect()">Favourite</a></p>
     </div>
-    <a href="#divRecipe">The Receipe</a>
+    <a href="#">The Receipe</a>
 </div>
 <div>
     <p>{{detail.dish.blog}}</p>

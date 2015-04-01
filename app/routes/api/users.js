@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../../models/user');
+var Dish = require('../../models/dish');
 var jwt = require('jwt-simple');
 var config = require('../../../config');
 var bcrypt = require('bcrypt');
@@ -8,7 +9,7 @@ var bcrypt = require('bcrypt');
 //get user by id
 router.param('user_id', function(req, res, next, user_id) {
     var query = User.findById(user_id);
-    query.exec(function(err, user) {
+    query.populate('favouriteDishes').exec(function(err, user) {
         if (err) return next(err);
         req.user = user;
         return next();
@@ -108,5 +109,22 @@ router.route('/users/:user_id')
             });
         }
     });
+
+router.put('/users/:user_id/dishes/:dish_id', function(req, res) {
+    var user = req.user;
+    Dish.findById(req.params.dish_id).exec(function(err, dish) {
+        if (err) res.send(err);
+        if (dish) {
+            user.favouriteDishes.push(dish);
+            user.save(function(err, user) {
+                if (err) return res.send(err);
+                res.json({
+                    success: true
+                });
+            });
+        }
+    });
+
+})
 
 module.exports = router;

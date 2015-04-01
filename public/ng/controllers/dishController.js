@@ -41,12 +41,18 @@ angular.module('spicyTaste')
     //controller applied to dish detail page
     .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, DishService, UserService) {
         var vm = this;
-        vm.dish = null;
+        vm.dish = {};
         init();
 
         //get the dish by id
         DishService.get($routeParams.dish_id).success(function(data) {
             vm.dish = data;
+            if ($rootScope.user && $rootScope.user.favouriteDishes.indexOf(vm.dish._id) >= 0) {
+                vm.dish.isCollected = true;
+            } else {
+                vm.dish.isCollected = false;
+            }
+
         });
 
         vm.addComment = function() {
@@ -70,6 +76,23 @@ angular.module('spicyTaste')
             $scope.focusOnComment = true;
         };
 
+        vm.collect = function() {
+            if (!$rootScope.user) {
+                var returnUrl = $location.url();
+                return $location.path('/login').search({
+                    returnUrl: returnUrl
+                });
+            }
+
+            UserService.collect(vm.dish._id).then(function(data) {
+                console.log("UserService.collect:", data);
+
+                if (data.success) {
+                    vm.dish.isCollected = true;
+                }
+            });
+        }
+
         function init() {
             $scope.focusOnComment = false;
             vm.newComment = {
@@ -80,6 +103,7 @@ angular.module('spicyTaste')
         }
     })
     //controller applied to dish creation page
+    //not use anymore
     .controller('DishCreateController', function($location, DishService) {
         var vm = this;
 

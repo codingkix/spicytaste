@@ -17,6 +17,10 @@ var UserSchema = mongoose.Schema({
     },
     linkedSocial: [],
     photoUrl: String,
+    favouriteDishes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Dish'
+    }],
     createdDate: {
         type: Date,
         required: true,

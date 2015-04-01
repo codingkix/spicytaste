@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .factory('UserService', function($http, CONSTANTS) {
+    .factory('UserService', function($http, $rootScope, CONSTANTS) {
         var userFactory = {};
         //social login
         userFactory.socialLogin = function(socialUser) {
@@ -78,6 +78,13 @@ angular.module('spicyTaste')
         //update user
         userFactory.update = function(user_id, user) {
             return $http.put('/api/users/' + user_id, user).then(function(response) {
+                return response.data;
+            });
+        }
+
+        //collect dish as favourite
+        userFactory.collect = function(dish_id) {
+            return $http.put('/api/users/' + $rootScope.user._id + '/dishes/' + dish_id).then(function(response) {
                 return response.data;
             });
         }

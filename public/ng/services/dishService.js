@@ -33,6 +33,5 @@ angular.module('spicyTaste')
         dishFactory.addComment = function(dish_id, comment) {
             return $http.post('/api/dishes/' + dish_id + '/comments', comment);
         }
-
         return dishFactory;
     });
