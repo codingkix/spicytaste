@@ -1,6 +1,6 @@
 angular.module('spicyTaste')
     //controller applied to dish list page
-    .controller('DishListController', function(DishService) {
+    .controller('DishListController', function(DishService, SocialService, $location) {
         var vm = this;
 
         //set a processing variable to show loading
@@ -35,6 +35,11 @@ angular.module('spicyTaste')
             }).success(function(data) {
                 $location.path('/admin/dish/' + data.dish._id);
             });
+        }
+
+        vm.fbShare = function(dish) {
+            var dishLink = $location.absUrl() + '/' + dish._id;
+            SocialService.fbShare(dishLink);
         }
 
     })

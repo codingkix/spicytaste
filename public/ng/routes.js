@@ -45,4 +45,10 @@ angular.module('spicyTaste')
                 controller: 'LoginController',
                 controllerAs: 'login'
             })
+            //user profile
+            .when('/me', {
+                templateUrl: 'ng/views/pages/user/me.html',
+                controller: 'ProfileController',
+                controllerAs: 'me'
+            })
     });

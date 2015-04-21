@@ -17,7 +17,7 @@ router.param('user_id', function(req, res, next, user_id) {
 });
 
 //get current login user
-router.get('/users/me', function(req, res) {
+router.get('/users/me', function(req, res, next) {
 
     if (!req.headers['x-auth']) {
         res.sendStatus(401);
@@ -27,15 +27,14 @@ router.get('/users/me', function(req, res) {
 
     User.findOne({
         email: auth.email
-    }, function(err, user) {
-        if (err) return res.send(err);
-
+    }).populate('favouriteDishes').exec(function(err, user) {
+        if (err) return next(err);
         res.json(user);
     });
 });
 
 //search user by field
-router.get('/users', function(req, res) {
+router.get('/users', function(req, res, next) {
     var query = User.find({});
 
     //search by email
@@ -44,7 +43,7 @@ router.get('/users', function(req, res) {
     }
 
     query.exec(function(err, users) {
-        if (err) return res.send(err);
+        if (err) return next(err);
 
         if (!users) {
             res.json({
@@ -60,7 +59,7 @@ router.get('/users', function(req, res) {
 });
 
 //save a new user
-router.post('/users', function(req, res) {
+router.post('/users', function(req, res, next) {
     var user = new User({
         userName: req.body.userName,
         email: req.body.email,
@@ -69,12 +68,12 @@ router.post('/users', function(req, res) {
     });
     bcrypt.hash(req.body.password, 10, function(err, hash) {
         if (err) {
-            return res.send(err);
+            return next(err);
         }
         user.password = hash;
         user.save(function(err) {
             if (err) {
-                return res.send(err);
+                return next(err);
             }
 
             res.sendStatus(201);
@@ -88,7 +87,7 @@ router.route('/users/:user_id')
     })
     //update existing user
     //add linked social for now
-    .put(function(req, res) {
+    .put(function(req, res, next) {
         var user = req.user;
         if (!user) {
             res.json({
@@ -100,7 +99,7 @@ router.route('/users/:user_id')
             user.photoUrl = req.body.photoUrl;
             user.linkedSocial = req.body.linkedSocial;
             user.save(function(err) {
-                if (err) return res.send(err);
+                if (err) return next(err);
 
                 res.json({
                     success: true,
@@ -110,14 +109,14 @@ router.route('/users/:user_id')
         }
     });
 
-router.put('/users/:user_id/dishes/:dish_id', function(req, res) {
+router.put('/users/:user_id/dishes/:dish_id', function(req, res, next) {
     var user = req.user;
     Dish.findById(req.params.dish_id).exec(function(err, dish) {
-        if (err) res.send(err);
+        if (err) next(err);
         if (dish) {
             user.favouriteDishes.push(dish);
             user.save(function(err, user) {
-                if (err) return res.send(err);
+                if (err) return next(err);
                 res.json({
                     success: true
                 });

@@ -5,18 +5,20 @@ var jwt = require('jwt-simple');
 var config = require('../../../config');
 var bcrypt = require('bcrypt');
 
-router.post('/auth', function(req, res) {
-    console.log('/auth: ', req.body);
+router.post('/auth', function(req, res, next) {
 
     User.findOne({
         email: req.body.email
     }, 'password email', function(err, user) {
         if (err) {
-            return res.send(err);
+            return next(err);
         }
 
         if (!user) {
-            return res.sendStatus(401);
+            return next({
+                message: "user not found.",
+                status: 404
+            });
         }
         //only compare encrypted password when user login with email/password
         if (user.password != config.defaultPassword) {
@@ -24,7 +26,10 @@ router.post('/auth', function(req, res) {
                 if (err)
                     return res.send(err);
                 if (!valid) {
-                    return res.sendStatus(401);
+                    return next({
+                        message: "user not found.",
+                        status: 404
+                    });
                 }
 
                 var token = jwt.encode({

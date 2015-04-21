@@ -1,0 +1,24 @@
+<div class="row">
+    <div class="col-sm-4">
+        <div class="thumbnail">
+            <img ng-src="{{me.user.photoUrl}}" class="responsive">
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <h4>{{me.user.userName}}</h4>
+        <p>since {{me.user.createdDate | date: 'shortDate'}}</p>
+        <p> Favourite Dishes <span class="badge">{{me.user.favouriteDishes.length}}</span></p>
+    </div>
+</div>
+<hr>
+<h3>Favourite Dishes</h3>
+<div class="row">
+    <div ng-repeat="dish in me.user.favouriteDishes" class="col-xs-6 col-sm-4">
+        <div class="thumbnail">
+            <a href="dishes/{{dish._id}}"><img ng-src="{{dish.imageUrl}}" alt="{{dish.name}}" class="responsive"></a>
+            <div class="caption">
+                <p>{{dish.name}}</p>
+            </div>
+        </div>
+    </div>
+</div>

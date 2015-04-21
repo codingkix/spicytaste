@@ -1,6 +1,11 @@
 angular.module('spicyTaste')
     .controller('MainController', function($scope, $rootScope, $location, UserService, CONSTANTS) {
         var vm = this;
+        vm.showMobileMenu = false;
+
+        vm.toggleMobileMenu = function() {
+            vm.showMobileMenu = !vm.showMobileMenu;
+        }
 
         $scope.$on('login', function(_, user) {
             $rootScope.user = vm.currentUser = user;

@@ -13,7 +13,10 @@ router.param('dish_id', function(req, res, next, dish_id) {
     query.populate('comments').exec(function(err, dish) {
         if (err) return next(err);
         if (!dish) {
-            return next(new Error("dish not found."));
+            return next({
+                message: "dish not found.",
+                status: 404
+            });
         }
 
         Comment.populate(dish.comments, {
@@ -33,7 +36,7 @@ router.route('/dishes')
     .get(function(req, res, next) {
         Dish.find().sort('-createdDate').exec(function(err, dishes) {
             if (err) {
-                res.send(err);
+                return next(err);
             }
             res.status(200).json(dishes);
         })
@@ -45,7 +48,7 @@ router.route('/dishes')
 
         dish.save(function(err, dish) {
             if (err) {
-                res.send(err);
+                return next(err);
             } else {
                 // return the saved dish
                 res.status(201).json({
@@ -63,7 +66,7 @@ router.route('/dishes/:dish_id')
         res.json(req.dish);
     })
     //update the dish with the id
-    .put(function(req, res) {
+    .put(function(req, res, next) {
         var dish = req.dish;
         dish.name = req.body.name;
         dish.tags = req.body.tags; // set the dish tags (comes from the request)
@@ -74,7 +77,7 @@ router.route('/dishes/:dish_id')
         dish.photos = req.body.photos;
 
         dish.save(function(err) {
-            if (err) res.send(err);
+            if (err) return next(err);
 
             res.json({
                 message: 'Dish updated!'
@@ -82,11 +85,11 @@ router.route('/dishes/:dish_id')
         });
     })
     //delete the dish with the id
-    .delete(function(req, res) {
+    .delete(function(req, res, next) {
         Dish.remove({
             _id: req.params.dish_id
         }, function(err, dish) {
-            if (err) res.send(err);
+            if (err) next(err);
             res.json({
                 message: "Dish deleted"
             });
@@ -95,19 +98,22 @@ router.route('/dishes/:dish_id')
 
 // on routes that end in /api/dishes/:dish_id/comments
 // ----------------------------------------------------
-router.post('/dishes/:dish_id/comments', function(req, res) {
+router.post('/dishes/:dish_id/comments', function(req, res, next) {
     var comment = new Comment({
         content: req.body.content
     });
 
     if (!req.headers['x-auth']) {
         console.log(req.headers['x-auth']);
-        res.sendStatus(401);
+        return next({
+            message: "not authorized.",
+            status: 401
+        });
     }
 
     if (req.body.replyTo) {
         User.findById(req.body.replyTo).exec(function(err, user) {
-            if (err) res.send(err);
+            if (err) return next(err);
             comment.replyTo = user;
         });
     }
@@ -116,19 +122,19 @@ router.post('/dishes/:dish_id/comments', function(req, res) {
     User.findOne({
         email: auth.email
     }, function(err, user) {
-        if (err) res.send(err);
+        if (err) next(err);
         comment.author = user;
         comment.dish = req.dish;
 
         comment.save(function(err, comment) {
-            if (err) return res.send(err);
+            if (err) return next(err);
             req.dish.comments.push(comment);
             req.dish.save(function(err, dish) {
-                if (err) return res.send(err);
+                if (err) return next(err);
                 Comment.populate(comment, {
                     path: 'author replyTo'
                 }, function(err, comment) {
-                    if (err) res.send(err);
+                    if (err) next(err);
                     res.json(comment);
                 })
             });
