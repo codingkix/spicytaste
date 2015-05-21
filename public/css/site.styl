@@ -15,6 +15,21 @@ body{
 	font-family: main-font
 }
 
+//mobile menu
+.mobile-menu-container{
+	height:101px;
+	background-color:#FF8A65;
+	color: #FFF;
+}
+
+.mobile-menu-container md-list-item{
+	height: 50px;
+}
+
+.mobile-menu-container.ng-hide{
+	height:0px;
+}
+
 //home 
 .hero-container{
 	background-image: url(https://assets0.munchery.com/assets/referral/referrals-page-hero20@2x-14ed2ae984b7fd3e9fa937352f732f5e.jpg)
@@ -38,8 +53,30 @@ body{
 	width: 48px;
 }
 
+.fb-btn{
+	background-color:#6984b4;
+	color: #FFF;
+}
+
+.login-dialog .md-button{
+	margin:0;
+}
+
+//MD
 .md-button{
 	border-radius: 0!important;
+}
+
+md-list{
+	padding: 0;
+}
+
+//animation
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+  -webkit-transition: all linear 0.4s;
+  transition: all linear 0.4s;
 }
 
 
