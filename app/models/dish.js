@@ -9,6 +9,9 @@ var DishSchema = mongoose.Schema({
     imageUrl: {
         type: String
     },
+    prepTime: String,
+    totalTime: String,
+    difficulty: String,
     photos: [],
     tags: [],
     blog: String,

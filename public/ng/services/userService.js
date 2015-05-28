@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .factory('UserService', function($http, $rootScope, CONSTANTS) {
+    .factory('UserService', function($http, $rootScope, $window, CONSTANTS) {
         var userFactory = {};
         //social login
         userFactory.socialLogin = function(socialUser) {
@@ -37,7 +37,6 @@ angular.module('spicyTaste')
                 password: password
             }).then(function(response) {
                 $http.defaults.headers.common['X-Auth'] = response.data;
-
                 return userFactory.get();
             })
         }
@@ -45,6 +44,7 @@ angular.module('spicyTaste')
         //logout user
         userFactory.logout = function() {
             delete $http.defaults.headers.common['X-Auth'];
+            $window.localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_KEY);
         }
 
         //get current user

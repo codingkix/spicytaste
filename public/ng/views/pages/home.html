@@ -3,3 +3,56 @@
     <md-button ng-href="/places" class="md-raised md-primary hero-btn">TASTE</md-button>
 </div>
 <h3 layout="row" class="md-title">RECIPES</h3>
+<div flex class="tile-grid-container">
+    <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="12px">
+        <md-grid-tile ng-repeat="tile in home.recipeTiles" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1">
+            <div class="flip-container">
+                <div class="flipper">
+                    <div class="front">
+                        <img ng-src="{{tile.image}}">
+                        <md-grid-tile-footer>
+                            <h4>{{tile.title}}</h4>
+                        </md-grid-tile-footer>
+                    </div>
+                    <div class="back" ng-class="{'big-tile': tile.span.row == 2, 'small-tile': tile.span.row == 1}" layout>
+                        <md-whiteframe class="md-whiteframe-z3" flex layout>
+                            <md-list flex layout="column" layout-fill>
+                                <md-list-item class="md-2-line">
+                                    <md-icon md-svg-icon="time1"></md-icon>
+                                    <div class="md-list-item-text">
+                                        <h3>Prep Time</h3>
+                                        <p>{{tile.prepTime}}</p>
+                                    </div>
+                                </md-list-item>
+                                <md-list-item class="md-2-line">
+                                    <md-icon md-svg-icon="time2"></md-icon>
+                                    <div class="md-list-item-text">
+                                        <h3>Total Time</h3>
+                                        <p>{{tile.totalTime}}</p>
+                                    </div>
+                                </md-list-item>
+                                <md-list-item class="md-2-line">
+                                    <md-icon md-svg-icon="difficulty"></md-icon>
+                                    <div class="md-list-item-text">
+                                        <h3>Difficulty</h3>
+                                        <p>{{tile.difficulty}}</p>
+                                    </div>
+                                </md-list-item>
+                                <md-list-item ng-if="tile.span.row==2" layout="column" layout-align="center start">
+                                    <h3>Ingredients</h4>
+                                    <md-chips readonly="true" ng-model="tile.ingredients">
+                                    </md-chips>
+                                </md-list-item>
+                                <md-list-item layout layout-align="end center">
+                                    <md-button ng-href="/dishes/{{tile.id}}">
+                                        <md-icon class="md-primary" md-svg-icon="more"></md-icon>
+                                    </md-button>
+                                </md-list-item>
+                            </md-list>
+                        </md-whiteframe>
+                    </div>
+                </div>
+            </div>
+        </md-grid-tile>
+    </md-grid-list>
+</div>

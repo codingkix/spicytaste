@@ -34,7 +34,14 @@ router.param('dish_id', function(req, res, next, dish_id) {
 router.route('/dishes')
     //get all dishes and order by createDate desc(GET http://localhost:5050/api/dishes)
     .get(function(req, res, next) {
-        Dish.find().sort('-createdDate').exec(function(err, dishes) {
+        var query = Dish.find().sort('-createdDate');
+
+        if (req.query.limit) {
+            var n = req.query.limit;
+            query.limit(n);
+        }
+
+        query.exec(function(err, dishes) {
             if (err) {
                 return next(err);
             }
@@ -44,7 +51,16 @@ router.route('/dishes')
     //create a new dish (POST http://localhost:5050/api/dishes)
     .post(function(req, res, next) {
         var dish = new Dish(); // create a new instance of the dish model
-        dish.name = req.body.name; // set the dish name (comes from the request)
+        dish.name = req.body.name;
+        dish.tags = req.body.tags; // set the dish tags (comes from the request)
+        dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
+        dish.blog = req.body.blog;
+        dish.ingredients = req.body.ingredients;
+        dish.instructions = req.body.instructions;
+        dish.photos = req.body.photos;
+        dish.prepTime = req.body.prepTime;
+        dish.totalTime = req.body.totalTime;
+        dish.difficulty = req.body.difficulty;
 
         dish.save(function(err, dish) {
             if (err) {
@@ -58,6 +74,7 @@ router.route('/dishes')
         });
     });
 
+
 // on routes that end in /api/dishes/:dish_id
 // ----------------------------------------------------
 router.route('/dishes/:dish_id')
@@ -68,13 +85,16 @@ router.route('/dishes/:dish_id')
     //update the dish with the id
     .put(function(req, res, next) {
         var dish = req.dish;
-        dish.name = req.body.name;
-        dish.tags = req.body.tags; // set the dish tags (comes from the request)
-        dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
-        dish.blog = req.body.blog;
-        dish.ingredients = req.body.ingredients;
-        dish.instructions = req.body.instructions;
-        dish.photos = req.body.photos;
+        dish.name = req.body.name ? req.body.name : dish.name; // set the dish name (comes from the request)
+        dish.tags = req.body.tags ? req.body.tags : dish.tags; // set the dish tags (comes from the request)
+        dish.imageUrl = req.body.imageUrl ? req.body.imageUrl : dish.imageUrl; // set the dish imageUrl (comes from the request)
+        dish.blog = req.body.blog ? req.body.blog : dish.blog;
+        dish.ingredients = req.body.ingredients ? req.body.ingredients : dish.ingredients;
+        dish.instructions = req.body.instructions ? req.body.instructions : dish.instructions;
+        dish.photos = req.body.photos ? req.body.photos : dish.photos;
+        dish.prepTime = req.body.prepTime ? req.body.prepTime : dish.prepTime;
+        dish.totalTime = req.body.totalTime ? req.body.totalTime : dish.totalTime;
+        dish.difficulty = req.body.difficulty ? req.body.difficulty : dish.difficulty;
 
         dish.save(function(err) {
             if (err) return next(err);

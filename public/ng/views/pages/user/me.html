@@ -1,24 +1,26 @@
-<div class="row">
-    <div class="col-sm-4">
-        <div class="thumbnail">
-            <img ng-src="{{me.user.photoUrl}}" class="responsive">
-        </div>
+<div layout="row">
+    <div flex="40" layout layout-fill>
+        <img flex ng-src="{{me.user.photoUrl}}" alt="{{me.user.userName}}">
     </div>
-    <div class="col-sm-8">
+    <div flex layout="column">
         <h4>{{me.user.userName}}</h4>
-        <p>since {{me.user.createdDate | date: 'shortDate'}}</p>
-        <p> Favourite Dishes <span class="badge">{{me.user.favouriteDishes.length}}</span></p>
+        <p>Since {{me.user.createdDate | date: 'shortDate'}}</p>
+        <p>Favourite Dishes
+            <md-chip>{{me.user.favouriteDishes.length}}</md-chip>
+        </p>
     </div>
 </div>
 <hr>
 <h3>Favourite Dishes</h3>
-<div class="row">
-    <div ng-repeat="dish in me.user.favouriteDishes" class="col-xs-6 col-sm-4">
-        <div class="thumbnail">
-            <a href="dishes/{{dish._id}}"><img ng-src="{{dish.imageUrl}}" alt="{{dish.name}}" class="responsive"></a>
-            <div class="caption">
-                <p>{{dish.name}}</p>
+<md-content>
+    <md-list>
+        <md-list-item class="md-3-line" ng-repeat="dish in me.user.favouriteDishes">
+            <a ng-href="dishes/{{dish._id}}"><img ng-src="{{dish.imageUrl}}" alt="{{dish.name}}"></a>
+            <div class="md-list-item-text">
+                <h3>{{dish.name}}</h3>
+                <h4>Total time - {{dish.totalTime}} | Difficulty - {{dish.difficulty}}</h4>
+                <p><span ng-repeat="tag in dish.tags">{{tag}}</span></p>
             </div>
-        </div>
-    </div>
-</div>
+        </md-list-item>
+    </md-list>
+</md-content>
