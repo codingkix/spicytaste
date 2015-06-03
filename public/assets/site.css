@@ -1,6 +1,12 @@
 /* Variables */
+html,
 body {
   font-family: "open sans", sans-serif;
+}
+.circle-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
 }
 .mobile-menu-container {
   height: 101px;
@@ -114,11 +120,29 @@ body {
   -webkit-transform: scale(0.7);
   -moz-transform: scale(0.7);
 }
+.profile-head {
+  height: 100%;
+}
+.profile-head img {
+  width: 100%;
+}
+.profile-head .vertical-divider {
+  margin: 0 20px;
+}
+.vertical-divider {
+  border-top: 0;
+  border-left: 1px solid;
+  border-left-color: rgba(0,0,0,0.3);
+  height: 100%;
+}
 .md-button {
   border-radius: 0 !important;
 }
 md-list {
   padding: 0;
+}
+.md-list-item-text span {
+  margin-right: 8px;
 }
 .animate-show.ng-hide-add.ng-hide-add-active,
 .animate-show.ng-hide-remove.ng-hide-remove-active {

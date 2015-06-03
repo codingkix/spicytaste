@@ -1,21 +1,11 @@
 angular.module('spicyTaste')
-    .controller('MainController', function($location, $mdDialog, $http, SessionService, UserService, CONSTANTS) {
+    .controller('MainController', function($rootScope, $location, $mdDialog, $http, SessionService, UserService, CONSTANTS) {
         var vm = this;
         init();
 
         vm.toggleMobileMenu = function() {
             vm.showMobileMenu = !vm.showMobileMenu;
         }
-
-        vm.logout = function() {
-            if (vm.currentUser.loginType == CONSTANTS.FACEBOOK) {
-                FB.logout(function(response) {
-
-                });
-            }
-            vm.currentUser = null;
-            UserService.logout();
-        };
 
         vm.showLoginDialog = function(ev) {
             $mdDialog.show({
@@ -25,7 +15,7 @@ angular.module('spicyTaste')
                 controller: 'MainController',
                 controllerAs: 'main'
             }).then(function(user) {
-                vm.currentUser = user;
+                $rootScope.currentUser = user;
             });
         };
 
@@ -97,7 +87,7 @@ angular.module('spicyTaste')
             if (loginedToken) {
                 $http.defaults.headers.common['X-Auth'] = loginedToken;
                 UserService.get().then(function(user) {
-                    vm.currentUser = user;
+                    $rootScope.currentUser = user;
                 });
             }
         }

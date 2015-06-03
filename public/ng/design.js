@@ -30,6 +30,7 @@ angular.module('spicyTaste')
             .icon('more', 'assets/svg/ic_more_24px.svg')
             .icon('time1', 'assets/svg/ic_av_timer_24px.svg')
             .icon('time2', 'assets/svg/ic_access_time_24px.svg')
-            .icon('difficulty', 'assets/svg/ic_track_changes_24px.svg');
+            .icon('difficulty', 'assets/svg/ic_track_changes_24px.svg')
+            .icon('exit', 'assets/svg/ic_exit_to_app_48px.svg');
 
     });

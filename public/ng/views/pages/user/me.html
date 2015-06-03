@@ -1,26 +1,43 @@
-<div layout="row">
-    <div flex="40" layout layout-fill>
-        <img flex ng-src="{{me.user.photoUrl}}" alt="{{me.user.userName}}">
+<div layout="row" layout-sm="column">
+    <div flex="20" hide-sm>
     </div>
-    <div flex layout="column">
-        <h4>{{me.user.userName}}</h4>
-        <p>Since {{me.user.createdDate | date: 'shortDate'}}</p>
-        <p>Favourite Dishes
-            <md-chip>{{me.user.favouriteDishes.length}}</md-chip>
-        </p>
+    <div flex layout="column" layout-margin>
+        <div flex="20" layout="row" layout-sm="column" layout-align="center center" layout-fill class="profile-head">
+            <div flex="30">
+                <img flex ng-src="{{me.user.photoUrl}}" alt="{{me.user.userName}}">
+            </div>
+            <div flex="5" hide-sm class="vertical-divider"></div>
+            <div class="profile-info-container" flex layout="column">
+                <div layout layout-align="center center">
+                    <h4>{{me.user.userName}}</h4>
+                    <md-button ng-click="me.logout()" class="md-icon-button md-primary" title="log out">
+                        <md-icon md-svg-icon="exit"></md-icon>
+                    </md-button>
+                </div>
+                <md-divider></md-divider>
+                <p class="md-caption">Since {{me.user.createdDate | date: 'shortDate'}}</p>
+                <p>Favourite Dishes {{me.user.favouriteDishes.length}}
+                </p>
+            </div>
+        </div>
+        <div flex>
+            <h3>Favourite Dishes</h3>
+            <md-content>
+                <md-list>
+                    <md-list-item layout layout-align="center center" class="md-3-line" ng-repeat="dish in me.user.favouriteDishes">
+                        <div flex="40">
+                            <a ng-href="dishes/{{dish._id}}"><img class="circle-img" ng-src="{{dish.imageUrl}}" alt="{{dish.name}}"></a>
+                        </div>
+                        <div flex class="md-list-item-text">
+                            <h3>{{dish.name}}</h3>
+                            <h4>Total time - {{dish.totalTime}} | Difficulty - {{dish.difficulty}}</h4>
+                            <p><span ng-repeat="tag in dish.tags">{{tag}}</span></p>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+        </div>
+    </div>
+    <div flex="20" hide-sm>
     </div>
 </div>
-<hr>
-<h3>Favourite Dishes</h3>
-<md-content>
-    <md-list>
-        <md-list-item class="md-3-line" ng-repeat="dish in me.user.favouriteDishes">
-            <a ng-href="dishes/{{dish._id}}"><img ng-src="{{dish.imageUrl}}" alt="{{dish.name}}"></a>
-            <div class="md-list-item-text">
-                <h3>{{dish.name}}</h3>
-                <h4>Total time - {{dish.totalTime}} | Difficulty - {{dish.difficulty}}</h4>
-                <p><span ng-repeat="tag in dish.tags">{{tag}}</span></p>
-            </div>
-        </md-list-item>
-    </md-list>
-</md-content>

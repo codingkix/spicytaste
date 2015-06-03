@@ -11,8 +11,14 @@ sm-font-size = 0.8em
 lg-font-size = 1.3em
 
 //main
-body{
-	font-family: main-font
+html, body{
+	font-family: main-font;
+}
+
+.circle-img{
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
 }
 
 //mobile menu
@@ -150,6 +156,23 @@ body{
   -moz-transform:scale(0.70);
 }
 
+//Profile Page
+.profile-head 
+	height: 100%
+	& img
+		width:100%
+
+.profile-head .vertical-divider{
+  	margin: 0 20px;
+}
+
+.vertical-divider{
+	border-top: 0;
+  	border-left: 1px solid;  
+  	border-left-color: rgba(0, 0, 0, 0.3);
+  	height:100%;
+}
+
 //MD
 .md-button{
 	border-radius: 0!important;
@@ -157,6 +180,10 @@ body{
 
 md-list{
 	padding: 0;
+}
+
+.md-list-item-text span {
+	margin-right: 8px;
 }
 
 //animation
