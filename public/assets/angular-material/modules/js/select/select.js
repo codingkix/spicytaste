@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.6-master-abadb53
+ * v0.10.0-rc2-master-999e0da
  */
 (function( window, angular, undefined ){
 "use strict";
@@ -249,6 +249,7 @@ function SelectDirective($mdSelect, $mdUtil, $mdTheming, $mdAria, $interpolate, 
           element.on('keydown', handleKeypress);
         }
       });
+
       if (!attr.disabled && !attr.ngDisabled) {
         element.attr({'tabindex': attr.tabindex, 'aria-disabled': 'false'});
         element.on('click', openSelect);

@@ -1,11 +1,8 @@
 {
   "name": "spicytaste",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/codingkix/spicytaste",
   "description": "spicytaste web app",
-  "moduleType": [
-    "node"
-  ],
   "authors": [
     "junchao zhang"
   ],
@@ -15,9 +12,14 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "public/assets"
   ],
   "dependencies": {
-    "angular-md5": "~0.1.7"
+    "angular-animate": "^1.3.0 || >1.4.0-beta.0",
+    "angular-aria": "^1.3.15 || >1.4.0-beta.0",
+    "angular-material": "master",
+    "angular-route": "~1.4.0",
+    "angular-messages": "~1.4.0"
   }
 }
