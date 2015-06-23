@@ -89,7 +89,6 @@ body {
 .italic-list {
   font-family: "Montserrat", sans-serif;
   font-style: italic;
-  font-color: #fff;
 }
 .italic-list li {
   padding: 4px 0;
@@ -135,14 +134,27 @@ body {
   border-left-color: rgba(0,0,0,0.3);
   height: 100%;
 }
+.blog {
+  margin-bottom: 10px;
+  text-align: justify;
+}
+.step {
+  padding-right: 16px;
+}
 .md-button {
   border-radius: 0 !important;
 }
 md-list {
   padding: 0;
 }
+md-list-item p {
+  line-height: 22px;
+}
 .md-list-item-text span {
   margin-right: 8px;
+}
+label.md-title {
+  margin: 16px 0 5px 10px;
 }
 .animate-show.ng-hide-add.ng-hide-add-active,
 .animate-show.ng-hide-remove.ng-hide-remove-active {

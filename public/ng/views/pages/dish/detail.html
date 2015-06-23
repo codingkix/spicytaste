@@ -1,59 +1,52 @@
-<div style="width: 600px" class="thumbnail center-block">
-    <img ng-src="{{detail.dish.imageUrl}}">
-    <div class="caption">
-        <h4>{{detail.dish.name}}</h4>
-        <p><span ng-repeat="tag in detail.dish.tags" class="label label-info">{{tag}}</span></p>
-        <p><a href="#" class="btn" ng-class="{'btn-default': !detail.dish.isCollected, 'btn-warning': detail.dish.isCollected}" ng-disabled="detail.dish.isCollected" ng-click="detail.collect()">Favourite</a></p>
+<div layout="column" layout-fill>
+    <div flex="20" layout="row">
+        <img ng-src="{{detail.dish.imageUrl}}" flex alt="{{detail.dish.name}}">
     </div>
-    <a href="#">The Receipe</a>
-</div>
-<div>
-    <p>{{detail.dish.blog}}</p>
-</div>
-<div ng-repeat="photo in detail.dish.photos" class="thumbnail">
-    <img ng-src="{{photo}}">
-</div>
-<div id="divRecipe" class="panel panel-default">
-    <div class="panel-body">
-        <h3>Ingredients</h3>
-        <ul>
-            <li ng-repeat="item in detail.dish.ingredients">{{item}}</li>
-        </ul>
-        <h3>Instructions</h3>
-        <ul>
-            <li ng-repeat="line in detail.dish.instructions">
-                {{line}}
-            </li>
-        </ul>
-    </div>
-</div>
-<hr class="divider">
-<form class="form-horizontal" ng-submit="detail.addComment()">
-    <div class="form-group">
-        <label for="inputContent" class="col-sm-2 control-label">{{detail.commentTitle}}:</label>
-        <div class="col-sm-10">
-            <textarea class="form-control" rows=3 ng-model="detail.newComment.content" focus-on="focusOnComment"></textarea>
+    <div flex="80" layout="row" layout-margin>
+        <div flex-lg="10">
+        </div>
+        <div flex-md="80" flex-lg="60" layout="column" layout-fill>
+            <h3 class="md-headline">{{detail.dish.name}}</h3>
+            <md-content class="blog">
+                <p>{{detail.dish.blog}}</p>
+            </md-content>
+            <div layout="row" layout-align="center" layout-margin>
+                <md-whiteframe flex="50" class="md-whiteframe-z2 italic-list" layout="column" layout-algin="center center">
+                    <label class="md-title">Ingredients</label>
+                    <ul flex>
+                        <li ng-repeat="item in detail.dish.ingredients">{{item}}</li>
+                    </ul>
+                </md-whiteframe>
+            </div>
+            <div layout="row" layout-margin ng-repeat="photo in detail.dish.photos">
+                <img flex ng-src="{{photo}}" alt="">
+            </div>
+            <div layout="row" layout-margin>
+                <md-whiteframe class="md-whiteframe-z3 md-body-1" flex layout="column">
+                    <label class="md-title">Instructions</label class="md-title">
+                    <md-list>
+                        <md-list-item ng-repeat="instruction in detail.dish.instructions" ng-click="detail.showInstructionPhoto(instruction.photo, $event)">
+                            <md-icon ng-if="instruction.photo" md-svg-icon="photo" class="md-primary"></md-icon>
+                            <p><strong class="italic-list step">Step {{$index + 1}}</strong>{{instruction.text}}</p>
+                        </md-list-item>
+                    </md-list>
+                </md-whiteframe>
+            </div>
+            <h3>Comments</h3>
+            <md-list>
+                <md-list-item ng-repeat="comment in detail.dish.comments | orderBy: '-createdDate'">
+                    <img ng-click="detail.reply(comment.author)" ng-src="{{comment.author.photoUrl}}" alt="{{comment.author.userName}}" title="@{{comment.author.userName}}" class="md-avatar">
+                    <div class="md-list-item-text">
+                        <h4><strong ng-if="comment.replyTo">@{{comment.replyTo.userName}}: </strong>{{comment.content}}</h4>
+                        <p>{{comment.createdDate | date: 'short'}}</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </div>
+        <div flex-gt-md="20">
+            <h3 class="md-headline">Related</h3>
+        </div>
+        <div flex-lg="10">
         </div>
     </div>
-    <div ng-if="detail.newComment.content.length > 0" class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </div>
-</form>
-<hr class="divider">
-<div ng-repeat="comment in detail.dish.comments | orderBy: '-createdDate'">
-    <dl class="dl-horizontal">
-        <dt>
-            <a href="#" ng-click="detail.reply(comment.author)">
-                <img ng-src="{{comment.author.photoUrl}}" alt="{{comment.author.userName}}" title="@{{comment.author.userName}}" class="sm-profile-photo"></a>
-        </dt>
-        <dd>
-            <blockquote>
-                <p><strong ng-if="comment.replyTo">@{{comment.replyTo.userName}}: </strong>{{comment.content}}</p>
-                <footer>{{comment.createdDate | date: 'short'}}</footer>
-            </blockquote>
-        </dd>
-    </dl>
-    <hr/>
 </div>

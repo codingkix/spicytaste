@@ -18,7 +18,7 @@ angular.module('spicyTaste')
                         prepTime: dish.prepTime,
                         totalTime: dish.totalTime,
                         difficulty: dish.difficulty,
-                        ingredients: dish.ingredients,
+                        tags: dish.tags,
                         span: {
                             row: 1,
                             col: 1

@@ -44,7 +44,7 @@ angular.module('spicyTaste')
 
     })
     //controller applied to dish detail page
-    .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, DishService, UserService) {
+    .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, $mdDialog, DishService, UserService) {
         var vm = this;
         vm.dish = {};
         init();
@@ -94,6 +94,22 @@ angular.module('spicyTaste')
 
                 if (data.success) {
                     vm.dish.isCollected = true;
+                }
+            });
+        }
+
+        vm.showInstructionPhoto = function(photoUrl, $event) {
+            if (photoUrl == null || photoUrl.trim() == '')
+                return;
+
+            $mdDialog.show({
+                targetEvent: $event,
+                clickOutsideToClose: true,
+                template: '<md-dialog>' +
+                    '  <md-dialog-content><img src="{{photo}}"></md-dialog-content>' +
+                    '</md-dialog>',
+                controller: function DialogCtr($scope) {
+                    $scope.photo = photoUrl;
                 }
             });
         }

@@ -3,6 +3,7 @@ var router = express.Router();
 var Dish = require('../../models/dish');
 var User = require('../../models/user');
 var Comment = require('../../models/comment');
+var Instruction = require('../../models/instruction');
 var jwt = require('jwt-simple');
 var config = require('../../../config');
 
@@ -10,7 +11,7 @@ var config = require('../../../config');
 router.param('dish_id', function(req, res, next, dish_id) {
     var query = Dish.findById(dish_id);
 
-    query.populate('comments').exec(function(err, dish) {
+    query.populate('comments instructions').exec(function(err, dish) {
         if (err) return next(err);
         if (!dish) {
             return next({
@@ -19,12 +20,19 @@ router.param('dish_id', function(req, res, next, dish_id) {
             });
         }
 
-        Comment.populate(dish.comments, {
-            path: 'author replyTo'
-        }, function(err, data) {
-            req.dish = dish;
+        req.dish = dish;
+
+        if (dish.comments.length > 0) {
+            Comment.populate(dish.comments, {
+                path: 'author replyTo'
+            }, function(err, data) {
+                req.dish = dish;
+                return next();
+            });
+        } else {
             return next();
-        });
+        }
+
     });
 });
 
@@ -56,7 +64,6 @@ router.route('/dishes')
         dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
         dish.blog = req.body.blog;
         dish.ingredients = req.body.ingredients;
-        dish.instructions = req.body.instructions;
         dish.photos = req.body.photos;
         dish.prepTime = req.body.prepTime;
         dish.totalTime = req.body.totalTime;
@@ -90,7 +97,6 @@ router.route('/dishes/:dish_id')
         dish.imageUrl = req.body.imageUrl ? req.body.imageUrl : dish.imageUrl; // set the dish imageUrl (comes from the request)
         dish.blog = req.body.blog ? req.body.blog : dish.blog;
         dish.ingredients = req.body.ingredients ? req.body.ingredients : dish.ingredients;
-        dish.instructions = req.body.instructions ? req.body.instructions : dish.instructions;
         dish.photos = req.body.photos ? req.body.photos : dish.photos;
         dish.prepTime = req.body.prepTime ? req.body.prepTime : dish.prepTime;
         dish.totalTime = req.body.totalTime ? req.body.totalTime : dish.totalTime;
@@ -160,6 +166,28 @@ router.post('/dishes/:dish_id/comments', function(req, res, next) {
             });
         });
     });
+});
+
+// on routes that end in /api/dishes/:dish_id/instructions
+// ----------------------------------------------------
+router.post('/dishes/:dish_id/instructions', function(req, res, next) {
+    var instruction = new Instruction({
+        text: req.body.text,
+        photo: req.body.photo
+    });
+    console.log('new instr', instruction);
+
+    instruction.save(function(err, instruction) {
+        if (err) return next(err);
+        req.dish.instructions.push(instruction);
+        req.dish.save(function(err, dish) {
+            if (err) return next(err);
+
+            res.json({
+                message: 'Dish Instruction Added!'
+            });
+        });
+    })
 });
 
 module.exports = router;

@@ -31,6 +31,7 @@ angular.module('spicyTaste')
             .icon('time1', 'svg/ic_av_timer_24px.svg')
             .icon('time2', 'svg/ic_access_time_24px.svg')
             .icon('difficulty', 'svg/ic_track_changes_24px.svg')
-            .icon('exit', 'svg/ic_exit_to_app_48px.svg');
-
+            .icon('exit', 'svg/ic_exit_to_app_48px.svg')
+            .icon('photo', 'svg/ic_mms_24px.svg')
+            .icon('check', 'svg/ic_check_circle_24px.svg');
     });
