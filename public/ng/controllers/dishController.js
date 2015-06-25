@@ -60,25 +60,9 @@ angular.module('spicyTaste')
 
         });
 
-        vm.addComment = function() {
-            if (!$rootScope.user) {
-                var returnUrl = $location.url();
-                return $location.path('/login').search({
-                    returnUrl: returnUrl
-                });
-            }
-
-            DishService.addComment(vm.dish._id, vm.newComment).success(function(comment) {
-                vm.dish.comments.push(comment);
-            });
-
-            init();
-        };
-
-        vm.reply = function(user) {
-            vm.newComment.replyTo = user._id;
-            vm.commentTitle = '@' + user.userName;
-            $scope.focusOnComment = true;
+        vm.reply = function(user, $event) {
+            var commentTitle = '@' + user.userName;
+            openCommentDialog(commentTitle, $event, user._id);
         };
 
         vm.collect = function() {
@@ -114,13 +98,49 @@ angular.module('spicyTaste')
             });
         }
 
+        vm.newComment = function($event) {
+            openCommentDialog('Comment', $event, null);
+        }
+
         function init() {
-            $scope.focusOnComment = false;
-            vm.newComment = {
-                content: '',
-                replyTo: null,
-            };
-            vm.commentTitle = 'Comment';
+
+        }
+
+        function openCommentDialog(title, $event, replyTo) {
+            $mdDialog.show({
+                targetEvent: $event,
+                clickOutsideToClose: true,
+                templateUrl: 'ng/views/dialogs/comment.html',
+                locals: {
+                    title: title
+                },
+                controller: commentController,
+                controllerAs: 'comment'
+            }).then(function(content) {
+                DishService.addComment(vm.dish._id, {
+                    content: content,
+                    replyTo: replyTo
+                }).success(function(comment) {
+                    vm.dish.comments.push(comment);
+                });
+            });
+        }
+
+        function commentController(title, $mdDialog) {
+            var dvm = this;
+            dvm.content = '';
+            dvm.title = title;
+
+            dvm.closeDialog = function() {
+                $mdDialog.cancel();
+            }
+
+            dvm.submit = function() {
+                if (dvm.content.trim() == '')
+                    $mdDialog.cancel()
+                else
+                    $mdDialog.hide(dvm.content);
+            }
         }
     })
     //controller applied to dish creation page

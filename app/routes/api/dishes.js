@@ -130,12 +130,12 @@ router.post('/dishes/:dish_id/comments', function(req, res, next) {
     });
 
     if (!req.headers['x-auth']) {
-        console.log(req.headers['x-auth']);
         return next({
             message: "not authorized.",
             status: 401
         });
     }
+
 
     if (req.body.replyTo) {
         User.findById(req.body.replyTo).exec(function(err, user) {
@@ -145,6 +145,7 @@ router.post('/dishes/:dish_id/comments', function(req, res, next) {
     }
 
     var auth = jwt.decode(req.headers['x-auth'], config.secret);
+
     User.findOne({
         email: auth.email
     }, function(err, user) {

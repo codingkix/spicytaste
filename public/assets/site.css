@@ -141,8 +141,18 @@ body {
 .step {
   padding-right: 16px;
 }
-.md-button {
-  border-radius: 0 !important;
+.dish-hero {
+  position: relative;
+}
+.share-buttons {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+}
+.comment-button {
+  position: fixed;
+  right: 20px;
+  bottom: 40px;
 }
 md-list {
   padding: 0;

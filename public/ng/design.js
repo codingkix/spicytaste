@@ -21,7 +21,7 @@ angular.module('spicyTaste')
             .primaryPalette('primaryBlue');
 
         $mdIconProvider.icon('menu', 'svg/ic_menu_24px.svg')
-            .icon('share', 'svg/ic_share_24px.svg')
+            .icon('share', 'svg/ic_share_48px.svg')
             .icon('login', 'svg/ic_account_circle_24px.svg')
             .icon('recipes', 'svg/ic_event_note_48px.svg')
             .icon('restaurants', 'svg/ic_restaurant_menu_48px.svg')
@@ -33,5 +33,9 @@ angular.module('spicyTaste')
             .icon('difficulty', 'svg/ic_track_changes_24px.svg')
             .icon('exit', 'svg/ic_exit_to_app_48px.svg')
             .icon('photo', 'svg/ic_mms_24px.svg')
-            .icon('check', 'svg/ic_check_circle_24px.svg');
+            .icon('check', 'svg/ic_check_circle_24px.svg')
+            .icon('facebook', 'svg/facebook.svg')
+            .icon('twitter', 'svg/twitter.svg')
+            .icon('pinterest', 'svg/pinterest.svg')
+            .icon('comments', 'svg/ic_chat_48px.svg');
     });

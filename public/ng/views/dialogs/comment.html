@@ -1,0 +1,27 @@
+<md-dialog aria-label="Leave Comment" flex="80" flex-lg="60">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h3>{{comment.title}}</h3>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="comment.closeDialog()">
+                    <md-icon md-svg-icon="svg/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div layout>
+                <textarea flex rows="5" ng-model="comment.content"></textarea>
+            </div>
+        </md-dialog-content>
+        <div class="md-actions" layout="row">
+            <span flex></span>
+            <md-button ng-click="comment.submit()" class="md-raised md-primary">
+                Submit
+            </md-button>
+            <md-button ng-click="comment.closeDialog()" class="md-raised">
+                Cancel
+            </md-button>
+        </div>
+    </form>
+</md-dialog>

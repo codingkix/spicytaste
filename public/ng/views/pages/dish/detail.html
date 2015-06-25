@@ -1,11 +1,29 @@
 <div layout="column" layout-fill>
-    <div flex="20" layout="row">
+    <div flex="20" layout="row" class="dish-hero">
         <img ng-src="{{detail.dish.imageUrl}}" flex alt="{{detail.dish.name}}">
-    </div>
-    <div flex="80" layout="row" layout-margin>
-        <div flex-lg="10">
+        <div layout="row" layout-align="center center" class="share-buttons">
+            <md-fab-speed-dial md-open="true" md-direction="right" ng-class="md-scale">
+                <md-fab-trigger>
+                    <md-button aria-label="share" title="Share this dish" class="md-fab md-warn">
+                        <md-icon md-svg-icon="share"></md-icon>
+                    </md-button>
+                </md-fab-trigger>
+                <md-fab-actions>
+                    <md-button aria-label="twitter" class="md-fab md-primary md-mini">
+                        <md-icon md-svg-icon="twitter"></md-icon>
+                    </md-button>
+                    <md-button aria-label="facebook" class="md-fab md-primary md-mini">
+                        <md-icon md-svg-icon="facebook"></md-icon>
+                    </md-button>
+                    <md-button aria-label="Pinterest" class="md-fab md-primary md-mini">
+                        <md-icon md-svg-icon="pinterest"></md-icon>
+                    </md-button>
+                </md-fab-actions>
+            </md-fab-speed-dial>
         </div>
-        <div flex-md="80" flex-lg="60" layout="column" layout-fill>
+    </div>
+    <div flex="80" layout="row" layout-padding layout-margin layout-align="center">
+        <div flex-md="80" layout="column" layout-fill>
             <h3 class="md-headline">{{detail.dish.name}}</h3>
             <md-content class="blog">
                 <p>{{detail.dish.blog}}</p>
@@ -32,12 +50,13 @@
                     </md-list>
                 </md-whiteframe>
             </div>
-            <h3>Comments</h3>
+            <hr class="md-divider">
+            <h3 ng-if="detail.dish.comments.length>0">Comments</h3>
             <md-list>
-                <md-list-item ng-repeat="comment in detail.dish.comments | orderBy: '-createdDate'">
-                    <img ng-click="detail.reply(comment.author)" ng-src="{{comment.author.photoUrl}}" alt="{{comment.author.userName}}" title="@{{comment.author.userName}}" class="md-avatar">
+                <md-list-item class="md-2-line" ng-repeat="comment in detail.dish.comments | orderBy: '-createdDate'">
+                    <img ng-click="detail.reply(comment.author, $event)" ng-src="{{comment.author.photoUrl}}" alt="{{comment.author.userName}}" title="@{{comment.author.userName}}" class="md-avatar">
                     <div class="md-list-item-text">
-                        <h4><strong ng-if="comment.replyTo">@{{comment.replyTo.userName}}: </strong>{{comment.content}}</h4>
+                        <h3><strong ng-if="comment.replyTo">@{{comment.replyTo.userName}}: </strong>{{comment.content}}</h4>
                         <p>{{comment.createdDate | date: 'short'}}</p>
                     </div>
                 </md-list-item>
@@ -45,8 +64,9 @@
         </div>
         <div flex-gt-md="20">
             <h3 class="md-headline">Related</h3>
-        </div>
-        <div flex-lg="10">
+                    </div>
         </div>
     </div>
-</div>
+    <md-button aria-label="comment" title="Leave a comment" ng-click="detail.newComment($event)" class="md-fab md-warn comment-button">
+        <md-icon md-svg-icon="comments"></md-icon>
+    </md-button>
