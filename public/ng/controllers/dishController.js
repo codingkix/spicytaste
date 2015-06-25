@@ -44,7 +44,7 @@ angular.module('spicyTaste')
 
     })
     //controller applied to dish detail page
-    .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, $mdDialog, DishService, UserService) {
+    .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, $mdDialog, DishService, UserService, SocialService) {
         var vm = this;
         vm.dish = {};
         init();
@@ -59,6 +59,11 @@ angular.module('spicyTaste')
             }
 
         });
+
+        vm.fbShare = function(dish) {
+            var dishLink = $location.absUrl() + '/' + dish._id;
+            SocialService.fbShare(dishLink);
+        }
 
         vm.reply = function(user, $event) {
             var commentTitle = '@' + user.userName;

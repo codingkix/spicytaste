@@ -1,18 +1,11 @@
-<div class="row">
-    <div ng-repeat="dish in dishList.dishes" class="col-sm-6 col-md-4">
-        <div class="thumbnail">
-            <a href="/dishes/{{dish._id}}">
-                <img src="{{dish.imageUrl}}" alt="{{dish.name}}">
-            </a>
-            <div class="caption">
-                <h4>{{dish.name}}</h4>
-                <p>
-                    <span class="label label-info" ng-repeat="tag in dish.tags">{{tag}}</span>
-                </p>
-                <p>
-                    <a href="#" ng-click="dishList.fbShare(dish)" class="btn btn-default" role="button">FB Share</a>
-                </p>
-            </div>
+<div layout="row" layout-wrap layout-align="start start">
+    <div class="md-padding list-item-container" layout="column" ng-repeat="dish in dishList.dishes" flex="100" flex-gt-sm="50" flex-gt-lg="33">
+        <a flex="80" ng-href="/dishes/{{dish._id}}">
+            <img flex ng-src="{{dish.imageUrl}}" alt="{{dish.name}}" title="{{dish.name}}">
+        </a>
+        <div flex="20" class="list-item-footer">
+            <h3 class="md-subhead">{{dish.name}}</p>
+            <p class="md-caption"><span class="plain-tag" ng-repeat="tag in dish.tags">{{tag}}</span></p>
         </div>
     </div>
 </div>

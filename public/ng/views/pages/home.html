@@ -4,7 +4,10 @@
         <md-button ng-href="/places" class="md-raised md-primary hero-btn">TASTE</md-button>
     </div>
     <div flex="80" layout="column">
-        <h3 class="md-title">RECIPES</h3>
+        <div layout="row">
+            <h3 flex="90" class="md-title">RECENT RECIPES</h3>
+            <a flex ng-href="/dishes">VIEW ALL</a>
+        </div>
         <div class="tile-grid-container">
             <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="12px">
                 <md-grid-tile ng-repeat="tile in home.recipeTiles" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1">

@@ -19,7 +19,7 @@ angular.module('spicyTaste')
             .when('/dishes/:dish_id', {
                 templateUrl: 'ng/views/pages/dish/detail.html',
                 controller: 'DishDetailController',
-                controllerAs: 'detail'
+                controllerAs: 'dishDetail'
             })
             //list admin dish page
             .when('/admin/dishes/list', {
