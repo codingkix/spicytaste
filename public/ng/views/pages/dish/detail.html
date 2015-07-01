@@ -1,6 +1,7 @@
 <div layout="column" layout-fill>
     <div flex="20" layout="row" class="dish-hero">
         <img ng-src="{{dishDetail.dish.imageUrl}}" flex alt="{{dishDetail.dish.name}}">
+        <md-icon ng-if="dishDetail.dish.isCollected" md-svg-icon="favorite" class="md-primary big-icon favorite-icon" title="My Favorite"></md-icon>
         <div layout="row" layout-align="center center" class="share-buttons">
             <md-fab-speed-dial md-direction="right" ng-class="md-scale">
                 <md-fab-trigger>
@@ -66,6 +67,20 @@
         </div>
     </div>
 </div>
-<md-button aria-label="comment" title="Leave a comment" ng-click="dishDetail.newComment($event)" class="md-fab md-warn comment-button">
-    <md-icon md-svg-icon="comments"></md-icon>
-</md-button>
+<div class="speed-menu" layout="row" layout-align="center center">
+    <md-fab-speed-dial md-direction="up" ng-class="md-fling">
+        <md-fab-trigger>
+            <md-button aria-label="menu" class="md-fab md-warn">
+                <md-icon md-svg-icon="menu"></md-icon>
+            </md-button>
+        </md-fab-trigger>
+        <md-fab-actions>
+            <md-button aria-label="comment" title="Leave a comment" ng-click="dishDetail.newComment($event)" class="md-fab md-raised md-primary md-mini">
+                <md-icon md-svg-icon="comments"></md-icon>
+            </md-button>
+            <md-button aria-label="favorite" title="Save as favorite" ng-click="dishDetail.collect($event)" class="md-fab md-raised md-primary md-mini">
+                <md-icon md-svg-icon="favorite"></md-icon>
+            </md-button>
+        </md-fab-actions>
+    </md-fab-speed-dial>
+</div>
