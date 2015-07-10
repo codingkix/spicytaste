@@ -37,28 +37,42 @@ angular.module('spicyTaste')
             });
         }
 
-        vm.fbShare = function(dish) {
-            var dishLink = $location.absUrl() + '/' + dish._id;
-            SocialService.fbShare(dishLink);
-        }
-
     })
     //controller applied to dish detail page
-    .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, $mdDialog, DishService, UserService, SocialService) {
+    .controller('DishDetailController', function($scope, $location, $rootScope, $routeParams, $filter, $mdDialog, DishService, UserService, SocialService) {
         var vm = this;
         vm.dish = {};
         init();
 
-        //get the dish by id
-        DishService.get($routeParams.dish_id).success(function(data) {
-            vm.dish = data;
-            if ($rootScope.user && $rootScope.user.favouriteDishes.indexOf(vm.dish._id) >= 0) {
-                vm.dish.isCollected = true;
-            } else {
-                vm.dish.isCollected = false;
-            }
+        vm.enterFlipBook = function(evn) {
+            $mdDialog.show({
+                targetEvent: evn,
+                clickOutsideToClose: true,
+                templateUrl: 'ng/views/dialogs/flipbook.html',
+                controller: 'DishDetailController',
+                controllerAs: 'book'
+            }).finally(function() {
+                $rootScope.shownBook = false;
+            });
 
+            $rootScope.shownBook = true;
+        };
+
+        $scope.$on('onRepeatLast', function(scope, element, attrs) {
+            angular.element(element).parents('#dishBook').booklet({
+                width: '100%',
+                height: 600,
+                closed: true,
+                autoCenter: true,
+                pageNumbers: false,
+                pagePadding: 0,
+                hoverWidth: 100
+            });
         });
+
+        vm.closeDialog = function() {
+            $mdDialog.cancel();
+        }
 
         vm.fbShare = function(dish) {
             var dishLink = $location.absUrl() + '/' + dish._id;
@@ -95,7 +109,7 @@ angular.module('spicyTaste')
                 targetEvent: $event,
                 clickOutsideToClose: true,
                 template: '<md-dialog>' +
-                    '  <md-dialog-content><img src="{{photo}}"></md-dialog-content>' +
+                    '<md-dialog-content><img src="{{photo}}"></md-dialog-content>' +
                     '</md-dialog>',
                 controller: function DialogCtr($scope) {
                     $scope.photo = photoUrl;
@@ -108,7 +122,22 @@ angular.module('spicyTaste')
         }
 
         function init() {
+            //get the dish by id
+            DishService.get($routeParams.dish_id).success(function(data) {
+                vm.dish = data;
+                vm.dish.isCollected = false;
 
+                if ($rootScope.currentUser) {
+                    var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
+                        _id: vm.dish._id
+                    }, true);
+
+                    if (found.length) {
+                        vm.dish.isCollected = true;
+                    }
+                }
+
+            });
         }
 
         function openCommentDialog(title, $event, replyTo) {
