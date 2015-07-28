@@ -10,9 +10,18 @@ sm-font-size = 0.8em
 
 lg-font-size = 1.3em
 
+all-ease-transition(s)
+	-webkit-transition: all s ease
+	transition all s ease
+
 //main
 html, body{
 	font-family: main-font;
+}
+
+.responsive-img{
+	width: 100%;
+	height: 100%;
 }
 
 .circle-img{
@@ -188,6 +197,12 @@ html, body{
 	height:80px;
 }
 
+.favorite-icon{
+	position:absolute;
+	top:20px;
+	right: 20px;
+}
+
 .blog{
 	margin-bottom: 10px;
 	text-align: justify;
@@ -244,6 +259,39 @@ html, body{
 	margin-right: 5px;
 }
 
+//admin single Page
+.image-holder{
+	min-height:180px;
+	border: 1px solid rgba(0,0,0,0.12);
+	border-top:0;
+}
+
+.blog-text{
+	text-align: justify;
+}
+
+.photo-edit-container{
+	position: relative;
+}
+
+.admin-photo-delete{
+	position: absolute;
+	right:-8px;
+	top:15px;
+}
+
+.photo-edit-container md-input-container{
+	padding:0;
+}
+
+.status-success{
+	color:#12B55E∏;
+}
+
+.status-normal{
+	all-ease-transition(0.5s);
+}
+
 //MD
 md-list{
 	padding: 0;
@@ -251,6 +299,10 @@ md-list{
 
 md-list-item p{
 	line-height: 22px;
+}
+
+md-select{
+	padding-top: 0;
 }
 
 .md-list-item-text span {
@@ -267,6 +319,21 @@ label.md-title{
 .animate-show.ng-hide-remove.ng-hide-remove-active {
   -webkit-transition: all linear 0.4s;
   transition: all linear 0.4s;
+}
+
+.animate-if.ng-enter, .animate-if.ng-leave {
+  -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.2s;
+  transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.2s;
+}
+
+.animate-if.ng-enter,
+.animate-if.ng-leave.ng-leave-active {
+  opacity:0;
+}
+
+.animate-if.ng-leave,
+.animate-if.ng-enter.ng-enter-active {
+  opacity:1;
 }
 
 //overwrite booklet style

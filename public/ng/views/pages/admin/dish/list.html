@@ -1,23 +1,28 @@
-<div class="row text-right">
-    <a href="#" class="btn btn-primary" ng-click="dishList.addDish()">New Dish</a>
-</div>
-<hr>
-<div class="row">
-    <div ng-repeat="dish in dishList.dishes" class="col-sm-6 col-md-4">
-        <div class="thumbnail">
-            <a href="/dishes/{{dish._id}}">
-                <img src="{{dish.imageUrl}}" alt="{{dish.name}}">
-            </a>
-            <div class="caption">
-                <h4>{{dish.name}}</h4>
-                <p>
-                    <span class="label label-info" ng-repeat="tag in dish.tags">{{tag}}</span>
-                </p>
-                <p>
-                    <a href="/admin/dishes/{{dish._id}}" class="btn btn-info" role="button">edit</a>
-                    <a href="#" ng-click="dishList.deleteDish(dish._id)" class="btn btn-danger" role="button">delete</a>
-                </p>
-            </div>
-        </div>
+<md-toolbar md-scroll-shrink>
+    <div class="md-toolbar-tools">
+        <h3>All Dishes</h3>
+        <span flex></span>
+        <md-button ng-click="dishList.addDish()">
+            <md-icon class="big-icon" md-svg-icon="add"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+<div layout="row">
+    <div flex="20">
+    </div>
+    <md-content flex="60">
+        <md-list>
+            <md-list-item ng-repeat-start="dish in dishList.dishes" class="md-2-line" ng-click="dishList.goToEdit(dish._id)">
+                <img ng-src="{{dish.imageUrl}}" alt="{{dish.name}}" class="md-avatar">
+                <div class="md-list-item-text">
+                    <h3>{{dish.name}}</h3>
+                    <p><span ng-repeat="tag in dish.tags">{{tag}}</span></p>
+                </div>
+                <md-icon md-svg-icon="delete" class="md-secondary md-warn" ng-click="dishList.deleteDish($index)"></md-icon>
+            </md-list-item>
+            <md-divider ng-repeat-end></md-divider>
+        </md-list>
+    </md-content>
+    <div flex="20">
     </div>
 </div>
