@@ -11,6 +11,7 @@
     <link href="http://fonts.googleapis.com/css?family=Open+Sans|Montserrat" rel="stylesheet" type="text/css">
     <!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.3/angular-material.min.css"> -->
     <link rel="stylesheet" href="assets/angular-material/angular-material.min.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="assets/booklet/jquery.booklet.latest.css">
     <link rel="stylesheet" type="text/css" href="assets/site.css">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -21,15 +22,15 @@
 
 <body ng-app="spicyTaste" layout="column" layout-fill ng-controller="MainController as main">
     <md-toolbar layout="row" layout-align="center center">
-        <span>Spicy Taste</span>
+        <md-button ng-href="/"><span class="md-headline">Spicy Taste</span></md-button>
         <span flex></span>
-        <md-button ng-if="!currentUser" ng-click="main.showLoginDialog($event)">
+        <md-button ng-if="!currentUser" ng-click="showLoginDialog($event)">
             <md-icon md-svg-icon="login" class="login-btn-icon"></md-icon>
         </md-button>
         <md-button ng-if="currentUser" ng-href="/me">
             <img ng-src="{{currentUser.photoUrl}}" class="avatar" alt="{{currentUser.userName}}">
         </md-button>
-        <md-button hide-gt-sm ng-click="main.toggleMobileMenu()">
+        <md-button hide-gt-sm ng-click="main.toggleMobileMenu()" class="md-icon-button">
             <md-icon md-svg-icon="menu"></md-icon>
         </md-button>
     </md-toolbar>
@@ -50,15 +51,21 @@
             </md-list-item>
         </md-list>
     </div>
-    <div layout="column" ng-view></div>
+    <div layout="column" ng-view>
+    </div>
+    <div flex class="book-backdrop animate-show" ng-if="shownBook"></div>
+    <script type="text/javascript" src="assets/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="assets/jquery.easing/js/juqery.easing.min.js"></script>
+    <script type="text/javascript" src="assets/booklet/jquery.booklet.latest.min.js"></script>
     <script type="text/javascript" src="assets/angular/angular.min.js"></script>
     <script type="text/javascript" src="assets/angular-route/angular-route.min.js"></script>
     <script type="text/javascript" src="assets/angular-animate/angular-animate.min.js"></script>
     <script type="text/javascript" src="assets/angular-aria/angular-aria.min.js"></script>
     <script type="text/javascript" src="assets/angular-messages/angular-messages.min.js"></script>
     <script type="text/javascript" src="assets/angular-material/angular-material.min.js"></script>
-    <script src="assets/angular-md5/angular-md5.min.js"></script>
-    <script src="assets/app.js"></script>
+    <script type="text/javascript" src="assets/angular-md5/angular-md5.min.js"></script>
+    <script type="text/javascript" src="assets/app.js"></script>
 </body>
 
 </html>

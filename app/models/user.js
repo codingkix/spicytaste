@@ -21,6 +21,7 @@ var UserSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dish'
     }],
+    role: String,
     createdDate: {
         type: Date,
         required: true,

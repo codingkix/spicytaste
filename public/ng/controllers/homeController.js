@@ -1,10 +1,16 @@
 angular.module('spicyTaste')
-    .controller('HomeController', function(DishService, CONSTANTS) {
+    .controller('HomeController', function($scope, $mdMedia, DishService, CONSTANTS) {
         var vm = this;
         init();
 
         function init() {
             vm.recipeTiles = [];
+            $scope.$watch(function() {
+                return $mdMedia('sm');
+            }, function(isSmall) {
+                $scope.smallScreen = isSmall;
+            });
+
             buildGrid();
         }
 

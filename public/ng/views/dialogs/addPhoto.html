@@ -1,0 +1,29 @@
+<md-dialog aria-label="Add Photo" flex="60" flex-lg="40">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h3>Add Photo</h3>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="photoDlg.closeDialog()">
+                    <md-icon md-svg-icon="svg/ic_close_24px.svg" aria-label="close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="photo-edit-container">
+                <md-input-container md-no-float>
+                    <input ng-model="photoDlg.newPhoto" placeholder="New Photo Url">
+                </md-input-container>
+                <div class="image-holder">
+                    <img ng-src="{{photoDlg.newPhoto}}" ng-class="{'responsive-img' : photoDlg.newPhoto != ''}" />
+                </div>
+            </div>
+        </md-dialog-content>
+        <div ng-if="photoDlg.newPhoto !='' " class="md-actions animate-if" layout="row">
+            <span flex></span>
+            <md-button ng-click="photoDlg.submit()" class="md-primary">
+                Submit
+            </md-button>
+        </div>
+    </form>
+</md-dialog>

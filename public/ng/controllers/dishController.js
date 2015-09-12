@@ -3,38 +3,30 @@ angular.module('spicyTaste')
     .controller('DishListController', function(DishService, SocialService, $location) {
         var vm = this;
 
-        //set a processing variable to show loading
-        vm.processing = true;
-
         //grab all the dishes at page load
         DishService.all().success(function(data) {
-            //when all dishes fetched, remove processing variable
-            vm.processing = false;
-
             //bind the dishes
             vm.dishes = data;
         });
 
         //function to delete a dish
-        vm.deleteDish = function(id) {
-            vm.processing = true;
-
-            DishService.delete(id).success(function(data) {
-                DishService.all().success(function(data) {
-                    vm.processing = false;
-                    vm.dishes = data;
-                });
+        vm.deleteDish = function(index) {
+            var dish = vm.dishes[index];
+            DishService.delete(dish._id).success(function(data) {
+                vm.dishes.splice(index, 1);
             });
         };
 
         vm.addDish = function() {
-            vm.processing = true;
-
             DishService.create({
                 name: 'new dish'
             }).success(function(data) {
-                $location.path('/admin/dish/' + data.dish._id);
+                $location.path('/admin/dishes/' + data.dish._id);
             });
+        }
+
+        vm.goToEdit = function(id) {
+            $location.path('/admin/dishes/' + id);
         }
 
     })
@@ -58,6 +50,7 @@ angular.module('spicyTaste')
             $rootScope.shownBook = true;
         };
 
+        //call booklet plugin
         $scope.$on('onRepeatLast', function(scope, element, attrs) {
             angular.element(element).parents('#dishBook').booklet({
                 width: '100%',
@@ -84,21 +77,24 @@ angular.module('spicyTaste')
             openCommentDialog(commentTitle, $event, user._id);
         };
 
-        vm.collect = function() {
-            if (!$rootScope.user) {
-                var returnUrl = $location.url();
-                return $location.path('/login').search({
-                    returnUrl: returnUrl
+        vm.collect = function($event) {
+            if (!$rootScope.currentUser) {
+                $scope.showLoginDialog($event, true, 'Login/SignUp first to save as favorite').then(function(user) {
+                    $rootScope.currentUser = user;
+
+                    UserService.collect(vm.dish._id).then(function(data) {
+                        if (data.success) {
+                            vm.dish.isCollected = true;
+                        }
+                    });
+                })
+            } else {
+                UserService.collect(vm.dish._id).then(function(data) {
+                    if (data.success) {
+                        vm.dish.isCollected = true;
+                    }
                 });
             }
-
-            UserService.collect(vm.dish._id).then(function(data) {
-                console.log("UserService.collect:", data);
-
-                if (data.success) {
-                    vm.dish.isCollected = true;
-                }
-            });
         }
 
         vm.showInstructionPhoto = function(photoUrl, $event) {
@@ -118,14 +114,29 @@ angular.module('spicyTaste')
         }
 
         vm.newComment = function($event) {
-            openCommentDialog('Comment', $event, null);
+            if (!$rootScope.currentUser) {
+                $scope.showLoginDialog($event, true, 'Login/SignUp first to leave a comment').then(function(user) {
+                    $rootScope.currentUser = user;
+                    openCommentDialog('Comment', $event, null);
+                })
+            } else {
+                openCommentDialog('Comment', $event, null);
+            }
         }
 
         function init() {
+            vm.dish = {};
+            vm.relatedDishes = {};
+
             //get the dish by id
             DishService.get($routeParams.dish_id).success(function(data) {
                 vm.dish = data;
                 vm.dish.isCollected = false;
+
+                //get the 3 related dishes
+                DishService.relate(vm.dish._id, vm.dish.tags, 3).success(function(data) {
+                    vm.relatedDishes = data;
+                })
 
                 if ($rootScope.currentUser) {
                     var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
@@ -177,82 +188,95 @@ angular.module('spicyTaste')
             }
         }
     })
-    //controller applied to dish creation page
-    //not use anymore
-    .controller('DishCreateController', function($location, DishService) {
-        var vm = this;
-
-        vm.dish = {
-            name: 'new dish'
-        };
-
-        vm.save = function() {
-            vm.processing = true;
-
-            DishService.create(vm.dish).success(function(data) {
-                $location.path('/admin/dish/' + data.dish._id);
-            });
-        };
-
-
-
-        function init() {
-            vm.type = 'create';
-            vm.dish = {
-                instructions: [],
-                photo: []
-            };
-            vm.newInstruction = '';
-            vm.newPhoto = '';
-            vm.message = '';
-            vm.processing = false;
-            vm.dish.instructions.length = 0;
-            vm.dish.photos.length = 0;
-        }
-    })
     //controller applied to dish edit page
-    .controller('DishEditController', function($routeParams, DishService, $location) {
+    .controller('DishEditController', function($mdDialog, $routeParams, DishService, $location, $timeout) {
         var vm = this;
         init();
 
-        //get the dish by id
-        DishService.get($routeParams.dish_id).success(function(data) {
-            vm.dish = data;
-        });
+        vm.saveDish = function() {
+            DishService.update($routeParams.dish_id, vm.dish).success(function(data) {
+                vm.updateSuccess = true;
 
-        vm.addInstruction = function() {
-            vm.dish.instructions.push(vm.newInstruction);
-            vm.newInstruction = '';
+                $timeout(function() {
+                    vm.updateSuccess = false;
+                }, 1000);
+            })
         }
 
         vm.removeInstruction = function(index) {
-            vm.dish.instructions.splice(index, 1);
-        }
-
-        vm.addPhoto = function() {
-            console.log("newPhoto: ", vm.newPhoto);
-            vm.dish.photos.push(vm.newPhoto);
-            console.log("dish:", vm.dish);
-            vm.newPhoto = '';
+            DishService.removeInstruction($routeParams.dish_id, vm.dish.instructions[index]._id).success(function(data) {
+                vm.dish.instructions.splice(index, 1);
+            });
         }
 
         vm.removePhoto = function(index) {
             vm.dish.photos.splice(index, 1);
+            vm.saveDish();
         }
 
-        vm.save = function() {
-            vm.processing = true;
+        vm.showAddPhotoDialog = function(evn) {
+            $mdDialog.show({
+                targetEvent: evn,
+                controller: photoDialogController,
+                controllerAs: 'photoDlg',
+                clickOutsideToClose: true,
+                templateUrl: 'ng/views/dialogs/addPhoto.html'
+            }).then(function(newPhoto) {
+                vm.dish.photos.push(newPhoto);
+                vm.saveDish();
+            });
+        }
 
-            DishService.update($routeParams.dish_id, vm.dish).success(function(data) {
-                init();
-                vm.message = data.message;
-            })
+        vm.showAddInstructionDialog = function(evn) {
+            $mdDialog.show({
+                targetEvent: evn,
+                controller: instructionDialogController,
+                controllerAs: 'instructionDlg',
+                clickOutsideToClose: true,
+                templateUrl: 'ng/views/dialogs/addInstruction.html'
+            }).then(function(newInstruction) {
+                vm.dish.instructions.push(newInstruction);
+                DishService.addInstruction($routeParams.dish_id, newInstruction).success(function(data) {
+
+                });
+            });
+        }
+
+        function photoDialogController($mdDialog) {
+            var dvm = this;
+            dvm.newPhoto = '';
+
+            dvm.closeDialog = function() {
+                $mdDialog.cancel();
+            }
+
+            dvm.submit = function() {
+                $mdDialog.hide(dvm.newPhoto);
+            }
+        }
+
+        function instructionDialogController($mdDialog) {
+            var dvm = this;
+
+            dvm.newInstruction = {
+                photo: '',
+                text: ''
+            };
+
+            dvm.closeDialog = function() {
+                $mdDialog.cancel();
+            }
+
+            dvm.submit = function() {
+                $mdDialog.hide(dvm.newInstruction);
+            }
         }
 
         function init() {
-            vm.newPhoto = '';
-            vm.newInstruction = '';
-            vm.message = '';
-            vm.processing = false;
+            //get the dish by id
+            DishService.get($routeParams.dish_id).success(function(data) {
+                vm.dish = data;
+            });
+            vm.difficulties = DishService.getDifficulties();
         }
     });

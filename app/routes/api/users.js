@@ -109,8 +109,17 @@ router.route('/users/:user_id')
         }
     });
 
+//save dish as favorite
 router.put('/users/:user_id/dishes/:dish_id', function(req, res, next) {
     var user = req.user;
+    //if user already have it, return true
+    user.favouriteDishes.forEach(function(item) {
+        if (item._id == req.params.dish_id)
+            return res.json({
+                success: true
+            });
+    });
+
     Dish.findById(req.params.dish_id).exec(function(err, dish) {
         if (err) next(err);
         if (dish) {

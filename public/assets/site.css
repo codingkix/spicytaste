@@ -3,10 +3,18 @@ html,
 body {
   font-family: "open sans", sans-serif;
 }
+.responsive-img {
+  width: 100%;
+  height: 100%;
+}
 .circle-img {
   width: 120px;
   height: 120px;
   border-radius: 50%;
+}
+.big-icon {
+  height: 48px;
+  width: 48px;
 }
 .mobile-menu-container {
   height: 101px;
@@ -77,6 +85,19 @@ body {
 .back {
   transform: rotateY(180deg);
 }
+.back md-whiteframe {
+  cursor: pointer;
+}
+.frame-link {
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+.button-in md-icon {
+  width: 50%;
+  height: 50%;
+}
 .big-tile md-whiteframe {
   padding: 24px 32px;
 }
@@ -134,6 +155,20 @@ body {
   border-left-color: rgba(0,0,0,0.3);
   height: 100%;
 }
+.bottom-actions-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.2);
+  width: 100%;
+  color: #fff;
+  height: 80px;
+}
+.favorite-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
 .blog {
   margin-bottom: 10px;
   text-align: justify;
@@ -149,10 +184,17 @@ body {
   bottom: 20px;
   left: 20px;
 }
-.comment-button {
+.speed-menu {
   position: fixed;
   right: 20px;
   bottom: 40px;
+}
+.right-col img {
+  width: 100%;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+.related-item {
+  margin-bottom: 10px;
 }
 .list-item-container {
   margin-bottom: 16px;
@@ -170,11 +212,40 @@ body {
 .plain-tag {
   margin-right: 5px;
 }
+.image-holder {
+  min-height: 180px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-top: 0;
+}
+.blog-text {
+  text-align: justify;
+}
+.photo-edit-container {
+  position: relative;
+}
+.admin-photo-delete {
+  position: absolute;
+  right: -8px;
+  top: 15px;
+}
+.photo-edit-container md-input-container {
+  padding: 0;
+}
+.status-success {
+  color: #12b55e;
+}
+.status-normal {
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
 md-list {
   padding: 0;
 }
 md-list-item p {
   line-height: 22px;
+}
+md-select {
+  padding-top: 0;
 }
 .md-list-item-text span {
   margin-right: 8px;
@@ -186,4 +257,48 @@ label.md-title {
 .animate-show.ng-hide-remove.ng-hide-remove-active {
   -webkit-transition: all linear 0.4s;
   transition: all linear 0.4s;
+}
+.animate-if.ng-enter,
+.animate-if.ng-leave {
+  -webkit-transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
+  transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
+}
+.animate-if.ng-enter,
+.animate-if.ng-leave.ng-leave-active {
+  opacity: 0;
+}
+.animate-if.ng-leave,
+.animate-if.ng-enter.ng-enter-active {
+  opacity: 1;
+}
+.booklet .b-page-cover {
+  background: none;
+}
+.book-img-page {
+  height: 100%;
+  background-size: cover !important;
+}
+.img-mask {
+  background-color: rgba(0,0,0,0.2);
+  width: 100%;
+  height: 100%;
+}
+.book-title {
+  color: #fff;
+  text-align: center;
+}
+.book-text {
+  padding: 16px;
+}
+.book-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  z-index: 79;
+}
+md-dialog-content.book-container {
+  padding: 14px;
 }

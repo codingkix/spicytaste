@@ -1,0 +1,15 @@
+<div id="dishBook">
+    <div class="book-img-page" style="background: url('{{dish.imageUrl}}')">
+        <div class="img-mask">
+            <h3 class="book-title">{{dish.name}}</h3></div>
+    </div>
+    <div ng-repeat-start="item in dish.instructions" on-last-repeat class="book-img-page" style="background: url('{{item.photo}}')" title="step {{$index+1}}">
+    </div>
+    <div ng-repeat-end layout="column" layout-align="start center">
+        <h4 class="md-title">Step {{$index+1}}</h4>
+        <p class="book-text">{{item.text}}</p>
+    </div>
+    <div layout="row" layout-align="center center">
+        <h3 flex style="text-align: center" class="md-display-1">All Done</h3>
+    </div>
+</div>

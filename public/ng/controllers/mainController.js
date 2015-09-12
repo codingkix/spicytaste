@@ -23,12 +23,16 @@ angular.module('spicyTaste')
             } else {
                 promise.then(function(user) {
                     $rootScope.currentUser = user;
-                    $location.path('/');
+                    if (user.role && user.role == "Admin") {
+                        $location.path('/admin/dishes');
+                    } else {
+                        $location.path('/');
+                    }
                 });
             }
         };
 
-        function loginController(dialogTitle, $mdDialog, UserService) {
+        function loginController(dialogTitle, $mdDialog, UserService, md5) {
             var dvm = this;
             dvm.title = dialogTitle;
             dvm.email = "";

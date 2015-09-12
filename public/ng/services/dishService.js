@@ -14,6 +14,19 @@ angular.module('spicyTaste')
             return $http.get('/api/dishes?limit=' + num);
         }
 
+        //get related dishes by tags
+        dishFactory.relate = function(id, tags, num) {
+            return $http({
+                method: 'GET',
+                url: '/api/dishes',
+                params: {
+                    id: id,
+                    limit: num,
+                    'tags[]': tags
+                }
+            });
+        }
+
         //create a dish
         dishFactory.create = function(dish) {
             return $http.post('/api/dishes', dish);
@@ -37,6 +50,16 @@ angular.module('spicyTaste')
         //add a comment
         dishFactory.addComment = function(dish_id, comment) {
             return $http.post('/api/dishes/' + dish_id + '/comments', comment);
+        }
+
+        //add a instruction
+        dishFactory.addInstruction = function(dish_id, instruction) {
+            return $http.post('/api/dishes/' + dish_id + '/instructions', instruction);
+        }
+
+        //remove an instruction
+        dishFactory.removeInstruction = function(dish_id, instruction_id) {
+            return $http.delete('/api/dishes/' + dish_id + '/instructions/' + instruction_id);
         }
 
         //get difficulty

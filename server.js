@@ -29,7 +29,7 @@ app.use(function(req, res, next) {
 app.use(morgan('dev'));
 
 // connect to database
-mongoose.connect(config.database);
+mongoose.connect(process.env.MONGOLAB_URL || config.database);
 
 // set static files location
 app.use(express.static(__dirname + '/public'));

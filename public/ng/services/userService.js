@@ -1,10 +1,9 @@
 angular.module('spicyTaste')
     .factory('UserService', function($http, $rootScope, $window, CONSTANTS) {
         var userFactory = {};
+
         //social login
         userFactory.socialLogin = function(socialUser) {
-            console.log("socialUser: ", socialUser);
-
             return userFactory.searchBy('email=' + socialUser.email).then(function(data) {
 
                 if (!data.success) {
@@ -45,6 +44,7 @@ angular.module('spicyTaste')
         userFactory.logout = function() {
             delete $http.defaults.headers.common['X-Auth'];
             $window.localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_KEY);
+            userFactory.loginedUser = null;
         }
 
         //get current user
@@ -84,9 +84,22 @@ angular.module('spicyTaste')
 
         //collect dish as favourite
         userFactory.collect = function(dish_id) {
-            return $http.put('/api/users/' + $rootScope.user._id + '/dishes/' + dish_id).then(function(response) {
+            return $http.put('/api/users/' + $rootScope.currentUser._id + '/dishes/' + dish_id).then(function(response) {
                 return response.data;
             });
+        }
+
+        //authorize user
+        userFactory.authorize = function(requirePermissions){
+            return userFactory.get().then(function(user){
+                    if(user && requirePermissions.indexOf(user.role) >= 0){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }, function(response){
+                    return false;
+                });
         }
 
         return userFactory;

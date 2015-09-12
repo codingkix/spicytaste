@@ -44,6 +44,14 @@ router.route('/dishes')
     .get(function(req, res, next) {
         var query = Dish.find().sort('-createdDate');
 
+        //search by tags
+        if (req.query.tags) {
+            var tags = req.query.tags;
+            var id = req.query.id;
+            query.ne('_id', id).where('tags').in(tags);
+        }
+
+        //limit the result
         if (req.query.limit) {
             var n = req.query.limit;
             query.limit(n);
@@ -75,6 +83,8 @@ router.route('/dishes')
             } else {
                 // return the saved dish
                 res.status(201).json({
+                    dish: dish,
+                    success: true,
                     message: 'Dish created!'
                 });
             }
@@ -106,6 +116,7 @@ router.route('/dishes/:dish_id')
             if (err) return next(err);
 
             res.json({
+                success: true,
                 message: 'Dish updated!'
             });
         });
@@ -117,6 +128,7 @@ router.route('/dishes/:dish_id')
         }, function(err, dish) {
             if (err) next(err);
             res.json({
+                success: true,
                 message: "Dish deleted"
             });
         })
@@ -176,7 +188,6 @@ router.post('/dishes/:dish_id/instructions', function(req, res, next) {
         text: req.body.text,
         photo: req.body.photo
     });
-    console.log('new instr', instruction);
 
     instruction.save(function(err, instruction) {
         if (err) return next(err);
@@ -185,10 +196,41 @@ router.post('/dishes/:dish_id/instructions', function(req, res, next) {
             if (err) return next(err);
 
             res.json({
+                success: true,
                 message: 'Dish Instruction Added!'
             });
         });
     })
+});
+
+// on routes that end in /api/dishes/:dish_id/instructions
+// ----------------------------------------------------
+router.delete('/dishes/:dish_id/instructions/:instruction_id', function(req, res, next) {
+    var dishId = req.params.dish_id;
+    var instructionId = req.params.instruction_id;
+
+    Dish.findByIdAndUpdate(
+        dishId, {
+            $pull: {
+                'instructions': {
+                    _id: instructionId
+                }
+            }
+        },
+        function(err, dish) {
+            if (err) return next(err);
+
+            Instruction.remove({
+                _id: instructionId
+            }, function(err, data) {
+                if (err) return next(err);
+                return res.json({
+                    success: true,
+                    message: 'Dish instruction deleted'
+                });
+            })
+        }
+    );
 });
 
 module.exports = router;

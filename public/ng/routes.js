@@ -22,22 +22,22 @@ angular.module('spicyTaste')
                 controllerAs: 'dishDetail'
             })
             //list admin dish page
-            .when('/admin/dishes/list', {
+            .when('/admin/dishes', {
                 templateUrl: 'ng/views/pages/admin/dish/list.html',
                 controller: 'DishListController',
-                controllerAs: 'dishList'
-            })
-            //create a new dish page
-            .when('/admin/dishes/create', {
-                templateUrl: 'ng/views/pages/admin/dish/single.html',
-                controller: 'DishCreateController',
-                controllerAs: 'dishManage'
+                controllerAs: 'dishList',
+                access: {
+                    requirePermissions: ['Admin']
+                }
             })
             //edit a dish page
             .when('/admin/dishes/:dish_id', {
                 templateUrl: 'ng/views/pages/admin/dish/single.html',
                 controller: 'DishEditController',
-                controllerAs: 'dishManage'
+                controllerAs: 'dishManage',
+                access: {
+                    requirePermissions: ['Admin']
+                }
             })
             //login user
             .when('/login', {
@@ -50,5 +50,8 @@ angular.module('spicyTaste')
                 templateUrl: 'ng/views/pages/user/me.html',
                 controller: 'ProfileController',
                 controllerAs: 'me'
+            })
+            .when('/not-authorize', {
+                templateUrl: 'ng/views/pages/not-authorize.html'
             })
     });

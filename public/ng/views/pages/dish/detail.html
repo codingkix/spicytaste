@@ -1,8 +1,7 @@
 <div layout="column" layout-fill>
     <div flex="20" layout="row" class="dish-hero">
-        <img ng-src="{{dishDetail.dish.imageUrl}}" flex alt="{{dishDetail.dish.name}}">
-        <md-icon ng-if="dishDetail.dish.isCollected" md-svg-icon="favorite" class="md-primary big-icon favorite-icon" title="My Favorite"></md-icon>
-        <div layout="row" layout-align="center center" class="share-buttons">
+        <img ng-src="{{dishDetail.dish.imageUrl}}" flex alt="{{dishDetail.dish.name}}" class="responsive-img">
+        <div layout="row" class="bottom-actions-container">
             <md-fab-speed-dial md-direction="right" ng-class="md-scale">
                 <md-fab-trigger>
                     <md-button aria-label="share" title="Share this dish" class="md-fab md-warn">
@@ -21,14 +20,20 @@
                     </md-button>
                 </md-fab-actions>
             </md-fab-speed-dial>
+            <md-button flex="60" ng-click="dishDetail.enterFlipBook($event)"><span class="md-title">Read Cooking Book</span></md-button>
+            <div flex></div>
         </div>
+        <md-icon ng-show="dishDetail.dish.isCollected" md-svg-icon="favorite" class="md-primary big-icon favorite-icon" title="My Favorite"></md-icon>
     </div>
-    <div flex="80" layout="row" layout-padding layout-margin layout-align="center">
-        <div flex-md="80" layout="column" layout-fill>
+    <div flex="80" layout="row" layout-padding layout-align="center">
+        <div flex="80" layout="column" layout-fill>
             <h3 class="md-headline">{{dishDetail.dish.name}}</h3>
             <md-content class="blog">
                 <p>{{dishDetail.dish.blog}}</p>
             </md-content>
+            <div layout="row" layout-margin ng-repeat="photo in dishDetail.dish.photos">
+                <img flex ng-src="{{photo}}" alt="" class="responsive-img">
+            </div>
             <div layout="row" layout-align="center" layout-margin>
                 <md-whiteframe flex="50" class="md-whiteframe-z2 italic-list" layout="column" layout-algin="center center">
                     <label class="md-title">Ingredients</label>
@@ -36,9 +41,6 @@
                         <li ng-repeat="item in dishDetail.dish.ingredients">{{item}}</li>
                     </ul>
                 </md-whiteframe>
-            </div>
-            <div layout="row" layout-margin ng-repeat="photo in dishDetail.dish.photos">
-                <img flex ng-src="{{photo}}" alt="">
             </div>
             <div layout="row" layout-margin>
                 <md-whiteframe class="md-whiteframe-z3 md-body-1" flex layout="column">
@@ -62,8 +64,11 @@
                 </md-list-item>
             </md-list>
         </div>
-        <div flex-gt-md="20">
+        <div flex="20" layout="column" layout-align="start center" layout-fill class="right-col">
             <h3 class="md-headline">Related</h3>
+            <a class="related-item" ng-repeat="item in dishDetail.relatedDishes" ng-href="/dishes/{{item._id}}">
+                <img ng-src="{{item.imageUrl}}" alt="{{item.name}}" title="{{item.name}}" />
+            </a>
         </div>
     </div>
 </div>

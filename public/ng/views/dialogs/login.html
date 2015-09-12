@@ -1,12 +1,17 @@
 <md-dialog class="login-dialog" aria-label="Login/SignUp" flex-sm="60" flex-md="50" flex-gt-md="30">
-    <md-dialog-content class="">
+    <md-toolbar ng-if="login.title">
+        <div class="md-toolbar-tools">
+            <h4>{{login.title}}</h4>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
         <md-tabs md-dynamic-height md-border-bottom md-stretch-tabs="always">
             <md-tab label="Log In">
                 <md-content class="md-padding">
-                    <form name="formLogin" ng-submit="main.login()" novalidate>
+                    <form name="formLogin" ng-submit="login.login()" novalidate>
                         <md-input-container>
                             <label>Email</label>
-                            <input type="email" required name="email" ng-model="main.email">
+                            <input type="email" required name="email" ng-model="login.email">
                             <div ng-messages="formLogin.email.$error" ng-if="formLogin.email.$dirty || formLogin.$submitted">
                                 <div ng-message="required">Email is required.</div>
                                 <div ng-message="email">Email is invalid.</div>
@@ -14,7 +19,7 @@
                         </md-input-container>
                         <md-input-container>
                             <label>Password</label>
-                            <input type="password" required name="password" ng-model="main.password">
+                            <input type="password" required name="password" ng-model="login.password">
                             <div ng-messages="formLogin.password.$error" ng-if="formLogin.password.$dirty || formLogin.$submitted">
                                 <div ng-message="required">Password is required.</div>
                             </div>
@@ -24,7 +29,7 @@
                         </md-input-container>
                     </form>
                     <md-input-container flex md-theme="blue">
-                        <md-button ng-click="main.fbLogin()" class="md-raised md-primary">
+                        <md-button ng-click="login.fbLogin()" class="md-raised md-primary">
                             Facebook
                         </md-button>
                     </md-input-container>
@@ -32,17 +37,17 @@
             </md-tab>
             <md-tab label="Sign Up">
                 <md-content class="md-padding">
-                    <form name="formSignUp" ng-submit="main.signUp()" novalidate>
+                    <form name="formSignUp" ng-submit="login.signUp()" novalidate>
                         <md-input-container>
                             <label>Nick Name</label>
-                            <input type="text" required name="username" ng-model="main.userName">
+                            <input type="text" required name="username" ng-model="login.userName">
                             <div ng-messages="formSignUp.username.$error" ng-if="formSignUp.username.$dirty">
                                 <div ng-message="required">User name is required.</div>
                             </div>
                         </md-input-container>
                         <md-input-container>
                             <label>Email</label>
-                            <input type="email" required name="email" ng-model="main.email">
+                            <input type="email" required name="email" ng-model="login.email">
                             <div ng-messages="formSignUp.email.$error" ng-if="formSignUp.email.$dirty">
                                 <div ng-message="required">Email is required.</div>
                                 <div ng-message="email">Email is invalid.</div>
@@ -50,7 +55,7 @@
                         </md-input-container>
                         <md-input-container>
                             <label>Password</label>
-                            <input type="password" required name="password" ng-model="main.password">
+                            <input type="password" required name="password" ng-model="login.password">
                             <div ng-messages="formSignUp.password.$error" ng-if="formSignUp.password.$dirty">
                                 <div ng-message="required">Password is required.</div>
                             </div>
@@ -60,7 +65,7 @@
                         </md-input-container>
                     </form>
                     <md-input-container flex>
-                        <md-button ng-click="main.fbLogin()" class="fb-btn">
+                        <md-button ng-click="login.fbLogin()" class="fb-btn">
                             Facebook
                         </md-button>
                     </md-input-container>

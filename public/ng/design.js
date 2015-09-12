@@ -37,5 +37,9 @@ angular.module('spicyTaste')
             .icon('facebook', 'svg/facebook.svg')
             .icon('twitter', 'svg/twitter.svg')
             .icon('pinterest', 'svg/pinterest.svg')
-            .icon('comments', 'svg/ic_chat_48px.svg');
+            .icon('comments', 'svg/ic_chat_48px.svg')
+            .icon('menu', 'svg/ic_menu_48px.svg')
+            .icon('favorite', 'svg/ic_favorite_24px.svg')
+            .icon('delete', 'svg/ic_delete_48px.svg')
+            .icon('add', 'svg/ic_add_circle_outline_48px.svg');
     });
