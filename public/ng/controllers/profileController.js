@@ -1,5 +1,7 @@
 angular.module('spicyTaste')
     .controller('ProfileController', function($location, $rootScope, UserService) {
+        'use strict';
+
         var vm = this;
         init();
 
@@ -11,7 +13,7 @@ angular.module('spicyTaste')
 
         function init() {
             vm.user = {};
-            UserService.get().then(function(user) {
+            UserService.getById($rootScope.currentUser._id).then(function(user) {
                 vm.user = user;
             });
         }

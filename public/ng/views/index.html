@@ -20,11 +20,13 @@
     <![endif]-->
 </head>
 
-<body ng-app="spicyTaste" layout="column" layout-fill ng-controller="MainController as main">
-    <md-toolbar layout="row" layout-align="center center">
-        <md-button ng-href="/"><span class="md-headline">Spicy Taste</span></md-button>
-        <span flex></span>
-        <md-button ng-if="!currentUser" ng-click="showLoginDialog($event)">
+<body ng-app="spicyTaste" layout-fill ng-controller="MainController as main">
+    <div class="top-menu-bar" layout="row" layout-align="center center">
+        <a ng-href="/" class="logo-link">
+            <img src="images/logo.png" alt="spicy taste" class="responsive-img"></img>
+        </a>
+        <span flex class="md-headline center-text logo-text">SPICY TASTE</span>
+        <md-button ng-if="!currentUser" class="md-primary" ng-click="showLoginDialog($event)">
             <md-icon md-svg-icon="login" class="login-btn-icon"></md-icon>
         </md-button>
         <md-button ng-if="currentUser" ng-href="/me">
@@ -33,7 +35,8 @@
         <md-button hide-gt-sm ng-click="main.toggleMobileMenu()" class="md-icon-button">
             <md-icon md-svg-icon="menu"></md-icon>
         </md-button>
-    </md-toolbar>
+    </div>
+    <!-- 
     <div layout="column" ng-show="main.showMobileMenu" class="mobile-menu-container animate-show">
         <md-list>
             <md-list-item layout="row" layout-align="center center">
@@ -50,8 +53,8 @@
                 </md-button>
             </md-list-item>
         </md-list>
-    </div>
-    <div layout="column" ng-view>
+    </div> -->
+    <div class="main" ng-view>
     </div>
     <div flex class="book-backdrop animate-show" ng-if="shownBook"></div>
     <script type="text/javascript" src="assets/jquery/dist/jquery.min.js"></script>

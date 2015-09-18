@@ -1,11 +1,12 @@
 angular.module('spicyTaste')
     .controller('MainController', function($rootScope, $scope, $location, $mdDialog, $http, SessionService, UserService, CONSTANTS) {
+        'use strict';
         var vm = this;
         init();
 
         vm.toggleMobileMenu = function() {
             vm.showMobileMenu = !vm.showMobileMenu;
-        }
+        };
 
         $scope.showLoginDialog = function(ev, postLogin, title) {
             var promise = $mdDialog.show({
@@ -23,11 +24,11 @@ angular.module('spicyTaste')
             } else {
                 promise.then(function(user) {
                     $rootScope.currentUser = user;
-                    if (user.role && user.role == "Admin") {
-                        $location.path('/admin/dishes');
-                    } else {
-                        $location.path('/');
-                    }
+                    // if (user.role && user.role == "Admin") {
+                    //     $location.path('/admin/dishes');
+                    // } else {
+                    //     $location.path('/');
+                    // }
                 });
             }
         };
@@ -35,9 +36,9 @@ angular.module('spicyTaste')
         function loginController(dialogTitle, $mdDialog, UserService, md5) {
             var dvm = this;
             dvm.title = dialogTitle;
-            dvm.email = "";
-            dvm.password = "";
-            dvm.userName = "";
+            dvm.email = '';
+            dvm.password = '';
+            dvm.userName = '';
 
             dvm.fbLogin = function() {
                 FB.login(function(response) {
@@ -50,11 +51,12 @@ angular.module('spicyTaste')
                                 password: CONSTANTS.SOCIAL_PASS,
                                 photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
                                 linkedSocial: CONSTANTS.FACEBOOK
-                            }
+                            };
+
                             UserService.socialLogin(fbUser).then(function(user) {
                                 user.loginType = CONSTANTS.FACEBOOK;
                                 afterAuth(user);
-                            })
+                            });
 
                         });
                     } else if (response.status === 'not_authorized') {
@@ -66,14 +68,14 @@ angular.module('spicyTaste')
                 }, {
                     scope: 'public_profile,email'
                 });
-            }
+            };
 
             dvm.login = function() {
                 UserService.login(dvm.email, dvm.password).then(function(user) {
                     user.loginType = CONSTANTS.EMAIL;
                     afterAuth(user);
                 });
-            }
+            };
 
             dvm.signUp = function() {
                 var newUser = {
@@ -89,7 +91,7 @@ angular.module('spicyTaste')
                     afterAuth(user);
                 });
 
-            }
+            };
 
             function afterAuth(user) {
                 var token = $http.defaults.headers.common['X-Auth'];
@@ -102,8 +104,10 @@ angular.module('spicyTaste')
             vm.showMobileMenu = false;
             var loginedToken = SessionService.getLocal(CONSTANTS.LOCAL_STORAGE_KEY);
             if (loginedToken) {
+                console.log('token', loginedToken);
+
                 $http.defaults.headers.common['X-Auth'] = loginedToken;
-                UserService.get().then(function(user) {
+                UserService.getCurrentUser().then(function(user) {
                     $rootScope.currentUser = user;
                 });
             }
