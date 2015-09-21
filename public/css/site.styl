@@ -10,6 +10,8 @@ sm-font-size = 0.8em
 
 lg-font-size = 1.3em
 
+theme-color = #F27242
+
 all-ease-transition(s)
 	-webkit-transition: all s ease
 	transition all s ease
@@ -41,7 +43,7 @@ html>body .full-height-content{
 }
 
 .logo-text{
-	color:#f27242;
+	color:theme-color;
 	font-weight:bold;
 }
 
@@ -52,6 +54,14 @@ html>body .full-height-content{
 	height: 64px;
 	width: 100%;
 	background-color: rgba(255,255,255,0.5);
+}
+
+.primary-bar{
+	background-color: theme-color;
+}
+
+.primary-bar .logo-text{
+	color: #FFF;
 }
 
 .responsive-img{
@@ -91,9 +101,13 @@ html>body .full-height-content{
 
 //home 
 #divLanding{
-	background: url(../images/landing-background.jpg) center center no-repeat scroll;
+	background: url(../images/landing-background.png) center no-repeat scroll;
+	background-size: cover;
 }
 
+#divLatestItems{
+
+}
 
 .hero-container{
 	background-image: url(https://assets0.munchery.com/assets/referral/referrals-page-hero20@2x-14ed2ae984b7fd3e9fa937352f732f5e.jpg)
@@ -107,9 +121,21 @@ html>body .full-height-content{
 }
 
 .hero-btn{
-	margin: 0 15px;
-	height: 36px;
-	width: 100px;
+	border: 1px solid theme-color;
+	color: theme-color;
+	border-radius: 20px;
+	height: 40px;
+	width: 200px;
+	font-size: 16px;
+}
+
+.solid-btn{
+	color: #FFF;
+	background-color: theme-color;
+}
+
+.tile-grid-container{
+	padding-top: 64px;
 }
 
 .tile-grid-container md-grid-tile{
@@ -202,6 +228,7 @@ html>body .full-height-content{
 .login-btn-icon{
 	height: 48px;
 	width: 48px;
+	color: #FFF;
 }
 
 .fb-btn{
