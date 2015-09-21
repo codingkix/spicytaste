@@ -8,6 +8,11 @@ angular.module('spicyTaste')
             vm.showMobileMenu = !vm.showMobileMenu;
         };
 
+        $scope.setScrollReached = function(flag) {
+            console.log('setScrollReached called', flag);
+            vm.scrollTargetReached = flag;
+        }
+
         $scope.showLoginDialog = function(ev, postLogin, title) {
             var promise = $mdDialog.show({
                 clickOutsideToClose: true,
@@ -102,6 +107,8 @@ angular.module('spicyTaste')
 
         function init() {
             vm.showMobileMenu = false;
+            vm.scrollTargetReached = false;
+
             var loginedToken = SessionService.getLocal(CONSTANTS.LOCAL_STORAGE_KEY);
             if (loginedToken) {
                 console.log('token', loginedToken);

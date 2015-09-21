@@ -21,12 +21,13 @@
 </head>
 
 <body ng-app="spicyTaste" layout-fill ng-controller="MainController as main">
-    <div class="top-menu-bar" layout="row" layout-align="center center">
+    <div class="top-menu-bar" layout="row" ng-class="{'primary-bar': main.scrollTargetReached}" layout-align="center center">
         <a ng-href="/" class="logo-link">
             <img src="images/logo.png" alt="spicy taste" class="responsive-img"></img>
         </a>
-        <span flex class="md-headline center-text logo-text">SPICY TASTE</span>
-        <md-button ng-if="!currentUser" class="md-primary" ng-click="showLoginDialog($event)">
+        <span ng-show="!main.scrollTargetReached" flex class="md-headline center-text logo-text">SPICY TASTE</span>
+        <span ng-show="main.scrollTargetReached" flex class="md-headline center-text logo-text">RECENT RECIPTS</span>
+        <md-button ng-if="!currentUser" ng-class="{'md-primary' : !main.scrollTargetReached}" ng-click="showLoginDialog($event)">
             <md-icon md-svg-icon="login" class="login-btn-icon"></md-icon>
         </md-button>
         <md-button ng-if="currentUser" ng-href="/me">

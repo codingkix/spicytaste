@@ -5,7 +5,6 @@ angular.module('spicyTaste')
             link: function(scope, $element, attrs) {
                 var $target = $(attrs.scrollTo);
                 $element.on('click', function() {
-                    console.log('offset', $target.offset().top);
                     $('html, body').animate({
                         scrollTop: $target.offset().top
                     }, 600);

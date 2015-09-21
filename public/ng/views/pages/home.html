@@ -1,11 +1,10 @@
-<div id="divLanding" class="full-height-content">
-    <md-button scroll-to="#divLatestItems" class="md-primary">Go To Latest</md-button>
-</div>
-<div id="divLatestItems" class="full-height-content">
-    <div layout="row" layout-align="center center">
-        <h3 flex="90" class="md-title">RECENT RECIPES</h3>
-        <md-button flex class="md-warn" ng-href="/dishes">VIEW ALL</md-button>
+<div id="divLanding" class="full-height-content" layout="column" layout-align="center center">
+    <div layout="row" layout-align="center">
+        <md-button scroll-to="#divLatestItems" class="hero-btn solid-btn">Inspire Me</md-button>
+        <md-button class="hero-btn">Share Mine</md-button>
     </div>
+</div>
+<div id="divLatestItems" scroll-reached class="full-height-content">
     <div class="tile-grid-container">
         <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="12px">
             <md-grid-tile ng-repeat="tile in home.recipeTiles" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1" md-rowspan-sm="1">
