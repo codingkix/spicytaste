@@ -12,15 +12,57 @@ lg-font-size = 1.3em
 
 theme-color = #F27242
 
+grey-background-color = #F4F7F8
+
+animation(a)
+	-webkit-animation: a
+	-moz-animation: a
+	-ms-animation: a
+	-o-animation: a
+	animation: a
+
+transform(t)
+	-webkit-transform: t
+	-moz-transform: t
+	-ms-transform: t
+	-o-transform: t
+	transform: t
+
 all-ease-transition(s)
-	-webkit-transition: all s ease
-	transition all s ease
+	-webkit-transition: all s ease-in
+  	-moz-transition: all s ease-in
+  	-ms-transition: all s ease-in
+  	-o-transition: all s ease-in
+  	transition: all s ease-in  	
+
 
 //main
 html, body{
 	font-family: main-font;
 	height:100%;
 	margin:0;
+	color: #515252;
+}
+
+.bounce{
+	animation(bounce 2s infinite)
+}
+
+@keyframes bounce {
+	0%, 20%, 50%, 80%, 100% {
+    transform(translateY(0));
+  }
+	40% {
+    transform(translateY(-30px));
+  }
+	60% {
+    transform(translateY(-15px));
+  }
+}
+
+.initial-icon{
+	height: initial
+	width: initial
 }
 
 .full-height-content{
@@ -54,14 +96,18 @@ html>body .full-height-content{
 	height: 64px;
 	width: 100%;
 	background-color: rgba(255,255,255,0.5);
+	z-index: 10;
+}
+
+.animation-block{
+	all-ease-transition(0.55s);
 }
 
 .primary-bar{
 	background-color: theme-color;
-}
-
-.primary-bar .logo-text{
-	color: #FFF;
+	.logo-text{
+		color: #FFF;
+	}
 }
 
 .responsive-img{
@@ -89,14 +135,36 @@ html>body .full-height-content{
 	height:101px;
 	background-color:#FF8A65;
 	color: #FFF;
-}
-
-.mobile-menu-container md-list-item{
-	height: 50px;
+	
+	md-list-item{
+		height: 50px;
+	};
 }
 
 .mobile-menu-container.ng-hide{
 	height:0px;
+}
+
+.bottom-section{
+	background-color: grey-background-color;
+	position:relative;
+}
+
+.footer{
+	background-color: #FFF
+	height: 200px;
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+}
+
+.footer >*{
+	height: 75%;
+	border-left: 1px solid #e8ebe9;
+}
+
+.footer >*:first-child{
+	border-left: none;
 }
 
 //home 
@@ -105,8 +173,19 @@ html>body .full-height-content{
 	background-size: cover;
 }
 
-#divLatestItems{
-
+.see-more-container{
+	color: #FFF;
+	font-size:lg-font-size;
+	padding-bottom: 20px;
+	
+	p{
+		margin: 0;
+	}
+	
+	md-button{
+		color: #FFF;
+		width: 100px;
+	}
 }
 
 .hero-container{
@@ -135,7 +214,7 @@ html>body .full-height-content{
 }
 
 .tile-grid-container{
-	padding-top: 64px;
+	padding: 76px 12px 12px 12px;
 }
 
 .tile-grid-container md-grid-tile{
@@ -376,7 +455,7 @@ html>body .full-height-content{
 }
 
 .status-normal{
-	all-ease-transition(0.5s);
+	all-ease-transition(0.55s);
 }
 
 //MD
