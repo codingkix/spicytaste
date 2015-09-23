@@ -1,5 +1,6 @@
 angular.module('spicyTaste')
     .config(function($mdThemingProvider, $mdIconProvider) {
+        'use strict';
 
         var primaryOrange = $mdThemingProvider.extendPalette('deep-orange', {
             '500': 'f27242'
@@ -41,5 +42,6 @@ angular.module('spicyTaste')
             .icon('menu', 'svg/ic_menu_48px.svg')
             .icon('favorite', 'svg/ic_favorite_24px.svg')
             .icon('delete', 'svg/ic_delete_48px.svg')
-            .icon('add', 'svg/ic_add_circle_outline_48px.svg');
+            .icon('add', 'svg/ic_add_circle_outline_48px.svg')
+            .icon('arrow-down', 'svg/ic_expand_more_48px.svg');
     });
