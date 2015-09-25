@@ -1,16 +1,23 @@
 angular.module('spicyTaste')
-    .directive('scrollReached', function($window) {
+    .directive('topMenuReached', function($window) {
         'use strict';
         return {
             restrict: 'A',
             scope: true,
             link: function(scope, $element, attrs) {
                 var offset = $element.offset().top - 64;
+                var defaultMenuBar = {
+                    primaryTheme: false,
+                    hidden: false,
+                    text: 'spicy taste'
+                };
+                var menuBar = scope.$eval(attrs.topMenuReached);
+
                 angular.element($window).on('scroll', function() {
                     if (this.pageYOffset >= offset) {
-                        scope.setScrollReached(true);
+                        scope.setMenuBar(menuBar);
                     } else {
-                        scope.setScrollReached(false);
+                        scope.setMenuBar(defaultMenuBar);
                     }
                     scope.$apply();
                 });

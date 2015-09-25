@@ -1,21 +1,21 @@
 <div id="divLanding" class="full-height-content" layout="column" layout-align="center center">
     <div flex layout="row" layout-align="center end">
-        <md-button class="hero-btn solid-btn">Inspire Me</md-button>
+        <md-button ng-href="/inspire" class="hero-btn solid-btn">Inspire Me</md-button>
         <md-button class="hero-btn">Share Mine</md-button>
     </div>
     <div flex layout="column" layout-align="end center" class="see-more-container">
         <p>Check out the recent recipts</p>
-        <md-button scroll-to="#divLatestItems" class="bounce md-fab md-primary">
+        <md-button scroll-to="#divBottom" class="bounce md-fab md-primary">
             <md-icon md-svg-icon="arrow-down" class="initial-icon"></md-icon>
         </md-button>
     </div>
 </div>
-<div id="divLatestItems" scroll-reached class="full-height-content bottom-section">
-    <div class="tile-grid-container">
-        <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="16px">
+<div id="divBottom" top-menu-reached="{primaryTheme: true, hidden: false, text: 'recent receipts'}" layout="column" layout-align="end center" class="full-height-content bottom-section">
+    <div flex class="tile-grid-container">
+        <md-grid-list ng-model-cols-sm="1" md-cols-md="2" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="8px" md-gutter-gt-sm="16px">
             <md-grid-tile ng-repeat="tile in home.recipeTiles" md-rowspan="{{tile.span.row}}" md-colspan="{{tile.span.col}}" md-colspan-sm="1" md-rowspan-sm="1">
                 <div class="show-card">
-                    <img ng-src="{{tile.image}}" alt="{{tile.title}}">
+                    <img class="responsive-img" ng-src="{{tile.image}}" alt="{{tile.title}}">
                     <div class="mask" layout="column" ng-class="{'big-tile': !smallScreen && tile.span.row == 2, 'small-tile': !smallScreen && tile.span.row == 1}">
                         <div flex="20">
                             <h3 class="md-title center-text">{{tile.title}}</h3>
@@ -45,56 +45,10 @@
                         </div>
                     </div>
                 </div>
-                <!-- 
-                <div class="flip-container">
-                    <div class="flipper">
-                        <div class="front">
-                            <img ng-src="{{tile.image}}">
-                            <md-grid-tile-footer>
-                                <h4>{{tile.title}}</h4>
-                            </md-grid-tile-footer>
-                        </div>
-                        <div class="back" ng-class="{'big-tile': !smallScreen && tile.span.row == 2, 'small-tile': !smallScreen && tile.span.row == 1}" layout>
-                            <md-whiteframe class="md-whiteframe-z3" flex>
-                                <a ng-href="/dishes/{{tile.id}}" class="frame-link">
-                                    <md-list>
-                                        <md-list-item class="md-2-line">
-                                            <md-icon md-svg-icon="time1"></md-icon>
-                                            <div class="md-list-item-text">
-                                                <h3>Prep Time</h3>
-                                                <p>{{tile.prepTime}}</p>
-                                            </div>
-                                        </md-list-item>
-                                        <md-list-item class="md-2-line">
-                                            <md-icon md-svg-icon="time2"></md-icon>
-                                            <div class="md-list-item-text">
-                                                <h3>Total Time</h3>
-                                                <p>{{tile.totalTime}}</p>
-                                            </div>
-                                        </md-list-item>
-                                        <md-list-item class="md-2-line">
-                                            <md-icon md-svg-icon="difficulty"></md-icon>
-                                            <div class="md-list-item-text">
-                                                <h3>Difficulty</h3>
-                                                <p>{{tile.difficulty}}</p>
-                                            </div>
-                                        </md-list-item>
-                                        <md-list-item ng-if="!smallScreen && tile.span.row==2" layout="column" layout-align="center start">
-                                            <h3>tags</h3>
-                                            <md-chips readonly="true" ng-model="tile.tags">
-                                            </md-chips>
-                                        </md-list-item>
-                                    </md-list>
-                                </a>
-                            </md-whiteframe>
-                        </div>
-                    </div>
-                </div>
-             -->
             </md-grid-tile>
         </md-grid-list>
     </div>
-    <div class="footer" layout="row" layout-align="center center">
+    <div flex="20" class="footer" layout="row" layout-align="center center">
         <div flex layout="column" layout-align="center center">
             <p>About SpicyTaste</p>
         </div>

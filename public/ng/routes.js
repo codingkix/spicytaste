@@ -1,5 +1,7 @@
 angular.module('spicyTaste')
     .config(function($locationProvider, $routeProvider) {
+        'use strict';
+
         $locationProvider.html5Mode(true);
 
         $routeProvider
@@ -8,6 +10,11 @@ angular.module('spicyTaste')
                 templateUrl: 'ng/views/pages/home.html',
                 controller: 'HomeController',
                 controllerAs: 'home'
+            })
+            .when('/inspire', {
+                templateUrl: '/ng/views/pages/shows/dinner.html',
+                controller: 'DinnerController',
+                controllerAs: 'dinner'
             })
             //show all dishes page
             .when('/dishes', {
@@ -53,5 +60,5 @@ angular.module('spicyTaste')
             })
             .when('/not-authorize', {
                 templateUrl: 'ng/views/pages/not-authorize.html'
-            })
+            });
     });

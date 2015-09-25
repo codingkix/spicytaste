@@ -74,6 +74,10 @@ html>body .full-height-content{
 	height:auto;
 }
 
+.light-bg{
+	background-color: #f4f7f8;
+}
+
 .main{
 	height:100%;
 }
@@ -97,6 +101,7 @@ html>body .full-height-content{
 	width: 100%;
 	background-color: rgba(255,255,255,0.5);
 	z-index: 10;
+	text-transform: uppercase;
 }
 
 .animation-block{
@@ -147,14 +152,11 @@ html>body .full-height-content{
 
 .bottom-section{
 	background-color: grey-background-color;
-	position:relative;
 }
 
 .footer{
 	background-color: #FFF
 	height: 200px;
-	position: absolute;
-	bottom: 0px;
 	width: 100%;
 }
 
@@ -225,11 +227,7 @@ html>body .full-height-content{
 
 .tile-grid-container{
 	padding: 76px 12px 12px 12px;
-}
-
-.tile-grid-container img{
 	width: 100%;
-	height: 100%;
 }
 
 .show-card{
@@ -285,7 +283,6 @@ html>body .full-height-content{
 	img{
 		transform: scale(1.2);
 	}
-	
 	.mask{
 		opacity: 1;
 		
@@ -297,10 +294,6 @@ html>body .full-height-content{
 
 .show-card:hover md-list{
 	transition-delay: 0.2s;
-}
-	
-.show-card:hover .go-cook-btn{
-	transition-delay: 0.4s;
 }
 
 .small-tile h3{
@@ -319,6 +312,111 @@ html>body .full-height-content{
 .italic-list li{
 	padding: 4px 0;
 }
+
+//dinner page
+#divDinnerHero{
+	background: url('../images/dinner-hero.png') center no-repeat
+	background-size: cover;
+	width: 100%;
+	height: 70%;
+	color: #F2F2F2;
+}
+
+.show-desc{
+	height: 20%;
+	
+	p{
+		line-height:2;
+		margin: 0 auto;
+		width: 70%;
+	}
+}
+
+.triangle-down{
+	width:0;
+	height:0;
+	border-style: solid;
+	border-width: 40px 300px 0 300px;
+	border-color: #F4F7F8 transparent transparent transparent
+	margin: 0 auto;
+}
+
+.show-container{
+	padding-top: 30px;
+	min-height: 30px;
+	
+	.show-item{
+		height: 320px;
+		width: 100%;
+		
+		img{
+			width: 100%;
+			height: 300px;
+		}
+		
+		.left-panel, .right-panel{
+			width: 400px;
+		}
+		
+		.left-container{
+			border-right: 1px solid rgba(0,0,0, 0.4);
+			
+			.left-panel.viewed{
+				margin-right: 20%;
+			}
+		}
+		
+		.right-container{
+			position: relative;
+			
+			.right-panel.viewed{
+				margin-left:20%;
+			}
+			
+			.show-item-tag{
+				width: 120px;
+				top: 120px;
+				left: -60px;
+				background-color: #F4F7F8;
+				padding: 30px 0;
+				position: absolute;
+				font-size:lg-font-size;
+				border-radius:50%;
+				margin:0;
+				color: theme-color;
+			}
+		}
+		
+		.show-item-desc{
+			p{
+				line-height: 1.5
+			}
+		}
+		
+		.left-panel.show-item-desc h4{
+			text-align: right;
+		}
+	}
+}
+
+.show-item .item-block
+	all-ease-transition(0.55s)
+	position: relative;
+	opacity: 0;
+	
+	&.left-panel
+		left: -50%;
+		
+		&.viewed
+			left: 0;
+			opacity: 1;
+		
+	&.right-panel
+		right: -50%;
+		
+		&.viewed
+			right: 0;
+			opacity: 1;
 
 //login dialog
 .login-btn-icon{
