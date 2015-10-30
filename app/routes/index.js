@@ -8,6 +8,8 @@ router.use(bodyParser.json());
 router.use('/api', require('./open_api/auth'));
 router.use('/api', require('./open_api/dishes'));
 router.use('/api', require('./open_api/users'));
+router.use('/api', require('./open_api/comments'));
+router.use('/api', require('./open_api/themes'));
 
 //route middleware to verify a token for accessing the restrict api
 router.use('/api', function(req, res, next) {
@@ -33,8 +35,8 @@ router.use('/api', function(req, res, next) {
     }
 });
 
+router.use('/api', require('./restrict_api/themes'));
 router.use('/api', require('./restrict_api/users'));
 router.use('/api', require('./restrict_api/dishes'));
-
 
 module.exports = router;

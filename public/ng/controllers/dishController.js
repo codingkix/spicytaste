@@ -23,11 +23,11 @@ angular.module('spicyTaste')
             }).success(function(data) {
                 $location.path('/admin/dishes/' + data.dish._id);
             });
-        }
+        };
 
         vm.goToEdit = function(id) {
             $location.path('/admin/dishes/' + id);
-        }
+        };
 
     })
     //controller applied to dish detail page
@@ -136,7 +136,7 @@ angular.module('spicyTaste')
                 //get the 3 related dishes
                 DishService.relate(vm.dish._id, vm.dish.tags, 3).success(function(data) {
                     vm.relatedDishes = data;
-                })
+                });
 
                 if ($rootScope.currentUser) {
                     var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
@@ -186,97 +186,5 @@ angular.module('spicyTaste')
                 else
                     $mdDialog.hide(dvm.content);
             }
-        }
-    })
-    //controller applied to dish edit page
-    .controller('DishEditController', function($mdDialog, $routeParams, DishService, $location, $timeout) {
-        var vm = this;
-        init();
-
-        vm.saveDish = function() {
-            DishService.update($routeParams.dish_id, vm.dish).success(function(data) {
-                vm.updateSuccess = true;
-
-                $timeout(function() {
-                    vm.updateSuccess = false;
-                }, 1000);
-            })
-        }
-
-        vm.removeInstruction = function(index) {
-            DishService.removeInstruction($routeParams.dish_id, vm.dish.instructions[index]._id).success(function(data) {
-                vm.dish.instructions.splice(index, 1);
-            });
-        }
-
-        vm.removePhoto = function(index) {
-            vm.dish.photos.splice(index, 1);
-            vm.saveDish();
-        }
-
-        vm.showAddPhotoDialog = function(evn) {
-            $mdDialog.show({
-                targetEvent: evn,
-                controller: photoDialogController,
-                controllerAs: 'photoDlg',
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/addPhoto.html'
-            }).then(function(newPhoto) {
-                vm.dish.photos.push(newPhoto);
-                vm.saveDish();
-            });
-        }
-
-        vm.showAddInstructionDialog = function(evn) {
-            $mdDialog.show({
-                targetEvent: evn,
-                controller: instructionDialogController,
-                controllerAs: 'instructionDlg',
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/addInstruction.html'
-            }).then(function(newInstruction) {
-                vm.dish.instructions.push(newInstruction);
-                DishService.addInstruction($routeParams.dish_id, newInstruction).success(function(data) {
-
-                });
-            });
-        }
-
-        function photoDialogController($mdDialog) {
-            var dvm = this;
-            dvm.newPhoto = '';
-
-            dvm.closeDialog = function() {
-                $mdDialog.cancel();
-            }
-
-            dvm.submit = function() {
-                $mdDialog.hide(dvm.newPhoto);
-            }
-        }
-
-        function instructionDialogController($mdDialog) {
-            var dvm = this;
-
-            dvm.newInstruction = {
-                photo: '',
-                text: ''
-            };
-
-            dvm.closeDialog = function() {
-                $mdDialog.cancel();
-            }
-
-            dvm.submit = function() {
-                $mdDialog.hide(dvm.newInstruction);
-            }
-        }
-
-        function init() {
-            //get the dish by id
-            DishService.get($routeParams.dish_id).success(function(data) {
-                vm.dish = data;
-            });
-            vm.difficulties = DishService.getDifficulties();
         }
     });

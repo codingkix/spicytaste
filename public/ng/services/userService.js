@@ -3,7 +3,7 @@ angular.module('spicyTaste')
         'use strict';
 
         var userFactory = {};
-
+        var baseUrl = '/api/users/';
         //social login
         userFactory.socialLogin = function(socialUser) {
             return userFactory.searchBy('email=' + socialUser.email).then(function(data) {
@@ -51,29 +51,33 @@ angular.module('spicyTaste')
         };
 
         //get user by id
-        userFactory.getById = function(user_id) {
-            return $http.get('/api/users/' + user_id).then(function(response) {
+        userFactory.getById = function(userId) {
+            return $http.get(baseUrl + userId).then(function(response) {
                 return response.data;
             });
         };
 
+        //get user full profile
+        userFactory.getProfile = function() {
+            return $http.get('/api/me/profile');
+        };
         //create a new user
         userFactory.create = function(user) {
-            return $http.post('/api/users/', user).then(function() {
+            return $http.post(baseUrl, user).then(function() {
                 return userFactory.login(user.email, user.password);
             });
         };
 
         //update user
         userFactory.update = function(user) {
-            return $http.put('/api/users/' + user.user_id, user).then(function(response) {
+            return $http.put(baseUrl + user.userId, user).then(function(response) {
                 return response.data;
             });
         };
 
         //collect dish as favourite
-        userFactory.collect = function(dish_id) {
-            return $http.put('/api/users/' + $rootScope.currentUser._id + '/dishes/' + dish_id).then(function(response) {
+        userFactory.collect = function(dishId) {
+            return $http.put(baseUrl + $rootScope.currentUser._id + '/dishes/' + dishId).then(function(response) {
                 return response.data;
             });
         };
@@ -87,6 +91,7 @@ angular.module('spicyTaste')
                     return false;
                 }
             }, function(response) {
+                console.log('err', response);
                 return false;
             });
         };

@@ -1,0 +1,114 @@
+.recipts-top-hero{
+	background-image: url(../images/recipt-hero.jpeg);
+}
+
+.search-bar{
+	border-radius: 30px;
+	padding: 3px 0;
+	background-color: #FFF;
+	
+	input{
+		outline: none;
+		margin-left: 30px;
+		border: 0;
+	}
+}
+
+#divColumns{
+	column-width: 220px;
+	column-gap: 15px;
+  	width: 90%;
+	max-width: 1200px;
+	margin: auto;
+	padding: 50px 0;
+}
+
+#divColumns .card-item {
+	background: #fefefe;
+	border: 2px solid #fcfcfc;
+	border-radius: 5px;
+	box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
+	margin: 0 2px 15px;
+	padding: 15px;
+	padding-bottom: 10px;
+	transition: opacity .4s ease-in-out;
+  	display: inline-block;
+  	column-break-inside: avoid;
+  	
+  	.item-img {
+  		width: 100%;
+  		height: auto;
+  		border-bottom: 1px solid #CCC;
+  		padding-bottom: 15px;
+  		margin-bottom: 5px;
+  		//background-color: rgba(0,0,0,0.3);
+  	}
+  	
+  	.blog{
+  		font-size:.9rem;
+  		color:#444;
+  		line-height: 1.5
+  	}
+}
+
+#divColumns:hover .card-item:not(:hover){
+	opacity: 0.4;
+}
+
+.search-card
+	border-radius: 50%;
+	width: 140px;
+	height: 140px;
+	border: 1px solid #fcfcfc;
+	transition: all 0.2s linear;
+	margin:0 15px;
+	background-size: cover;
+	background-position: center;
+	
+	&:hover{
+		transform: scale(1.2);
+	}
+	
+	& button{
+		color: #FFF;
+		font-weight: bold;
+		border-radius: 50%;
+		width:100%;
+		height:100%;
+		margin: 0 auto;
+		background-color: rgba(0,0,0,0.3);
+	}
+	
+.active-card{
+	transform: scale(1.2);
+	
+	& button{
+		background: none;
+	}
+}
+
+.category-seafood{
+	background-image: url(http://www.piazzapascal.com/seafood.jpg);
+}
+
+.category-dessert{
+	background-image: url(http://cdn.shopify.com/s/files/1/0224/3403/files/Mandalay-Bay-Aureole-dessert-sampler-03_grande.jpg?9493);
+}
+
+.category-breakfast{
+	background-image: url(http://www.endevr.com/Shared/images/Blog/Breakfast.jpg);
+}
+
+.category-spicy{
+	background-image: url(http://1.bp.blogspot.com/-QsROz3K-WS0/T00OtTHxI7I/AAAAAAAAFPQ/OM1E5Go8cbs/s640/034.JPG);
+}
+
+@media screen and (max-width: 600px){
+	#divColumns {
+		column-gap: 0px;
+		
+		.card-item{
+			width: 100%;
+		}		
+	}
+}

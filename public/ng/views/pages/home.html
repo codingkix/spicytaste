@@ -1,6 +1,6 @@
 <div id="divLanding" class="full-height-content" layout="column" layout-align="center center">
     <div flex layout="row" layout-align="center end">
-        <md-button ng-href="/inspire" class="hero-btn solid-btn">Inspire Me</md-button>
+        <md-button ng-href="/themes/dinner" class="hero-btn solid-btn">Inspire Me</md-button>
         <md-button class="hero-btn">Share Mine</md-button>
     </div>
     <div flex layout="column" layout-align="end center" class="see-more-container">
@@ -17,7 +17,7 @@
                 <div class="show-card">
                     <img class="responsive-img" ng-src="{{tile.image}}" alt="{{tile.title}}">
                     <div class="mask" layout="column" ng-class="{'big-tile': !smallScreen && tile.span.row == 2, 'small-tile': !smallScreen && tile.span.row == 1}">
-                        <div flex="20">
+                        <div flex="20" layout="column" layout-align="center center" class="info-title">
                             <h3 class="md-title center-text">{{tile.title}}</h3>
                         </div>
                         <div class="info-card" flex layout="column" layout-align="end center">
@@ -30,7 +30,7 @@
                                     </div>
                                 </md-list-item>
                                 <md-list-item class="md-2-line">
-                                    <md-icon md-svg-icon="difficulty"></md-icon>
+                                    <md-icon md-svg-icon="time1"></md-icon>
                                     <div class="md-list-item-text">
                                         <h3>Difficulty</h3>
                                         <p>{{tile.difficulty}}</p>

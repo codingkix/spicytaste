@@ -1,11 +1,46 @@
-<div layout="row" layout-wrap layout-align="start start">
-    <div class="md-padding list-item-container" layout="column" ng-repeat="dish in dishList.dishes" flex="100" flex-gt-sm="50" flex-gt-lg="33">
-        <a flex="80" ng-href="/dishes/{{dish._id}}">
-            <img flex ng-src="{{dish.imageUrl}}" alt="{{dish.name}}" title="{{dish.name}}">
-        </a>
-        <div flex="20" class="list-item-footer">
-            <h3 class="md-subhead">{{dish.name}}</p>
-            <p class="md-caption"><span class="plain-tag" ng-repeat="tag in dish.tags">{{tag}}</span></p>
+<div class="page-hero recipts-top-hero" layout layout-align="center center">
+    <div flex="40" class="search-bar">
+        <form layout ng-submit="dishAll.search()">
+            <input flex placeholder="name / ingredient / category" ng-model="dishAll.searchText">
+            <md-button type="submit" class="md-icon-button">
+                <md-icon md-svg-icon="search" class="initial-icon"></md-icon>
+            </md-button>
+        </form>
+    </div>
+</div>
+<div class="light-bg">
+    <div layout="column" layout-algin="center center">
+        <h4 class="md-subhead center-text">Popular Search Categories</h4>
+        <div layout layout-align="center center" layout-margin>
+            <div ng-repeat="category in dishAll.hotSearch" class="search-card category-{{category}}" ng-class="{'active-card': category == dishAll.selectedCategory}">
+                <md-button ng-click="dishAll.selectCategory(category)">{{category}}</md-button>
+            </div>
+            <div class="search-card">
+                <md-button ng-click="dishAll.showAll()">View All</md-button>
+            </div>
+        </div>
+    </div>
+    <div id='divColumns'>
+        <div class="card-item animate-repeat" ng-repeat="dish in dishAll.dishes track by dish._id">
+            <a ng-href="/dishes/{{dish._id}}">
+                <!-- <img class="item-img" data-src="{{dish.imageUrl}}" src="/svg/ic_restaurant_menu_48px.svg" alt="{{dish.name}}" title="{{dish.name}}"> -->
+                <img class="item-img" src="{{dish.imageUrl}}" alt="{{dish.name}}" title="{{dish.name}}">
+            </a>
+            <div class="card-footer">
+                <p class="md-subhead">{{dish.name}}</p>
+                <md-divider></md-divider>
+                <p ng-if="dish.blog.length > 0" class="blog">{{dish.blog}}</p>
+                <md-divider ng-if="dish.blog.length > 0"></md-divider>
+                <md-list>
+                    <md-list-item class="md-3-line">
+                        <img ng-src="{{dish.createdBy.photoUrl}}" class="md-avatar" alt="{{dish.createdBy.userName}}" />
+                        <div class="md-list-item-text">
+                            <h4>{{ dish.createdBy.userName }}</h4>
+                            <p>@ {{dish.createdDate | date: 'shortDate'}}</p>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </div>
         </div>
     </div>
 </div>

@@ -2,7 +2,7 @@
     <form>
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h3>Add Photo</h3>
+                <h2>Add Photo</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="photoDlg.closeDialog()">
                     <md-icon md-svg-icon="svg/ic_close_24px.svg" aria-label="close dialog"></md-icon>
@@ -10,7 +10,7 @@
             </div>
         </md-toolbar>
         <md-dialog-content>
-            <div class="photo-edit-container">
+            <div class="md-dialog-content photo-edit-container">
                 <md-input-container md-no-float>
                     <input ng-model="photoDlg.newPhoto" placeholder="New Photo Url">
                 </md-input-container>
@@ -19,9 +19,9 @@
                 </div>
             </div>
         </md-dialog-content>
-        <div ng-if="photoDlg.newPhoto !='' " class="md-actions animate-if" layout="row">
+        <div class="md-actions" layout="row">
             <span flex></span>
-            <md-button ng-click="photoDlg.submit()" class="md-primary">
+            <md-button ng-disabled="photoDlg.newPhoto.trim() == ''" ng-click="photoDlg.submit()" class="md-primary">
                 Submit
             </md-button>
         </div>

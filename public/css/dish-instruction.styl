@@ -1,0 +1,46 @@
+@import 'mixins'
+
+.instruction-container{
+	position: relative;	
+}
+.nav-btn{
+	height: 320px;
+	width: 100px;
+	z-index:10;
+	background-color: rgba(250,250,250,0.3);
+	
+	md-icon{
+		height:100%;
+		width:100%;
+		color: light-font-color;
+	}
+}
+
+.dish-instruction-hero{
+	position: absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-color: grey-background-color;
+	transition: all 1s linear;
+		
+		.text-container{
+			height: 120px;
+			background-color: rgba(0,0,0,0.7);
+			color:light-font-color;
+			padding: 10px 30px;
+		}
+}
+
+.dish-instruction-hero.pre{
+	left:-100%;
+}
+
+.dish-instruction-hero.next{
+	left:100%;
+}

@@ -1,7 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var Dish = require('../../models/dish');
-var Comment = require('../../models/comment');
+
+
+// on routes that end in /api/dishes/count
+// ----------------------------------------------------
+router.get('/dishes/count', function(req, res, next) {
+    'use strict';
+    Dish.count(req.query, function(err, count) {
+        if (err) {
+            next(err);
+        }
+
+        res.status(200).json(count);
+    });
+});
 
 // on routes that end in /api/dishes
 // ----------------------------------------------------
@@ -9,7 +22,7 @@ var Comment = require('../../models/comment');
 
 router.get('/dishes', function(req, res, next) {
     'use strict';
-    var query = Dish.find().sort('-createdDate');
+    var query = Dish.find();
 
     //search by tags
     if (req.query.tags) {
@@ -18,13 +31,47 @@ router.get('/dishes', function(req, res, next) {
         query.ne('_id', id).where('tags').in(tags);
     }
 
+    //search by category
+    if (req.query.category) {
+        var ca = new RegExp(req.query.category, 'i');
+        query.or([{
+            'tags': {
+                $in: [ca]
+            }
+        }]);
+    }
+
+    //search by search
+    if (req.query.search) {
+        var search = req.query.search;
+        var re = new RegExp(search, 'i');
+        query.or([{
+            'name': {
+                $regex: re
+            }
+        }, {
+            'ingredients': {
+                $in: [re]
+            }
+        }, {
+            'tags': {
+                $in: [re]
+            }
+        }]);
+    }
+
+    //search by author
+    if (req.query.createdBy) {
+        query.where('createdBy').equals(req.query.createdBy);
+    }
+
     //limit the result
     if (req.query.limit) {
         var n = req.query.limit;
         query.limit(n);
     }
 
-    query.exec(function(err, dishes) {
+    query.populate('createdBy').sort('-createdDate').exec(function(err, dishes) {
         if (err) {
             return next(err);
         }
@@ -32,17 +79,12 @@ router.get('/dishes', function(req, res, next) {
     });
 });
 
-
-// on routes that end in /api/dishes/:dish_id
+// on routes that end in /api/dishes/:dishId
 // ----------------------------------------------------
-router.get('/dishes/:dish_id', function(req, res, next) {
+router.get('/dishes/:dishId', function(req, res, next) {
     'use strict';
-    console.log('dish query by id', req.params.dish_id);
-
-    var query = Dish.findById(req.params.dish_id);
-    query.populate('comments instructions').exec(function(err, dish) {
+    Dish.findById(req.params.dishId).exec(function(err, dish) {
         if (err) {
-            console.log('dish query err', err);
             return next(err);
         }
         if (!dish) {
@@ -52,16 +94,26 @@ router.get('/dishes/:dish_id', function(req, res, next) {
             });
         }
 
-        if (dish.comments.length > 0) {
-            Comment.populate(dish.comments, {
-                path: 'author replyTo'
-            }, function(err, data) {
-                res.status(200).send(dish);
+        res.status(200).json(dish);
+    });
+});
+
+// on routes that end in /api/dishes/:dishId/instructions
+// ----------------------------------------------------
+router.get('/dishes/:dishId/instructions', function(req, res, next) {
+    'use strict';
+    Dish.findById(req.params.dishId).populate('instructions').exec(function(err, dish) {
+        if (err) {
+            return next(err);
+        }
+        if (!dish) {
+            return next({
+                message: 'dish not found.',
+                status: 404
             });
-        } else {
-            res.status(200).send(dish);
         }
 
+        res.status(200).json(dish.instructions);
     });
 });
 

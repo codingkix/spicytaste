@@ -1,0 +1,100 @@
+<div class="page-top-bar" top-menu-reached="{primaryTheme: true, hidden: true, text: 'spicy taste'}" layout="column" layout-padding>
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools">
+            <h4>Theme Info</h4>
+            <span flex></span>
+            <md-button ng-click="themeEdit.update()">
+                <md-icon md-svg-icon="check" class="big-icon status-normal" ng-class="{'status-success': themeEdit.updateSuccess}"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div layout="row" layout-sm="column" layout-padding>
+        <div flex="15" layout="column">
+            <md-input-container>
+                <label>Thumbnail</label>
+                <input ng-model="themeEdit.theme.thumbnail">
+            </md-input-container>
+            <div>
+                <img ng-src="{{themeEdit.theme.thumbnail}}" class="responsive-img" />
+            </div>
+        </div>
+        <div flex="40" layout="column">
+            <md-input-container>
+                <label>Main Image</label>
+                <input ng-model="themeEdit.theme.image">
+            </md-input-container>
+            <div>
+                <img ng-src="{{themeEdit.theme.image}}" class="responsive-img" />
+            </div>
+        </div>
+        <div flex="45" layout="column">
+            <md-input-container>
+                <label>Name</label>
+                <input ng-model="themeEdit.theme.name">
+            </md-input-container>
+            <md-input-container>
+                <label>Slogan</label>
+                <textarea ng-model="themeEdit.theme.slogan" columns="1" class="md-body-1"></textarea>
+            </md-input-container>
+            <md-input-container>
+                <label>Description</label>
+                <textarea ng-model="themeEdit.theme.description" columns="1" class="blog-text md-body-1"></textarea>
+            </md-input-container>
+        </div>
+    </div>
+</div>
+<div layout="column" layout-padding class="theme-components-edit">
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools">
+            <h4>Components</h4>
+            <span flex></span>
+            <md-button ng-click="themeEdit.update()">
+                <md-icon md-svg-icon="check" class="big-icon status-normal" ng-class="{'status-success': themeEdit.updateSuccess}"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div flex layout="row">
+        <div flex="25" layout="column">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2 class="md-flex">Search Bar</h2>
+                </div>
+            </md-toolbar>
+            <md-content flex layout="column" layout-margin layout-align="start center">
+                <div flex ng-repeat="dish in themeEdit.dishes">
+                    <div class="component-img-container component-mask">
+                        <img ng-src="{{dish.imageUrl}}" alt="{{dish.name}}" />
+                        <md-button class="md-icon-button" ng-click="themeEdit.addDish(dish)">
+                            <md-icon md-svg-icon="add"></md-icon>
+                        </md-button>
+                    </div>
+                    <p class="center-text">{{dish.name}}</p>
+                </div>
+            </md-content>
+        </div>
+        <div flex layout="row" layout-wrap class="components-container">
+            <div flex-sm="100" flex-md="50" flex-gt-md="33" class="md-padding" ng-repeat="component in themeEdit.theme.components">
+                <md-input-container>
+                    <label>Title</label>
+                    <input ng-model="component.title">
+                </md-input-container>
+                <div class="component-img-container component-mask">
+                    <img ng-src="{{component.dish.imageUrl}}" alt="component.dish.name">
+                    <md-button class="md-icon-button" ng-click="themeEdit.removeComponent($index)">
+                        <md-icon md-svg-icon="delete"></md-icon>
+                    </md-button>
+                </div>
+                <md-input-container>
+                    <label>Display Order</label>
+                    <md-select placeholder="Display Order" ng-model="component.displayOrder">
+                        <md-option ng-repeat="item in themeEdit.getDisplayOrders()" value="{{item}}">{{item}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <label>Description</label>
+                    <textarea ng-model="component.description"></textarea>
+                </md-input-container>
+            </div>
+        </div>
+    </div>
+</div>

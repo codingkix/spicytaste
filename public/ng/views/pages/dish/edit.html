@@ -1,0 +1,111 @@
+<div layout="column" layout-margin layout-padding>
+    <md-toolbar md-scroll-shrink class="page-top-bar">
+        <div class="md-toolbar-tools">
+            <h4>Dish Info</h4>
+            <span flex></span>
+            <md-button ng-click="dishManage.saveDish()" aira-label="save">
+                <md-icon md-svg-icon="check" class="big-icon status-normal" ng-class="{'status-success': dishManage.updateSuccess}"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div layout="row" layout-sm="column" layout-padding>
+        <div flex="40" layout="column" layout-padding>
+            <md-input-container>
+                <label>Main Image</label>
+                <input ng-model="dishManage.dish.imageUrl">
+            </md-input-container>
+            <div>
+                <img ng-src="{{dishManage.dish.imageUrl}}" class="responsive-img" />
+            </div>
+        </div>
+        <div flex layout="column">
+            <div flex="50">
+                <md-input-container>
+                    <label>Name</label>
+                    <input ng-model="dishManage.dish.name">
+                </md-input-container>
+                <div layout>
+                    <md-input-container flex>
+                        <label>Prep Time(min)</label>
+                        <input ng-model="dishManage.dish.prepTime">
+                    </md-input-container>
+                    <md-input-container flex>
+                        <label>Total Time(min)</label>
+                        <input ng-model="dishManage.dish.totalTime">
+                    </md-input-container>
+                </div>
+                <md-select placeholder="Difficulty" ng-model="dishManage.dish.difficulty">
+                    <md-option ng-repeat="item in dishManage.difficulties" value="{{$index+1}}">{{item}}</md-option>
+                </md-select>
+            </div>
+            <div layout>
+                <md-chips ng-model="dishManage.dish.tags" placeholder="Enter a tag" secondary-placeholder="+Tag" delete-button-label="Remove Tag"></md-chips>
+            </div>
+            <div layout>
+                <md-chips ng-model="dishManage.dish.ingredients" placeholder="+Ingredient" secondary-placeholder="+Ingredient" delete-button-label="Remove Ingredient"></md-chips>
+            </div>
+        </div>
+    </div>
+    <div layout layout-padding>
+        <md-input-container flex>
+            <label>Blog</label>
+            <textarea ng-model="dishManage.dish.blog" columns="1" class="blog-text md-body-1"></textarea>
+        </md-input-container>
+    </div>
+</div>
+<div layout="column" layout-margin layout-padding>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h4>Photos</h4>
+            <span flex></span>
+            <md-button ng-click="dishManage.showAddPhotoDialog($event)" aira-label="add photo">
+                <md-icon md-svg-icon="add" class="big-icon"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content>
+        <div layout layout-wrap layout-algin="start start">
+            <div ng-repeat="photo in dishManage.dish.photos" class="md-padding photo-edit-container" flex-sm="50" flex-gt-sm="33">
+                <md-input-container md-no-float>
+                    <input ng-model="dishManage.dish.photos[$index]" placeholder="photo {{$index+1}}">
+                </md-input-container>
+                <div class="component-img-container component-mask">
+                    <md-button class="md-icon-button" ng-click="dishManage.removePhoto($index)" aria-label="delete photo">
+                        <md-icon md-svg-icon="delete"></md-icon>
+                    </md-button>
+                    <img ng-src="{{dishManage.dish.photos[$index]}}" class="responsive-img" />
+                </div>
+            </div>
+        </div>
+    </md-content>
+</div>
+<div layout="column" layout-margin layout-padding>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h4>Instructions</h4>
+            <span flex></span>
+            <md-button ng-click="dishManage.showAddInstructionDialog($event)" aira-label="add instruction">
+                <md-icon md-svg-icon="add" class="big-icon"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-content>
+        <div layout layout-wrap layout-algin="start start">
+            <div ng-repeat="instruction in dishManage.dish.instructions" class="md-padding photo-edit-container" flex-sm="100" flex-gt-sm="50">
+                <md-input-container md-no-float>
+                    <input ng-model="dishManage.dish.instructions[$index].photo" placeholder="step {{$index}} photo"></input>
+                </md-input-container>
+                <div class="component-img-container component-mask">
+                    <img ng-src="{{dishManage.dish.instructions[$index].photo}}" class="responsive-img" />
+                    <md-button class="md-icon-button" ng-click="dishManage.removeInstruction($index)" arial-label="delete instruction">
+                        <md-icon md-svg-icon="delete"></md-icon>
+                    </md-button>
+                </div>
+                <md-input-container>
+                    <label>Step {{$index +1}}</label>
+                    <textarea ng-model="dishManage.dish.instructions[$index].text" columns="1" class="blog-text md-body-1"></textarea>
+                </md-input-container>
+            </div>
+        </div>
+    </md-content>
+</div>

@@ -1,15 +1,38 @@
 var express = require('express');
 var router = express.Router();
 var Dish = require('../../models/dish');
-var User = require('../../models/user');
 var Comment = require('../../models/comment');
+var User = require('../../models/user');
 var Instruction = require('../../models/instruction');
 var jwt = require('jsonwebtoken');
 var config = require('../../../config');
 
+//preload dish object on routes with ":dishId"
+router.param('dishId', function(req, res, next, dishId) {
+    'use strict';
+    Dish.findById(dishId).exec(function(err, dish) {
+        if (err) {
+            next(err);
+        }
+        if (!dish) {
+            return next({
+                message: 'dish not found.',
+                status: 404
+            });
+        }
+
+
+        req.dish = dish;
+
+        return next();
+    });
+});
+
 // on routes that end in /api/dishes
 // ----------------------------------------------------
 router.post('/dishes', function(req, res, next) {
+    'use strict';
+
     var dish = new Dish(); // create a new instance of the dish model
     dish.name = req.body.name;
     dish.tags = req.body.tags; // set the dish tags (comes from the request)
@@ -36,13 +59,14 @@ router.post('/dishes', function(req, res, next) {
 });
 
 
-// on routes that end in /api/dishes/:dish_id
+// on routes that end in /api/dishes/:dishId
 // ----------------------------------------------------
-router.route('/dishes/:dish_id')
+router.route('/dishes/:dishId')
     //update the dish with the id
     .put(function(req, res, next) {
+        'use strict';
 
-        Dish.findById(req.params.dish_id).exec(function(err, dish) {
+        Dish.findById(req.params.dishId).exec(function(err, dish) {
             if (err) {
                 return next(err);
             }
@@ -59,7 +83,9 @@ router.route('/dishes/:dish_id')
                 dish.difficulty = req.body.difficulty ? req.body.difficulty : dish.difficulty;
 
                 dish.save(function(err) {
-                    if (err) return next(err);
+                    if (err) {
+                        return next(err);
+                    }
 
                     res.json({
                         success: true,
@@ -72,20 +98,24 @@ router.route('/dishes/:dish_id')
     })
     //delete the dish with the id
     .delete(function(req, res, next) {
+        'use strict';
+
         Dish.remove({
-            _id: req.params.dish_id
+            _id: req.params.dishId
         }, function(err, dish) {
-            if (err) next(err);
+            if (err) {
+                next(err);
+            }
             res.json({
                 success: true,
-                message: "Dish deleted"
+                message: 'Dish deleted'
             });
         });
     });
 
-// on routes that end in /api/dishes/:dish_id/comments
+// on routes that end in /api/dishes/:dishId/comments
 // ----------------------------------------------------
-router.post('/dishes/:dish_id/comments', function(req, res, next) {
+router.post('/dishes/:dishId/comments', function(req, res, next) {
     'use strict';
     var comment = new Comment({
         content: req.body.content
@@ -93,39 +123,44 @@ router.post('/dishes/:dish_id/comments', function(req, res, next) {
 
     if (req.body.replyTo) {
         User.findById(req.body.replyTo).exec(function(err, user) {
-            if (err) return next(err);
+            if (err) {
+                next(err);
+            }
             comment.replyTo = user;
         });
     }
 
     var auth = jwt.decode(req.headers['x-auth'], config.secret);
 
-    User.findOne({
-        email: auth.email
-    }, function(err, user) {
-        if (err) next(err);
+    User.findById(auth.userId).exec(function(err, user) {
+        if (err) {
+            next(err);
+        }
         comment.author = user;
         comment.dish = req.dish;
 
         comment.save(function(err, comment) {
-            if (err) return next(err);
-            req.dish.comments.push(comment);
-            req.dish.save(function(err, dish) {
-                if (err) return next(err);
-                Comment.populate(comment, {
-                    path: 'author replyTo'
-                }, function(err, comment) {
-                    if (err) next(err);
-                    res.json(comment);
-                })
+            if (err) {
+                return next(err);
+            }
+
+            Comment.populate(comment, {
+                path: 'author replyTo'
+            }, function(err, comment) {
+                if (err) {
+                    next(err);
+                }
+                res.status(200).json(comment);
             });
         });
     });
 });
 
-// on routes that end in /api/dishes/:dish_id/instructions
+// on routes that end in /api/dishes/:dishId/instructions
 // ----------------------------------------------------
-router.post('/dishes/:dish_id/instructions', function(req, res, next) {
+router.post('/dishes/:dishId/instructions', function(req, res, next) {
+    'use strict';
+
     var instruction = new Instruction({
         text: req.body.text,
         photo: req.body.photo
@@ -142,14 +177,16 @@ router.post('/dishes/:dish_id/instructions', function(req, res, next) {
                 message: 'Dish Instruction Added!'
             });
         });
-    })
+    });
 });
 
-// on routes that end in /api/dishes/:dish_id/instructions
+// on routes that end in /api/dishes/:dishId/instructions
 // ----------------------------------------------------
-router.delete('/dishes/:dish_id/instructions/:instruction_id', function(req, res, next) {
-    var dishId = req.params.dish_id;
-    var instructionId = req.params.instruction_id;
+router.delete('/dishes/:dishId/instructions/:instructionId', function(req, res, next) {
+    'use strict';
+
+    var dishId = req.params.dishId;
+    var instructionId = req.params.instructionId;
 
     Dish.findByIdAndUpdate(
         dishId, {
@@ -170,7 +207,7 @@ router.delete('/dishes/:dish_id/instructions/:instruction_id', function(req, res
                     success: true,
                     message: 'Dish instruction deleted'
                 });
-            })
+            });
         }
     );
 });

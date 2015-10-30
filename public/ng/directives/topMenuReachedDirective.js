@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .directive('topMenuReached', function($window) {
+    .directive('topMenuReached', function($window, UtilityService) {
         'use strict';
         return {
             restrict: 'A',
@@ -12,15 +12,25 @@ angular.module('spicyTaste')
                     text: 'spicy taste'
                 };
                 var menuBar = scope.$eval(attrs.topMenuReached);
+                //check if the top menu is already reaching the element.
+                var yOffset = $window.pageYOffset;
+                if (yOffset >= offset) {
+                    scope.setMenuBar(menuBar);
+                }
 
-                angular.element($window).on('scroll', function() {
-                    if (this.pageYOffset >= offset) {
+                var onScrollDebounced = UtilityService.debounce(function() {
+                    console.log('debounce called');
+                    if ($window.pageYOffset >= offset) {
                         scope.setMenuBar(menuBar);
                     } else {
                         scope.setMenuBar(defaultMenuBar);
                     }
                     scope.$apply();
-                });
+                }, 150);
+
+                angular.element($window).on('scroll', onScrollDebounced);
+
+                scope.$on('$destroy', onScrollDebounced);
             }
         };
     });

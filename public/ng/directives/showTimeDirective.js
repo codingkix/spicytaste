@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .directive('showTime', function($window) {
+    .directive('showTime', function($window, UtilityService) {
         'use strict';
         return {
             restrict: 'A',
@@ -11,7 +11,7 @@ angular.module('spicyTaste')
                     offset = showTime.offset;
                 }
 
-                angular.element($window).on('scroll', function(e) {
+                var onScrollDebounced = UtilityService.debounce(function() {
                     if ($element.hasClass('viewed')) {
                         return;
                     }
@@ -35,8 +35,11 @@ angular.module('spicyTaste')
                     if (elemBottom <= docBottom && elemTop >= docTop) {
                         $element.removeClass('notViewed').addClass('viewed');
                     }
+                }, 200, true);
 
-                });
+                angular.element($window).on('scroll', onScrollDebounced);
+
+                scope.$on('$destroy', onScrollDebounced);
             }
         };
     });

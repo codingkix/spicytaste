@@ -7,6 +7,8 @@ var stylus = require('gulp-stylus');
 var nodemon = require('gulp-nodemon');
 var livereload = require('gulp-livereload');
 var childProcess = require('child_process');
+var rename = require('gulp-rename');
+var nib = require('nib');
 
 //script task
 gulp.task('js', function() {
@@ -14,8 +16,12 @@ gulp.task('js', function() {
         .pipe(sourcemaps.init())
         .pipe(concat('app.js'))
         .pipe(ngAnnotate())
+        .pipe(gulp.dest('public/assets'))
         .pipe(uglify())
-        .pipe(sourcemaps.write())
+        .pipe(rename({
+            extname: '.min.js'
+        }))
+        //.pipe(sourcemaps.write())
         .pipe(gulp.dest('public/assets'))
         .pipe(livereload());
 });
@@ -28,7 +34,12 @@ gulp.task('watch:js', ['js'], function() {
 //css task
 gulp.task('css', function() {
     gulp.src('public/css/**/*.styl')
-        .pipe(stylus())
+        .pipe(concat('site.styl'))
+        .pipe(stylus({
+            use: [nib()],
+            import: ['nib'],
+            compress: true
+        }))
         .pipe(gulp.dest('public/assets'))
         .pipe(livereload());
 });

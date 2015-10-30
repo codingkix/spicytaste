@@ -1,0 +1,89 @@
+<div class="full-height-content dish-show-hero" style="background-image: url('{{dishShow.backgroundImage}}') ">
+    <div layout class="hero-mask" ng-class="{'slide-right':dishShow.showAllComments}">
+        <div layout="column" layout-align="start center" flex="60">
+            <h3 class="md-display-1 accent-font dish-title">{{dishShow.dish.name}}
+                <md-icon ng-if="dishShow.dish.isCollected" md-svg-icon="favorite"></md-icon>
+            </h3>
+            <div layout="column" class="dish-blog-container">
+                <md-content flex>
+                    {{dishShow.dish.blog}}
+                </md-content>
+            </div>
+            <div flex>
+            </div>
+            <social-shares></social-shares>
+        </div>
+        <div flex layout="column" layout-align="start center">
+            <div layout class="sticky-note-container">
+                <div flex>
+                    <md-icon md-svg-icon="pin"></md-icon>
+                    <ul>
+                        <li>Prepare Time: {{dishShow.dish.prepTime}} min</li>
+                        <li>Cook Time: {{dishShow.dish.cookTime}} min</li>
+                        <li>Total: {{dishShow.dish.totalTime}} min</li>
+                    </ul>
+                </div>
+                <div flex>
+                    <md-icon md-svg-icon="pin"></md-icon>
+                    <span class="md-title">Main Ingredients:</span>
+                    <ul>
+                        <li ng-repeat="item in dishShow.dish.ingredients">{{item}}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="difficulty-container">
+                <md-progress-linear class="md-warn" md-mode="determinate" value="{{dishShow.progress}}"></md-progress-linear>
+            </div>
+            <div layout="column" layout-align="center center">
+                <md-button ng-href="/dishes/{{dishShow.dish._id}}/instructions" class="hero-btn solid-btn">{{dishShow.showDifficulty? dishShow.dish.difficultyText : 'Read Instructions'}}</md-button>
+                <md-button ng-if="dishShow.allComments.length == 0" class="hero-btn" ng-click="dishShow.showAllComments=true">Leave Comment</md-button>
+            </div>
+            <div flex>
+            </div>
+            <div ng-hide="dishShow.showAllComments" layout layout-align="center end" class="current-comment-placeholder">
+                <div flex="80" layout ng-if="dishShow.currentComment" class="comment-container">
+                    <img ng-src="{{dishShow.currentComment.author.photoUrl}}" class="avatar" alt="{{dishShow.currentComment.author.userName}}">
+                    <div flex layout="column" class="comment-content-container">
+                        <div class="comment-top-info"><strong>{{dishShow.currentComment.author.userName}}</strong><span>{{dishShow.currentComment.createdDate | date: 'short'}}</span></div>
+                        <md-content>
+                            <p class="md-body-1">{{dishShow.currentComment.content}}</p>
+                        </md-content>
+                        <div layout layout-align="center">
+                            <md-button flex class="small-btn md-primary" ng-click="dishShow.getAllComments()">Read All {{dishShow.commentsCount}} Comments</md-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div layout="column" layout-align="end center" class="all-comments-container" ng-class="{'slide-right': dishShow.showAllComments}">
+        <md-content flex>
+            <div ng-repeat="comment in dishShow.allComments" layout class="comment-container comment-list-item">
+                <img ng-src="{{comment.author.photoUrl}}" class="avatar" alt="{{comment.author.userName}}">
+                <div flex layout="column" class="comment-content-container">
+                    <div class="comment-top-info"><strong>{{comment.author.userName}}</strong><span>{{comment.createdDate | date: 'short'}}</span></div>
+                    <md-content class="md-body-1">
+                        <p><strong ng-if="comment.replyTo">@{{comment.replyTo.userName}}: </strong>{{comment.content}}</p>
+                    </md-content>
+                    <div layout layout-align="center">
+                        <md-button ng-if="comment.author._id != currentUser._id" flex class="small-btn md-primary" ng-click="dishShow.newComment.replyTo = comment.author">Reply</md-button>
+                    </div>
+                </div>
+            </div>
+        </md-content>
+        <div class="new-comment-placeholder" layout="column">
+            <h5 class="md-subhead">Leave your comment:</h5>
+            <div flex layout="column" class="comment-input-container">
+                <strong class="md-body-1" ng-if="dishShow.newComment.replyTo">@{{dishShow.newComment.replyTo.userName}}: </strong>
+                <textarea ng-model="dishShow.newComment.content" columns="1" rows="3" class="md-body-1"></textarea>
+                <div ng-show="dishShow.newComment.content.trim().length>0" layout layout-align="end">
+                    <md-button class="small-btn md-primary" ng-click="dishShow.createComment($event)">Post</md-button>
+                    <md-button class="small-btn" ng-click="dishShow.newComment={}">Cancel</md-button>
+                </div>
+            </div>
+        </div>
+        <md-button class="clear-comments-btn" ng-click="dishShow.showAllComments=false">
+            <md-icon md-svg-icon="clear"></md-icon>
+        </md-button>
+    </div>
+</div>

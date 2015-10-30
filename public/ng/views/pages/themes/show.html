@@ -1,0 +1,49 @@
+<div id="divThemeHero" style="background-image: url('{{themeShow.theme.image}}')" layout="column" layout-align="center center">
+    <h2 ng-repeat="slogan in themeShow.theme.slogans">{{slogan}}</h2>
+</div>
+<div top-menu-reached="{primaryTheme: false, hidden: true, text:'spicy taste'}" class="show-desc light-bg" layout="row" layout-align="center center">
+    <p>{{themeShow.theme.description}}</p>
+</div>
+<div class="triangle-down">
+</div>
+<div layout="column" class="show-container">
+    <section ng-repeat="component in themeShow.theme.components" layout="row" class="show-item">
+        <div flex class="left-container" layout="row" layout-align="end center">
+            <div ng-if="$even" show-time="{offset: 200}" class="item-block left-panel notViewed">
+                <a ng-href="/dishes/{{component.dish._id}}">
+                    <img ng-src="{{component.dish.imageUrl}}" alt="{{component.dish.name}}"></a>
+            </div>
+            <div ng-if="$odd" show-time class="item-block notViewed left-panel show-item-desc">
+                <h4>{{component.dish.name}}</h4>
+                <p>{{component.description}}</p>
+            </div>
+        </div>
+        <div flex class="right-container" layout="row" layout-align="start center">
+            <p class="show-item-tag center-text">{{component.title}}</p>
+            <div ng-if="$even" show-time="{offset: 0}" class="item-block notViewed right-panel show-item-desc">
+                <h4>{{component.dish.name}}</h4>
+                <p>{{component.description}}</p>
+            </div>
+            <div ng-if="$odd" show-time="{offset: 200}" class="item-block notViewed right-panel">
+                <a ng-href="/dishes/{{component.dish._id}}">
+                    <img ng-src="{{component.dish.imageUrl}}" alt="{{component.dish.name}}"></a>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="triangle-up">
+</div>
+<div layout="column" class="light-bg" layout-algin="center center">
+    <p class="center-text">You may also want to check out these themes</p class="center-text">
+    <div layout="row" layout-align="center center" layout-margin>
+        <div flex ng-repeat="theme in themeShow.otherThemes">
+            <a ng-href="/themes/{{theme.name}}" class="component-img-container component-mask">
+                <img ng-src="{{theme.thumbnail}}" alt="{{theme.name}}" title="{{theme.name}}">
+                <md-button class="md-icon-button">
+                    <md-icon md-svg-icon="play"></md-icon>
+                </md-button>
+            </a>
+            <p class="md-subtitle center-text">{{theme.name}}</p>
+        </div>
+    </div>
+</div>

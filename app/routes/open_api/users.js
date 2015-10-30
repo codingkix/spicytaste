@@ -5,6 +5,7 @@ var bcrypt = require('bcrypt');
 
 //search user by field
 router.get('/users', function(req, res, next) {
+    'use strict';
 
     if (Object.keys(req.query).length === 0) {
         res.status(403).json('query is denied.');
@@ -14,11 +15,13 @@ router.get('/users', function(req, res, next) {
 
     //search by email
     if (req.query.email) {
-        query.where('email').regex(new RegExp(req.query.email));
+        query.where('email').regex(new RegExp(req.query.email, 'i'));
     }
 
     query.exec(function(err, users) {
-        if (err) return next(err);
+        if (err) {
+            next(err);
+        }
 
         if (!users) {
             res.json({
@@ -35,6 +38,7 @@ router.get('/users', function(req, res, next) {
 
 //save a new user
 router.post('/users', function(req, res, next) {
+    'use strict';
     var user = new User({
         userName: req.body.userName,
         email: req.body.email,
@@ -57,9 +61,9 @@ router.post('/users', function(req, res, next) {
 });
 
 //get user by id
-router.get('/users/:user_id', function(req, res, next) {
-    var query = User.findById(req.params.user_id);
-    query.populate('favouriteDishes').exec(function(err, user) {
+router.get('/users/:userId', function(req, res, next) {
+    'use strict';
+    User.findById(req.params.userId).exec(function(err, user) {
         if (err) {
             return next(err);
         }

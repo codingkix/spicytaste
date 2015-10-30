@@ -10,7 +10,7 @@
             </div>
         </md-toolbar>
         <md-dialog-content>
-            <div class="photo-edit-container" flex-sm="80" flex-gt-sm="60">
+            <div class="md-dialog-content photo-edit-container">
                 <md-input-container md-no-float>
                     <input ng-model="instructionDlg.newInstruction.photo" placeholder="Instruction Photo Url">
                 </md-input-container>
@@ -23,9 +23,9 @@
                 </md-input-container>
             </div>
         </md-dialog-content>
-        <div ng-if="instructionDlg.newInstruction.text != '' " class="md-actions" layout="row">
+        <div class="md-actions" layout="row">
             <span flex></span>
-            <md-button ng-click="instructionDlg.submit()" class="md-primary">
+            <md-button ng-disabled="instructionDlg.newInstruction.text.trim() == ''" ng-click="instructionDlg.submit()" class="md-primary">
                 Submit
             </md-button>
         </div>

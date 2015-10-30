@@ -7,13 +7,55 @@ var config = require('../../../config');
 
 //get current login user
 router.get('/me', function(req, res) {
+    'use strict';
     var auth = jwt.verify(req.headers['x-auth'], config.secret);
     res.send(auth.userId);
 });
 
+//get user full profile
+router.get('/me/profile', function(req, res, next) {
+    'use strict';
+    var auth = jwt.verify(req.headers['x-auth'], config.secret);
+    User.findById(auth.userId).populate('favouriteDishes').exec(function(err, user) {
+        if (err) {
+            next(err);
+        }
+
+        Dish.count({
+            createdBy: auth.userId
+        }, function(err, count) {
+            if (err) {
+                next(err);
+            }
+            res.status(200).json({
+                user: user,
+                reciptsCount: count
+            });
+
+        });
+    });
+});
+
+//get user's recipts
+router.get('/users/:userId/recipts', function(req, res, next) {
+    'use strict';
+
+    Dish.find({
+        createdBy: req.params.userId
+    }).sort('-createdDate').exec(function(err, dishes) {
+        if (err) {
+            next(err);
+        }
+
+        res.status(200).send(dishes);
+
+    });
+});
+
 //update user
-router.put('/users/:user_id', function(req, res, next) {
-    User.findById(req.params.user_id, function(err, user) {
+router.put('/users/:userId', function(req, res, next) {
+    'use strict';
+    User.findById(req.params.userId, function(err, user) {
         if (!user) {
             res.json({
                 success: false,
@@ -24,7 +66,9 @@ router.put('/users/:user_id', function(req, res, next) {
             user.photoUrl = req.body.photoUrl;
             user.linkedSocial = req.body.linkedSocial;
             user.save(function(err) {
-                if (err) return next(err);
+                if (err) {
+                    next(err);
+                }
 
                 res.json({
                     success: true,
@@ -37,8 +81,9 @@ router.put('/users/:user_id', function(req, res, next) {
 });
 
 //save dish as favorite
-router.put('/users/:user_id/dishes/:dish_id', function(req, res, next) {
-    var query = User.findById(user_id);
+router.put('/users/:userId/dishes/:dishId', function(req, res, next) {
+    'use strict';
+    var query = User.findById(req.params.userId);
     query.populate('favouriteDishes').exec(function(err, user) {
         if (err) {
             return next(err);
@@ -46,18 +91,26 @@ router.put('/users/:user_id/dishes/:dish_id', function(req, res, next) {
 
         //if user already have it, return true
         user.favouriteDishes.forEach(function(item) {
-            if (item._id === req.params.dish_id)
-                return res.json({
+            if (item._id === req.params.dishId) {
+                res.json({
                     success: true
                 });
+            }
         });
 
-        Dish.findById(req.params.dish_id).exec(function(err, dish) {
-            if (err) next(err);
+        Dish.findById(req.params.dishId).exec(function(err, dish) {
+            if (err) {
+                next(err);
+            }
             if (dish) {
                 user.favouriteDishes.push(dish);
-                user.save(function(err, user) {
-                    if (err) return next(err);
+                user.save(function(err) {
+                    if (err) {
+                        next(err);
+                        res.json({
+                            success: false
+                        });
+                    }
                     res.json({
                         success: true
                     });

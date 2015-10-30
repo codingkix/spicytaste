@@ -9,8 +9,8 @@ var DishSchema = mongoose.Schema({
     imageUrl: {
         type: String
     },
-    prepTime: String,
-    totalTime: String,
+    prepTime: Number,
+    totalTime: Number,
     difficulty: String,
     photos: [],
     tags: [],
@@ -24,11 +24,26 @@ var DishSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
     }],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     createdDate: {
         type: Date,
         required: true,
         default: Date.now
     }
+});
+
+DishSchema.virtual('cookTime').get(function() {
+    'use strict';
+
+    return this.totalTime - this.prepTime;
+});
+
+DishSchema.set('toJSON', {
+    getters: true,
+    virtuals: true
 });
 
 module.exports = mongoose.model('Dish', DishSchema);

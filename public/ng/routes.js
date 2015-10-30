@@ -11,40 +11,57 @@ angular.module('spicyTaste')
                 controller: 'HomeController',
                 controllerAs: 'home'
             })
-            .when('/inspire', {
-                templateUrl: '/ng/views/pages/shows/dinner.html',
-                controller: 'DinnerController',
-                controllerAs: 'dinner'
+            .when('/themes/:name', {
+                templateUrl: '/ng/views/pages/themes/show.html',
+                controller: 'ThemeShowController',
+                controllerAs: 'themeShow'
             })
             //show all dishes page
-            .when('/dishes', {
+            .when('/recipts', {
                 templateUrl: 'ng/views/pages/dish/all.html',
+                controller: 'DishAllController',
+                controllerAs: 'dishAll'
+            })
+            //show dish detail page
+            .when('/dishes/:dishId', {
+                templateUrl: 'ng/views/pages/dish/show.html',
+                controller: 'DishShowController',
+                controllerAs: 'dishShow'
+            })
+            .when('/dishes/:dishId/instructions', {
+                templateUrl: 'ng/views/pages/dish/instruction.html',
+                controller: 'DishInstructionController',
+                controllerAs: 'dishInstruction'
+            })
+            //list admin themes page
+            .when('/admin/themes', {
+                templateUrl: '/ng/views/pages/admin/theme/list.html',
+                controller: 'ThemeAdminListController',
+                controllerAs: 'themeList',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //edit a theme page
+            .when('/admin/themes/:id', {
+                templateUrl: 'ng/views/pages/admin/theme/edit.html',
+                controller: 'ThemeAdminEditController',
+                controllerAs: 'themeEdit',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //list admin dish page
+            .when('/me/dishes', {
+                templateUrl: 'ng/views/pages/admin/dish/list.html',
                 controller: 'DishListController',
                 controllerAs: 'dishList'
             })
-            //show dish detail page
-            .when('/dishes/:dish_id', {
-                templateUrl: 'ng/views/pages/dish/detail.html',
-                controller: 'DishDetailController',
-                controllerAs: 'dishDetail'
-            })
-            //list admin dish page
-            .when('/admin/dishes', {
-                templateUrl: 'ng/views/pages/admin/dish/list.html',
-                controller: 'DishListController',
-                controllerAs: 'dishList',
-                access: {
-                    requirePermissions: ['Admin']
-                }
-            })
             //edit a dish page
-            .when('/admin/dishes/:dish_id', {
-                templateUrl: 'ng/views/pages/admin/dish/single.html',
+            .when('/me/dishes/:dishId', {
+                templateUrl: 'ng/views/pages/dish/edit.html',
                 controller: 'DishEditController',
-                controllerAs: 'dishManage',
-                access: {
-                    requirePermissions: ['Admin']
-                }
+                controllerAs: 'dishManage'
             })
             //login user
             .when('/login', {
@@ -56,7 +73,7 @@ angular.module('spicyTaste')
             .when('/me', {
                 templateUrl: 'ng/views/pages/user/me.html',
                 controller: 'ProfileController',
-                controllerAs: 'me'
+                controllerAs: 'profile'
             })
             .when('/not-authorize', {
                 templateUrl: 'ng/views/pages/not-authorize.html'
