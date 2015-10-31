@@ -1,15 +1,25 @@
 <div layout layout-align="center center" class="full-height-content instruction-container">
-    <md-button ng-if="dishInstruction.currentIndex>0" class="nav-btn" ng-click="dishInstruction.showPre()">
-        <md-icon md-svg-icon="pre"></md-icon>
+    <div layout class="instruction-title-bar">
+        <span flex></span>
+        <a flex="50" href="/dishes/{{dishInstruction.dish._id}}">
+            <p class="md-title center-text">{{dishInstruction.dish.name}}</p>
+        </a>
+        <p flex class="md-caption">
+            By: <img ng-src="{{dishInstruction.dish.createdBy.photoUrl}}" class="avatar" alt="{{dishInstruction.dish.createdBy.userName}}" />
+            <span>{{dishInstruction.dish.createdBy.userName}}</span>
+        </p>
+    </div>
+    <md-button ng-if="dishInstruction.currentIndex>0" class="md-fab md-primary" ng-click="dishInstruction.showPre()">
+        <md-icon md-svg-icon="pre" class="initial-icon"></md-icon>
     </md-button>
-    <div ng-repeat="instruction in dishInstruction.instructions" ng-if="dishInstruction.isWithinShowRange($index)" ng-class="dishInstruction.setNavClass($index)" class="dish-instruction-hero" layout="column" layout-align="end center" style="background-image: url('{{instruction.photo}}')">
+    <div ng-repeat="instruction in dishInstruction.dish.instructions" ng-if="dishInstruction.isWithinShowRange($index)" ng-class="dishInstruction.setNavClass($index)" class="dish-instruction-hero" layout="column" layout-align="end center" style="background-image: url('{{instruction.photo}}')">
         <div class="text-container">
             <p><strong>Step {{$index+1}}: </strong>{{instruction.text}}</p>
         </div>
     </div>
     <div flex>
     </div>
-    <md-button ng-if="dishInstruction.currentIndex<dishInstruction.instructions.length-1" class="nav-btn" ng-click="dishInstruction.showNext()">
-        <md-icon md-svg-icon="next"></md-icon>
+    <md-button ng-if="dishInstruction.currentIndex<dishInstruction.dish.instructions.length-1" class="md-fab md-primary" ng-click="dishInstruction.showNext()">
+        <md-icon md-svg-icon="next" class="initial-icon"></md-icon>
     </md-button>
 </div>

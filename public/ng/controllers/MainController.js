@@ -8,6 +8,7 @@ angular.module('spicyTaste')
         };
 
         $scope.setMenuBar = function(menuBar) {
+            vm.menuBar = {};
             angular.extend(vm.menuBar, vm.defaultMenu, menuBar);
         };
 
@@ -106,7 +107,7 @@ angular.module('spicyTaste')
                 hidden: false,
                 text: 'SPICY TASTE'
             };
-            vm.menuBar = {};
+            vm.menuBar = vm.defaultMenu;
 
             var loginedToken = SessionService.getLocal(CONSTANTS.LOCAL_STORAGE_KEY);
             if (loginedToken) {

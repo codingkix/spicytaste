@@ -112,8 +112,13 @@ angular.module('spicyTaste')
                 controller: 'HomeController',
                 controllerAs: 'home'
             })
+            .when('/themes', {
+                templateUrl: 'ng/views/pages/theme/all.html',
+                controller: 'ThemeAllController',
+                controllerAs: 'themeAll'
+            })
             .when('/themes/:name', {
-                templateUrl: '/ng/views/pages/themes/show.html',
+                templateUrl: '/ng/views/pages/theme/show.html',
                 controller: 'ThemeShowController',
                 controllerAs: 'themeShow'
             })
@@ -257,6 +262,7 @@ angular.module('spicyTaste')
         };
 
         $scope.setMenuBar = function(menuBar) {
+            vm.menuBar = {};
             angular.extend(vm.menuBar, vm.defaultMenu, menuBar);
         };
 
@@ -356,7 +362,7 @@ angular.module('spicyTaste')
                 hidden: false,
                 text: 'SPICY TASTE'
             };
-            vm.menuBar = {};
+            vm.menuBar = vm.defaultMenu;
 
             var loginedToken = SessionService.getLocal(CONSTANTS.LOCAL_STORAGE_KEY);
             if (loginedToken) {
@@ -488,7 +494,7 @@ angular.module('spicyTaste')
 
         vm.closeDialog = function() {
             $mdDialog.cancel();
-        }
+        };
 
         vm.fbShare = function(dish) {
             var dishLink = $location.absUrl() + '/' + dish._id;
@@ -562,14 +568,15 @@ angular.module('spicyTaste')
                 });
 
                 if ($rootScope.currentUser) {
-                    var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
-                        _id: vm.dish._id
-                    }, true);
+     var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
+         _id: vm.dish._id
+     }, true);
 
-                    if (found.length) {
-                        vm.dish.isCollected = true;
-                    }
-                }
+     if (found.length) {
+         vm.dish.isCollected = true;
+     }
+ }
+
 
             });
         }
@@ -1315,9 +1322,9 @@ angular.module('spicyTaste')
 
         function init() {
             DishService.getInstructions($routeParams.dishId).success(function(data) {
-                vm.instructions = data;
+                vm.dish = data;
 
-                if (vm.instructions.length > 0) {
+                if (vm.dish.instructions.length > 0) {
                     vm.currentIndex = 0;
                 }
             });
@@ -1571,6 +1578,20 @@ angular.module('spicyTaste')
         function init() {
             vm.themes = {};
 
+            ThemeService.getAll().success(function(data) {
+                vm.themes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAllController', ["ThemeService", function(ThemeService) {
+        'use strict';
+        var vm = this;
+
+        function init() {
             ThemeService.getAll().success(function(data) {
                 vm.themes = data;
             });

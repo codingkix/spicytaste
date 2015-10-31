@@ -102,7 +102,7 @@ router.get('/dishes/:dishId', function(req, res, next) {
 // ----------------------------------------------------
 router.get('/dishes/:dishId/instructions', function(req, res, next) {
     'use strict';
-    Dish.findById(req.params.dishId).populate('instructions').exec(function(err, dish) {
+    Dish.findById(req.params.dishId).populate('instructions createdBy').exec(function(err, dish) {
         if (err) {
             return next(err);
         }
@@ -113,7 +113,7 @@ router.get('/dishes/:dishId/instructions', function(req, res, next) {
             });
         }
 
-        res.status(200).json(dish.instructions);
+        res.status(200).json(dish);
     });
 });
 

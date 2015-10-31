@@ -5,9 +5,9 @@ angular.module('spicyTaste')
 
         function init() {
             DishService.getInstructions($routeParams.dishId).success(function(data) {
-                vm.instructions = data;
+                vm.dish = data;
 
-                if (vm.instructions.length > 0) {
+                if (vm.dish.instructions.length > 0) {
                     vm.currentIndex = 0;
                 }
             });

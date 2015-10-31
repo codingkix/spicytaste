@@ -65,7 +65,7 @@ angular.module('spicyTaste')
 
         vm.closeDialog = function() {
             $mdDialog.cancel();
-        }
+        };
 
         vm.fbShare = function(dish) {
             var dishLink = $location.absUrl() + '/' + dish._id;
@@ -139,14 +139,15 @@ angular.module('spicyTaste')
                 });
 
                 if ($rootScope.currentUser) {
-                    var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
-                        _id: vm.dish._id
-                    }, true);
+     var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
+         _id: vm.dish._id
+     }, true);
 
-                    if (found.length) {
-                        vm.dish.isCollected = true;
-                    }
-                }
+     if (found.length) {
+         vm.dish.isCollected = true;
+     }
+ }
+
 
             });
         }

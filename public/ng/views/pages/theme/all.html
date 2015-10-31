@@ -1,0 +1,19 @@
+<div class="page-hero theme-top-hero" layout layout-align="center center">
+    <div class="hero-mask">
+    </div>
+    <h2 flex="40">Prepare dishes for some occassions, special events or just a rommance dinner for two?</h3>
+</div>
+<div class="light-bg">
+    <div class="columns big-column">
+        <div class="card-item animate-repeat" ng-repeat="theme in themeAll.themes track by theme._id">
+            <a ng-href="/themes/{{theme.name}}">
+                <img class="item-img" src="{{theme.thumbnail}}" alt="{{theme.name}}" title="{{theme.name}}">
+            </a>
+            <div class="card-footer">
+                <p class="md-subhead">{{theme.name}}</p>
+                <md-divider></md-divider>
+                <p ng-if="theme.slogan.length > 0" class="blog">{{theme.slogan}}</p>
+            </div>
+        </div>
+    </div>
+</div>

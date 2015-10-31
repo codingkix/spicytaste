@@ -14,7 +14,7 @@
 	}
 }
 
-#divColumns{
+.columns{
 	column-width: 220px;
 	column-gap: 15px;
   	width: 90%;
@@ -23,7 +23,7 @@
 	padding: 50px 0;
 }
 
-#divColumns .card-item {
+.columns .card-item {
 	background: #fefefe;
 	border: 2px solid #fcfcfc;
 	border-radius: 5px;
@@ -38,10 +38,9 @@
   	.item-img {
   		width: 100%;
   		height: auto;
-  		border-bottom: 1px solid #CCC;
-  		padding-bottom: 15px;
+  		min-height: 140px;
   		margin-bottom: 5px;
-  		//background-color: rgba(0,0,0,0.3);
+  		background-color: rgba(0,0,0,0.3);
   	}
   	
   	.blog{
@@ -51,7 +50,7 @@
   	}
 }
 
-#divColumns:hover .card-item:not(:hover){
+.columns:hover .card-item:not(:hover){
 	opacity: 0.4;
 }
 
@@ -104,7 +103,7 @@
 }
 
 @media screen and (max-width: 600px){
-	#divColumns {
+	.columns {
 		column-gap: 0px;
 		
 		.card-item{

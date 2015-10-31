@@ -1,4 +1,5 @@
-<div id="divThemeHero" style="background-image: url('{{themeShow.theme.image}}')" layout="column" layout-align="center center">
+<div class="page-hero" style="background-image: url('{{themeShow.theme.image}}')" layout="column" layout-align="center center">
+    <div class="hero-mask"></div>
     <h2 ng-repeat="slogan in themeShow.theme.slogans">{{slogan}}</h2>
 </div>
 <div top-menu-reached="{primaryTheme: false, hidden: true, text:'spicy taste'}" class="show-desc light-bg" layout="row" layout-align="center center">
@@ -35,10 +36,10 @@
 </div>
 <div layout="column" class="light-bg" layout-algin="center center">
     <p class="center-text">You may also want to check out these themes</p class="center-text">
-    <div layout="row" layout-align="center center" layout-margin>
+    <div layout="row" layout-align="center center" layout-margin layout-padding>
         <div flex ng-repeat="theme in themeShow.otherThemes">
             <a ng-href="/themes/{{theme.name}}" class="component-img-container component-mask">
-                <img ng-src="{{theme.thumbnail}}" alt="{{theme.name}}" title="{{theme.name}}">
+                <img ng-src="{{theme.thumbnail}}" class="refer-theme-thumbnail" alt="{{theme.name}}" title="{{theme.name}}">
                 <md-button class="md-icon-button">
                     <md-icon md-svg-icon="play"></md-icon>
                 </md-button>

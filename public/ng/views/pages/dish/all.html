@@ -20,10 +20,9 @@
             </div>
         </div>
     </div>
-    <div id='divColumns'>
+    <div class="columns">
         <div class="card-item animate-repeat" ng-repeat="dish in dishAll.dishes track by dish._id">
             <a ng-href="/dishes/{{dish._id}}">
-                <!-- <img class="item-img" data-src="{{dish.imageUrl}}" src="/svg/ic_restaurant_menu_48px.svg" alt="{{dish.name}}" title="{{dish.name}}"> -->
                 <img class="item-img" src="{{dish.imageUrl}}" alt="{{dish.name}}" title="{{dish.name}}">
             </a>
             <div class="card-footer">

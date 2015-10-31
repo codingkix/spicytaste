@@ -11,8 +11,13 @@ angular.module('spicyTaste')
                 controller: 'HomeController',
                 controllerAs: 'home'
             })
+            .when('/themes', {
+                templateUrl: 'ng/views/pages/theme/all.html',
+                controller: 'ThemeAllController',
+                controllerAs: 'themeAll'
+            })
             .when('/themes/:name', {
-                templateUrl: '/ng/views/pages/themes/show.html',
+                templateUrl: '/ng/views/pages/theme/show.html',
                 controller: 'ThemeShowController',
                 controllerAs: 'themeShow'
             })
