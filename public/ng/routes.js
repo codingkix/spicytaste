@@ -11,6 +11,11 @@ angular.module('spicyTaste')
                 controller: 'HomeController',
                 controllerAs: 'home'
             })
+            .when('/share', {
+                templateUrl: 'ng/views/pages/dish/share.html',
+                controller: 'DishShareController',
+                controllerAs: 'share'
+            })
             .when('/themes', {
                 templateUrl: 'ng/views/pages/theme/all.html',
                 controller: 'ThemeAllController',
@@ -38,30 +43,6 @@ angular.module('spicyTaste')
                 controller: 'DishInstructionController',
                 controllerAs: 'dishInstruction'
             })
-            //list admin themes page
-            .when('/admin/themes', {
-                templateUrl: '/ng/views/pages/admin/theme/list.html',
-                controller: 'ThemeAdminListController',
-                controllerAs: 'themeList',
-                access: {
-                    requirePermissions: ['Admin']
-                }
-            })
-            //edit a theme page
-            .when('/admin/themes/:id', {
-                templateUrl: 'ng/views/pages/admin/theme/edit.html',
-                controller: 'ThemeAdminEditController',
-                controllerAs: 'themeEdit',
-                access: {
-                    requirePermissions: ['Admin']
-                }
-            })
-            //list admin dish page
-            .when('/me/dishes', {
-                templateUrl: 'ng/views/pages/admin/dish/list.html',
-                controller: 'DishListController',
-                controllerAs: 'dishList'
-            })
             //edit a dish page
             .when('/me/dishes/:dishId', {
                 templateUrl: 'ng/views/pages/dish/edit.html',
@@ -82,5 +63,35 @@ angular.module('spicyTaste')
             })
             .when('/not-authorize', {
                 templateUrl: 'ng/views/pages/not-authorize.html'
+            })
+            .when('/admin', {
+                templateUrl: '/ng/views/pages/admin/index.html',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //list admin themes page
+            .when('/admin/themes', {
+                templateUrl: '/ng/views/pages/admin/theme/list.html',
+                controller: 'ThemeAdminListController',
+                controllerAs: 'themeList',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //edit a theme page
+            .when('/admin/themes/:id', {
+                templateUrl: 'ng/views/pages/admin/theme/edit.html',
+                controller: 'ThemeAdminEditController',
+                controllerAs: 'themeEdit',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //list admin dish page
+            .when('/admin/dishes', {
+                templateUrl: 'ng/views/pages/admin/dish/list.html',
+                controller: 'DishAdminListController',
+                controllerAs: 'dishList'
             });
     });

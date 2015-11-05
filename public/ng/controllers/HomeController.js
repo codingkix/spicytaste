@@ -1,7 +1,7 @@
 angular.module('spicyTaste')
     .controller('HomeController', function($scope, $mdMedia, DishService, CONSTANTS) {
+        'use strict';
         var vm = this;
-        init();
 
         function init() {
             vm.recipeTiles = [];
@@ -23,7 +23,7 @@ angular.module('spicyTaste')
                         id: dish._id,
                         prepTime: dish.prepTime,
                         totalTime: dish.totalTime,
-                        difficulty: dish.difficulty,
+                        difficulty: DishService.getDifficulties()[dish.difficulty - 1],
                         tags: dish.tags,
                         span: {
                             row: 1,
@@ -40,11 +40,13 @@ angular.module('spicyTaste')
                             break;
                         case 4:
                             tile.span.col = 2;
+                            break;
                         case 5:
                         case 6:
                             break;
                         case 7:
                             tile.span.row = tile.span.col = 2;
+                            break;
                         case 8:
                         case 9:
                             break;
@@ -61,5 +63,6 @@ angular.module('spicyTaste')
                 });
             });
         }
+        init();
 
     });

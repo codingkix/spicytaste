@@ -69,7 +69,7 @@ angular.module('spicyTaste')
         };
 
         //get all instructions
-        dishFactory.getInstructions = function(dishId) {
+        dishFactory.getDishWithInstructions = function(dishId) {
             return $http.get(baseUrl + dishId + '/instructions');
         };
 

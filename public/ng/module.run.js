@@ -33,4 +33,8 @@ angular.module('spicyTaste')
                 });
             }
         });
+
+        $rootScope.$watch('currentUser', function() {
+            $rootScope.$broadcast('logined');
+        });
     });

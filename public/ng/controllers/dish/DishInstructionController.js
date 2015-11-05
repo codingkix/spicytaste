@@ -4,7 +4,7 @@ angular.module('spicyTaste')
         var vm = this;
 
         function init() {
-            DishService.getInstructions($routeParams.dishId).success(function(data) {
+            DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
                 vm.dish = data;
 
                 if (vm.dish.instructions.length > 0) {

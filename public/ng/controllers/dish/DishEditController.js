@@ -85,14 +85,9 @@ angular.module('spicyTaste')
         function init() {
             $scope.setMenuBar({});
             //get the dish by id
-            DishService.get($routeParams.dishId).success(function(data) {
+            DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
                 vm.dish = data;
             });
-
-            DishService.getInstructions($routeParams.dishId).success(function(data) {
-                vm.dish.instructions = data;
-            });
-
             vm.difficulties = DishService.getDifficulties();
         }
 

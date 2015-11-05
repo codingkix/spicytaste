@@ -6,6 +6,7 @@ var User = require('../../models/user');
 var Instruction = require('../../models/instruction');
 var jwt = require('jsonwebtoken');
 var config = require('../../../config');
+var utility = require('../../utils');
 
 //preload dish object on routes with ":dishId"
 router.param('dishId', function(req, res, next, dishId) {
@@ -34,15 +35,8 @@ router.post('/dishes', function(req, res, next) {
     'use strict';
 
     var dish = new Dish(); // create a new instance of the dish model
-    dish.name = req.body.name;
-    dish.tags = req.body.tags; // set the dish tags (comes from the request)
-    dish.imageUrl = req.body.imageUrl; // set the dish imageUrl (comes from the request)
-    dish.blog = req.body.blog;
-    dish.ingredients = req.body.ingredients;
-    dish.photos = req.body.photos;
-    dish.prepTime = req.body.prepTime;
-    dish.totalTime = req.body.totalTime;
-    dish.difficulty = req.body.difficulty;
+    utility.extend(dish, req.body);
+    console.log('dish', dish);
 
     dish.save(function(err, dish) {
         if (err) {

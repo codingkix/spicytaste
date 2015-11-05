@@ -16,7 +16,7 @@ angular.module('spicyTaste')
 
         $mdThemingProvider.theme('default')
             .primaryPalette('primaryOrange')
-            .accentPalette('light-green');
+            .accentPalette('deep-orange');
 
         $mdThemingProvider.theme('blue')
             .primaryPalette('primaryBlue');
@@ -49,5 +49,10 @@ angular.module('spicyTaste')
             .icon('clear', 'svg/ic_clear_all_48px.svg')
             .icon('next', 'svg/ic_chevron_right_48px.svg')
             .icon('pre', 'svg/ic_chevron_left_48px.svg')
-            .icon('edit', 'svg/ic_edit_48px.svg');
+            .icon('edit', 'svg/ic_edit_48px.svg')
+            .icon('email', 'svg/ic_email_48px.svg')
+            .icon('lock', 'svg/ic_lock_outline_48px.svg')
+            .icon('user', 'svg/ic_person_outline_48px.svg')
+            .icon('go', 'svg/ic_play_circle_fill_48px.svg')
+            .icon('send', 'svg/ic_send_48px.svg');
     });

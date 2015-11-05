@@ -1,0 +1,85 @@
+<div layout layout-fill class="full-height-content page-hero recipt-share-hero">
+    <div flex="60" layout="column" layout-align="center center">
+        <h2 class="md-display-1">Share your recipts, Share your taste</h2>
+        <h3>Your delicious memory needs an elegant page to be placed.</h3>
+    </div>
+    <div flex layout="column" class="share-right-col">
+        <div ng-if="share.isLogined" flex="60" layout="column" layout-align="end" class="">
+            <p class="md-subhead">What's your secrect recipt name?</p>
+            <form layout name="formCreate" ng-submit="formCreate.$valid && share.create()" novalidate class="share-recipt-form">
+                <input flex="80" required name="name" ng-model="share.newReciptName">
+                <md-button type="submit" flex class="md-icon-button" ng-class="{'md-primary': formCreate.$valid}">
+                    <md-icon md-svg-icon="send" class="medium-icon light-icon"></md-icon>
+                </md-button>
+            </form>
+        </div>
+        <div ng-if="!share.isLogined" ng-controller="LoginController as login" class="" flex layout="column" layout-align="center">
+            <div class="login-container" ng-if="share.showLogin">
+                <p class="md-subhead">Login to your account and start sharing</p>
+                <form name="formLogin" ng-submit="formLogin.$valid && login.login()" novalidate class="share-login-form">
+                    <input type="email" placeholder="Email" ng-focus="login.loginFailed=false" required name="email" ng-model="login.email">
+                    <input ng-focus="login.loginFailed=false" type="password" required name="password" placeholder="Password" ng-model="login.password">
+                    <button class="md-primary" ng-disabled="formLogin.$invalid" type="submit">
+                        <md-icon md-svg-icon="next" class="initial-icon"></md-icon>
+                    </button>
+                </form>
+                <div class="msg-container">
+                    <p ng-if="login.loginFailed" class="md-caption warn-color animate-show">Email/Password are not correct.</p>
+                </div>
+                <div layout class="other-login-container">
+                    <md-button flex md-theme="blue" ng-click="login.fbLogin()" class="md-raised md-primary">
+                        Facebook
+                    </md-button>
+                    <md-button class="hero-btn" flex ng-click="share.showLogin=false">Sign Up</md-button>
+                </div>
+            </div>
+            <div class="signUp-container" ng-if="!share.showLogin">
+                <p class="md-subhead">Create an account to store your taste</p>
+                <form layout="column" name="formSignUp" ng-submit="formSignUp.$valid && login.signUp()" novalidate class="share-signUp-form">
+                    <input placeholder="Nick name" ng-focus="login.loginFailed=false" required name="username" ng-model="login.userName">
+                    <input type="email" placeholder="Email" ng-focus="login.loginFailed=false" required name="email" ng-model="login.email">
+                    <input ng-focus="login.loginFailed=false" type="password" required name="password" placeholder="Password" ng-model="login.password">
+                    <button class="solid-btn" type="submit">
+                        Submit
+                    </button>
+                    <span class="md-caption">Or using social accounts to get in:</span>
+                    <md-divider class="or-divider"></md-divider>
+                    <button flex ng-click="login.fbLogin()" class="solid-btn fb-btn">
+                        Facebook
+                    </button>
+                    <p class="md-caption">Already have an account?
+                        <md-button class="md-primary" ng-click="share.showLogin=true">Login</md-button>
+                    </p>
+                </form>
+            </div>
+        </div>
+        <div flex ng-if="share.isLogined">
+        </div>
+        <!-- 
+        <form name="formLogin" ng-submit="login.login()" novalidate>
+            <md-input-container class="md-block">
+                <md-icon md-svg-icon="email"></md-icon>
+                <input type="email" placeholder="Email" required name="email" ng-model="login.email">
+                <div ng-messages="formLogin.email.$error" ng-if="formLogin.email.$dirty || formLogin.$submitted">
+                    <div ng-message="required">Email is required.</div>
+                    <div ng-message="email">Email is invalid.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <md-icon md-svg-icon="lock"></md-icon>
+                <input type="password" required name="password" placeholder="Password" ng-model="login.password">
+                <div ng-messages="formLogin.password.$error" ng-if="formLogin.password.$dirty || formLogin.$submitted">
+                    <div ng-message="required">Password is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container>
+                <md-button flex class="md-raised md-primary">Log In</md-button>
+            </md-input-container>
+        </form>
+        <md-input-container flex md-theme="blue">
+            <md-button ng-click="login.fbLogin()" class="md-raised md-primary">
+                Facebook
+            </md-button>
+        </md-input-container> -->
+    </div>
+</div>

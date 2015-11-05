@@ -26,7 +26,7 @@ angular.module('spicyTaste')
 
         $mdThemingProvider.theme('default')
             .primaryPalette('primaryOrange')
-            .accentPalette('light-green');
+            .accentPalette('deep-orange');
 
         $mdThemingProvider.theme('blue')
             .primaryPalette('primaryBlue');
@@ -59,7 +59,12 @@ angular.module('spicyTaste')
             .icon('clear', 'svg/ic_clear_all_48px.svg')
             .icon('next', 'svg/ic_chevron_right_48px.svg')
             .icon('pre', 'svg/ic_chevron_left_48px.svg')
-            .icon('edit', 'svg/ic_edit_48px.svg');
+            .icon('edit', 'svg/ic_edit_48px.svg')
+            .icon('email', 'svg/ic_email_48px.svg')
+            .icon('lock', 'svg/ic_lock_outline_48px.svg')
+            .icon('user', 'svg/ic_person_outline_48px.svg')
+            .icon('go', 'svg/ic_play_circle_fill_48px.svg')
+            .icon('send', 'svg/ic_send_48px.svg');
     }]);
 
 angular.module('spicyTaste')
@@ -97,6 +102,10 @@ angular.module('spicyTaste')
                 });
             }
         });
+
+        $rootScope.$watch('currentUser', function() {
+            $rootScope.$broadcast('logined');
+        });
     }]);
 
 angular.module('spicyTaste')
@@ -111,6 +120,11 @@ angular.module('spicyTaste')
                 templateUrl: 'ng/views/pages/home.html',
                 controller: 'HomeController',
                 controllerAs: 'home'
+            })
+            .when('/share', {
+                templateUrl: 'ng/views/pages/dish/share.html',
+                controller: 'DishShareController',
+                controllerAs: 'share'
             })
             .when('/themes', {
                 templateUrl: 'ng/views/pages/theme/all.html',
@@ -139,30 +153,6 @@ angular.module('spicyTaste')
                 controller: 'DishInstructionController',
                 controllerAs: 'dishInstruction'
             })
-            //list admin themes page
-            .when('/admin/themes', {
-                templateUrl: '/ng/views/pages/admin/theme/list.html',
-                controller: 'ThemeAdminListController',
-                controllerAs: 'themeList',
-                access: {
-                    requirePermissions: ['Admin']
-                }
-            })
-            //edit a theme page
-            .when('/admin/themes/:id', {
-                templateUrl: 'ng/views/pages/admin/theme/edit.html',
-                controller: 'ThemeAdminEditController',
-                controllerAs: 'themeEdit',
-                access: {
-                    requirePermissions: ['Admin']
-                }
-            })
-            //list admin dish page
-            .when('/me/dishes', {
-                templateUrl: 'ng/views/pages/admin/dish/list.html',
-                controller: 'DishListController',
-                controllerAs: 'dishList'
-            })
             //edit a dish page
             .when('/me/dishes/:dishId', {
                 templateUrl: 'ng/views/pages/dish/edit.html',
@@ -183,13 +173,43 @@ angular.module('spicyTaste')
             })
             .when('/not-authorize', {
                 templateUrl: 'ng/views/pages/not-authorize.html'
+            })
+            .when('/admin', {
+                templateUrl: '/ng/views/pages/admin/index.html',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //list admin themes page
+            .when('/admin/themes', {
+                templateUrl: '/ng/views/pages/admin/theme/list.html',
+                controller: 'ThemeAdminListController',
+                controllerAs: 'themeList',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //edit a theme page
+            .when('/admin/themes/:id', {
+                templateUrl: 'ng/views/pages/admin/theme/edit.html',
+                controller: 'ThemeAdminEditController',
+                controllerAs: 'themeEdit',
+                access: {
+                    requirePermissions: ['Admin']
+                }
+            })
+            //list admin dish page
+            .when('/admin/dishes', {
+                templateUrl: 'ng/views/pages/admin/dish/list.html',
+                controller: 'DishAdminListController',
+                controllerAs: 'dishList'
             });
     }]);
 
 angular.module('spicyTaste')
     .controller('HomeController', ["$scope", "$mdMedia", "DishService", "CONSTANTS", function($scope, $mdMedia, DishService, CONSTANTS) {
+        'use strict';
         var vm = this;
-        init();
 
         function init() {
             vm.recipeTiles = [];
@@ -211,7 +231,7 @@ angular.module('spicyTaste')
                         id: dish._id,
                         prepTime: dish.prepTime,
                         totalTime: dish.totalTime,
-                        difficulty: dish.difficulty,
+                        difficulty: DishService.getDifficulties()[dish.difficulty - 1],
                         tags: dish.tags,
                         span: {
                             row: 1,
@@ -228,11 +248,13 @@ angular.module('spicyTaste')
                             break;
                         case 4:
                             tile.span.col = 2;
+                            break;
                         case 5:
                         case 6:
                             break;
                         case 7:
                             tile.span.row = tile.span.col = 2;
+                            break;
                         case 8:
                         case 9:
                             break;
@@ -249,7 +271,87 @@ angular.module('spicyTaste')
                 });
             });
         }
+        init();
 
+    }]);
+
+angular.module('spicyTaste')
+    .controller('LoginController', ["$injector", "$rootScope", "$scope", "$mdDialog", "UserService", "md5", "CONSTANTS", "$http", "SessionService", function($injector, $rootScope, $scope, $mdDialog, UserService, md5, CONSTANTS, $http, SessionService) {
+        'use strict';
+
+        var vm = this;
+
+        vm.fbLogin = function() {
+            FB.login(function(response) {
+                if (response.status === 'connected') {
+                    // Logged into your app and Facebook.
+                    FB.api('/me', function(response) {
+                        var fbUser = {
+                            userName: response.name,
+                            email: response.email,
+                            password: CONSTANTS.SOCIAL_PASS,
+                            photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
+                            linkedSocial: CONSTANTS.FACEBOOK
+                        };
+
+                        UserService.socialLogin(fbUser).then(function(user) {
+                            user.loginType = CONSTANTS.FACEBOOK;
+                            afterAuth(user);
+                        });
+
+                    });
+                } else if (response.status === 'not_authorized') {
+                    // The person is logged into Facebook, but not your app.
+                } else {
+                    // The person is not logged into Facebook, so we're not sure if
+                    // they are logged into this app or not.
+                }
+            }, {
+                scope: 'public_profile,email'
+            });
+        };
+
+        vm.login = function() {
+            UserService.login(vm.email, vm.password).then(function(user) {
+                user.loginType = CONSTANTS.EMAIL;
+                afterAuth(user);
+            }, function() {
+                vm.loginFailed = true;
+            });
+        };
+
+        vm.signUp = function() {
+            var newUser = {
+                userName: vm.userName,
+                email: vm.email,
+                password: vm.password,
+                photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(vm.email),
+                linkedSocial: CONSTANTS.EMAIL
+            };
+
+            UserService.create(newUser).then(function(user) {
+                user.loginType = CONSTANTS.EMAIL;
+                afterAuth(user);
+            });
+
+        };
+
+        function init() {
+            vm.title = vm.dialogTitle;
+            vm.email = '';
+            vm.password = '';
+            vm.userName = '';
+            vm.loginFailed = false;
+        }
+
+        function afterAuth(user) {
+            var token = $http.defaults.headers.common['X-Auth'];
+            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, token);
+            $rootScope.currentUser = user;
+            $mdDialog.hide();
+        }
+
+        init();
     }]);
 
 angular.module('spicyTaste')
@@ -267,92 +369,23 @@ angular.module('spicyTaste')
         };
 
         $scope.showLoginDialog = function(ev, postLogin, title) {
+            console.log('title', title);
+
             var promise = $mdDialog.show({
                 clickOutsideToClose: true,
                 templateUrl: 'ng/views/dialogs/login.html',
                 targetEvent: ev,
-                controller: loginController,
+                controller: 'LoginController',
                 controllerAs: 'login',
                 locals: {
                     dialogTitle: title
-                }
+                },
+                bindToController: true
             });
             if (postLogin) {
                 return promise;
-            } else {
-                promise.then(function(user) {
-                    $rootScope.currentUser = user;
-                });
             }
         };
-
-        function loginController(dialogTitle, $mdDialog, UserService, md5) {
-            var dvm = this;
-            dvm.title = dialogTitle;
-            dvm.email = '';
-            dvm.password = '';
-            dvm.userName = '';
-
-            dvm.fbLogin = function() {
-                FB.login(function(response) {
-                    if (response.status === 'connected') {
-                        // Logged into your app and Facebook.
-                        FB.api('/me', function(response) {
-                            var fbUser = {
-                                userName: response.name,
-                                email: response.email,
-                                password: CONSTANTS.SOCIAL_PASS,
-                                photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
-                                linkedSocial: CONSTANTS.FACEBOOK
-                            };
-
-                            UserService.socialLogin(fbUser).then(function(user) {
-                                user.loginType = CONSTANTS.FACEBOOK;
-                                afterAuth(user);
-                            });
-
-                        });
-                    } else if (response.status === 'not_authorized') {
-                        // The person is logged into Facebook, but not your app.
-                    } else {
-                        // The person is not logged into Facebook, so we're not sure if
-                        // they are logged into this app or not.
-                    }
-                }, {
-                    scope: 'public_profile,email'
-                });
-            };
-
-            dvm.login = function() {
-                UserService.login(dvm.email, dvm.password).then(function(user) {
-                    user.loginType = CONSTANTS.EMAIL;
-                    afterAuth(user);
-                });
-            };
-
-            dvm.signUp = function() {
-                var newUser = {
-                    userName: dvm.userName,
-                    email: dvm.email,
-                    password: dvm.password,
-                    photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(dvm.email),
-                    linkedSocial: CONSTANTS.EMAIL
-                };
-
-                UserService.create(newUser).then(function(user) {
-                    user.loginType = CONSTANTS.EMAIL;
-                    afterAuth(user);
-                });
-
-            };
-
-            function afterAuth(user) {
-                var token = $http.defaults.headers.common['X-Auth'];
-                SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, token);
-                $mdDialog.hide(user);
-            }
-        }
-        loginController.$inject = ["dialogTitle", "$mdDialog", "UserService", "md5"];
 
         function init() {
             vm.showMobileMenu = false;
@@ -367,7 +400,6 @@ angular.module('spicyTaste')
             var loginedToken = SessionService.getLocal(CONSTANTS.LOCAL_STORAGE_KEY);
             if (loginedToken) {
                 console.log('token', loginedToken);
-
                 $http.defaults.headers.common['X-Auth'] = loginedToken;
                 UserService.getCurrentUser().then(function(user) {
                     $rootScope.currentUser = user;
@@ -376,8 +408,6 @@ angular.module('spicyTaste')
         }
 
         init();
-
-
     }]);
 
 angular.module('spicyTaste')
@@ -425,199 +455,6 @@ angular.module('spicyTaste')
         }
 
         init();
-    }]);
-
-angular.module('spicyTaste')
-    //controller applied to dish list page
-    .controller('DishListController', ["DishService", "SocialService", "$location", function(DishService, SocialService, $location) {
-        var vm = this;
-
-        //grab all the dishes at page load
-        DishService.all().success(function(data) {
-            //bind the dishes
-            vm.dishes = data;
-        });
-
-        //function to delete a dish
-        vm.deleteDish = function(index) {
-            var dish = vm.dishes[index];
-            DishService.delete(dish._id).success(function(data) {
-                vm.dishes.splice(index, 1);
-            });
-        };
-
-        vm.addDish = function() {
-            DishService.create({
-                name: 'new dish'
-            }).success(function(data) {
-                $location.path('/admin/dishes/' + data.dish._id);
-            });
-        };
-
-        vm.goToEdit = function(id) {
-            $location.path('/admin/dishes/' + id);
-        };
-
-    }])
-    //controller applied to dish detail page
-    .controller('DishDetailController', ["$scope", "$location", "$rootScope", "$routeParams", "$filter", "$mdDialog", "DishService", "UserService", "SocialService", function($scope, $location, $rootScope, $routeParams, $filter, $mdDialog, DishService, UserService, SocialService) {
-        var vm = this;
-        vm.dish = {};
-        init();
-
-        vm.enterFlipBook = function(evn) {
-            $mdDialog.show({
-                targetEvent: evn,
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/flipbook.html',
-                controller: 'DishDetailController',
-                controllerAs: 'book'
-            }).finally(function() {
-                $rootScope.shownBook = false;
-            });
-
-            $rootScope.shownBook = true;
-        };
-
-        //call booklet plugin
-        $scope.$on('onRepeatLast', function(scope, element, attrs) {
-            angular.element(element).parents('#dishBook').booklet({
-                width: '100%',
-                height: 600,
-                closed: true,
-                autoCenter: true,
-                pageNumbers: false,
-                pagePadding: 0,
-                hoverWidth: 100
-            });
-        });
-
-        vm.closeDialog = function() {
-            $mdDialog.cancel();
-        };
-
-        vm.fbShare = function(dish) {
-            var dishLink = $location.absUrl() + '/' + dish._id;
-            SocialService.fbShare(dishLink);
-        }
-
-        vm.reply = function(user, $event) {
-            var commentTitle = '@' + user.userName;
-            openCommentDialog(commentTitle, $event, user._id);
-        };
-
-        vm.collect = function($event) {
-            if (!$rootScope.currentUser) {
-                $scope.showLoginDialog($event, true, 'Login/SignUp first to save as favorite').then(function(user) {
-                    $rootScope.currentUser = user;
-
-                    UserService.collect(vm.dish._id).then(function(data) {
-                        if (data.success) {
-                            vm.dish.isCollected = true;
-                        }
-                    });
-                })
-            } else {
-                UserService.collect(vm.dish._id).then(function(data) {
-                    if (data.success) {
-                        vm.dish.isCollected = true;
-                    }
-                });
-            }
-        }
-
-        vm.showInstructionPhoto = function(photoUrl, $event) {
-            if (photoUrl == null || photoUrl.trim() == '')
-                return;
-
-            $mdDialog.show({
-                targetEvent: $event,
-                clickOutsideToClose: true,
-                template: '<md-dialog>' +
-                    '<md-dialog-content><img src="{{photo}}"></md-dialog-content>' +
-                    '</md-dialog>',
-                controller: ["$scope", function DialogCtr($scope) {
-                    $scope.photo = photoUrl;
-                }]
-            });
-        }
-
-        vm.newComment = function($event) {
-            if (!$rootScope.currentUser) {
-                $scope.showLoginDialog($event, true, 'Login/SignUp first to leave a comment').then(function(user) {
-                    $rootScope.currentUser = user;
-                    openCommentDialog('Comment', $event, null);
-                })
-            } else {
-                openCommentDialog('Comment', $event, null);
-            }
-        }
-
-        function init() {
-            vm.dish = {};
-            vm.relatedDishes = {};
-
-            //get the dish by id
-            DishService.get($routeParams.dish_id).success(function(data) {
-                vm.dish = data;
-                vm.dish.isCollected = false;
-
-                //get the 3 related dishes
-                DishService.relate(vm.dish._id, vm.dish.tags, 3).success(function(data) {
-                    vm.relatedDishes = data;
-                });
-
-                if ($rootScope.currentUser) {
-     var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
-         _id: vm.dish._id
-     }, true);
-
-     if (found.length) {
-         vm.dish.isCollected = true;
-     }
- }
-
-
-            });
-        }
-
-        function openCommentDialog(title, $event, replyTo) {
-            $mdDialog.show({
-                targetEvent: $event,
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/comment.html',
-                locals: {
-                    title: title
-                },
-                controller: commentController,
-                controllerAs: 'comment'
-            }).then(function(content) {
-                DishService.addComment(vm.dish._id, {
-                    content: content,
-                    replyTo: replyTo
-                }).success(function(comment) {
-                    vm.dish.comments.push(comment);
-                });
-            });
-        }
-
-        function commentController(title, $mdDialog) {
-            var dvm = this;
-            dvm.content = '';
-            dvm.title = title;
-
-            dvm.closeDialog = function() {
-                $mdDialog.cancel();
-            }
-
-            dvm.submit = function() {
-                if (dvm.content.trim() == '')
-                    $mdDialog.cancel()
-                else
-                    $mdDialog.hide(dvm.content);
-            }
-        }
-        commentController.$inject = ["title", "$mdDialog"];
     }]);
 
 angular.module('spicyTaste')
@@ -927,7 +764,7 @@ angular.module('spicyTaste')
         };
 
         //get all instructions
-        dishFactory.getInstructions = function(dishId) {
+        dishFactory.getDishWithInstructions = function(dishId) {
             return $http.get(baseUrl + dishId + '/instructions');
         };
 
@@ -1161,6 +998,145 @@ angular.module('spicyTaste')
     });
 
 angular.module('spicyTaste')
+    .controller('ThemeAdminEditController', ["ThemeService", "$routeParams", "$timeout", "DishService", function(ThemeService, $routeParams, $timeout, DishService) {
+        'use strict';
+
+        var vm = this;
+
+        vm.update = function() {
+            ThemeService.update(vm.theme._id, vm.theme).success(function(data) {
+                if (data.success) {
+                    vm.updateSuccess = true;
+
+                    $timeout(function() {
+                        vm.updateSuccess = false;
+                    }, 800);
+                }
+
+            });
+        };
+
+        vm.addDish = function(dish) {
+            vm.theme.components.push({
+                title: '',
+                displayOrder: vm.theme.components.length + 1,
+                dish: dish
+            });
+        };
+
+        vm.removeComponent = function(index) {
+            vm.theme.components.splice(index, 1);
+        };
+
+        vm.getDisplayOrders = function() {
+            var orders = [];
+            for (var i = 0; i < vm.theme.components.length; i++) {
+                orders.push(i + 1);
+            }
+
+            return orders;
+        };
+
+        function init() {
+            vm.theme = {};
+            vm.dishes = [];
+
+            ThemeService.get($routeParams.id).success(function(data) {
+                vm.theme = data;
+            });
+
+            DishService.all().success(function(data) {
+                vm.dishes = data;
+            });
+        }
+
+        init();
+
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAdminListController', ["ThemeService", "$location", function(ThemeService, $location) {
+        'use strict';
+
+        var vm = this;
+
+        vm.create = function() {
+            ThemeService.create({
+                name: 'new theme'
+            }).success(function(data) {
+                $location.path('/admin/themes/' + data.theme._id);
+            });
+        };
+
+        function init() {
+            vm.themes = {};
+
+            ThemeService.getAll().success(function(data) {
+                vm.themes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAllController', ["ThemeService", function(ThemeService) {
+        'use strict';
+        var vm = this;
+
+        function init() {
+            ThemeService.getAll().success(function(data) {
+                vm.themes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeShowController', ["ThemeService", "$routeParams", function(ThemeService, $routeParams) {
+        'use strict';
+        var vm = this;
+
+        function init() {
+            vm.theme = {};
+            ThemeService.searchBy('name=' + $routeParams.name).success(function(data) {
+                if (data && data.length > 0) {
+                    vm.theme = data[0];
+                    vm.theme.slogans = vm.theme.slogan.split('|');
+                }
+            });
+
+            ThemeService.getOthers($routeParams.name, 3).then(function(data) {
+                vm.otherThemes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    //controller applied to dish list page
+    .controller('DishAdminListController', ["DishService", function(DishService) {
+        'use strict';
+        var vm = this;
+
+        DishService.all().success(function(data) {
+            //bind the dishes
+            vm.dishes = data;
+        });
+
+        //function to delete a dish
+        vm.deleteDish = function(index) {
+            var dish = vm.dishes[index];
+            DishService.delete(dish._id).success(function() {
+                vm.dishes.splice(index, 1);
+            });
+        };
+
+    }]);
+
+angular.module('spicyTaste')
     .controller('DishAllController', ["DishService", "$scope", function(DishService, $scope) {
         'use strict';
 
@@ -1301,14 +1277,9 @@ angular.module('spicyTaste')
         function init() {
             $scope.setMenuBar({});
             //get the dish by id
-            DishService.get($routeParams.dishId).success(function(data) {
+            DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
                 vm.dish = data;
             });
-
-            DishService.getInstructions($routeParams.dishId).success(function(data) {
-                vm.dish.instructions = data;
-            });
-
             vm.difficulties = DishService.getDifficulties();
         }
 
@@ -1321,7 +1292,7 @@ angular.module('spicyTaste')
         var vm = this;
 
         function init() {
-            DishService.getInstructions($routeParams.dishId).success(function(data) {
+            DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
                 vm.dish = data;
 
                 if (vm.dish.instructions.length > 0) {
@@ -1360,6 +1331,32 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
+    .controller('DishShareController', ["$scope", "DishService", "$location", "$rootScope", function($scope, DishService, $location, $rootScope) {
+        'use strict';
+        var vm = this;
+        $scope.$on('logined', function() {
+            vm.isLogined = true;
+        });
+
+        function init() {
+            $scope.setMenuBar({});
+            vm.newReciptName = '';
+            vm.showLogin = true;
+            vm.isLogined = !angular.isUndefined($rootScope.currentUser) && $rootScope.currentUser !== null;
+        }
+
+        vm.create = function() {
+            DishService.create({
+                name: vm.newReciptName,
+                createdBy: $rootScope.currentUser._id
+            }).success(function(data) {
+                $location.path('/me/dishes/' + data.dish._id);
+            });
+        };
+        init();
+    }]);
+
+angular.module('spicyTaste')
     .controller('DishShowController', ["DishService", "CommentService", "$interval", "$timeout", "$routeParams", "$filter", "$rootScope", "$scope", function(DishService, CommentService, $interval, $timeout, $routeParams, $filter, $rootScope, $scope) {
         'use strict';
 
@@ -1376,8 +1373,7 @@ angular.module('spicyTaste')
 
         vm.createComment = function($event) {
             if (!$rootScope.currentUser) {
-                $scope.showLoginDialog($event, true, 'Login/SignUp first to leave a comment').then(function(user) {
-                    $rootScope.currentUser = user;
+                $scope.showLoginDialog($event, true, 'Login/SignUp first to leave a comment').then(function() {
                     saveComment();
                 });
             } else {
@@ -1498,124 +1494,6 @@ angular.module('spicyTaste')
             //get dish's comments count
             CommentService.countByDish($routeParams.dishId).success(function(data) {
                 vm.commentsCount = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAdminEditController', ["ThemeService", "$routeParams", "$timeout", "DishService", function(ThemeService, $routeParams, $timeout, DishService) {
-        'use strict';
-
-        var vm = this;
-
-        vm.update = function() {
-            ThemeService.update(vm.theme._id, vm.theme).success(function(data) {
-                if (data.success) {
-                    vm.updateSuccess = true;
-
-                    $timeout(function() {
-                        vm.updateSuccess = false;
-                    }, 800);
-                }
-
-            });
-        };
-
-        vm.addDish = function(dish) {
-            vm.theme.components.push({
-                title: '',
-                displayOrder: vm.theme.components.length + 1,
-                dish: dish
-            });
-        };
-
-        vm.removeComponent = function(index) {
-            vm.theme.components.splice(index, 1);
-        };
-
-        vm.getDisplayOrders = function() {
-            var orders = [];
-            for (var i = 0; i < vm.theme.components.length; i++) {
-                orders.push(i + 1);
-            }
-
-            return orders;
-        };
-
-        function init() {
-            vm.theme = {};
-            vm.dishes = [];
-
-            ThemeService.get($routeParams.id).success(function(data) {
-                vm.theme = data;
-            });
-
-            DishService.all().success(function(data) {
-                vm.dishes = data;
-            });
-        }
-
-        init();
-
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAdminListController', ["ThemeService", "$location", function(ThemeService, $location) {
-        'use strict';
-
-        var vm = this;
-
-        vm.create = function() {
-            ThemeService.create({
-                name: 'new theme'
-            }).success(function(data) {
-                $location.path('/admin/themes/' + data.theme._id);
-            });
-        };
-
-        function init() {
-            vm.themes = {};
-
-            ThemeService.getAll().success(function(data) {
-                vm.themes = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAllController', ["ThemeService", function(ThemeService) {
-        'use strict';
-        var vm = this;
-
-        function init() {
-            ThemeService.getAll().success(function(data) {
-                vm.themes = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeShowController', ["ThemeService", "$routeParams", function(ThemeService, $routeParams) {
-        'use strict';
-        var vm = this;
-
-        function init() {
-            vm.theme = {};
-            ThemeService.searchBy('name=' + $routeParams.name).success(function(data) {
-                if (data && data.length > 0) {
-                    vm.theme = data[0];
-                    vm.theme.slogans = vm.theme.slogan.split('|');
-                }
-            });
-
-            ThemeService.getOthers($routeParams.name, 3).then(function(data) {
-                vm.otherThemes = data;
             });
         }
 

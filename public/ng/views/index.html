@@ -34,7 +34,7 @@
             <md-button ng-href="/share">Share</md-button>
         </section>
         <md-button ng-if="!currentUser" ng-class="{'md-primary' : !main.menuBar.primaryTheme}" ng-click="showLoginDialog($event)">
-            <md-icon md-svg-icon="login" class="login-btn-icon"></md-icon>
+            <md-icon md-svg-icon="login" class=""></md-icon>
         </md-button>
         <md-button ng-if="currentUser" ng-href="/me">
             <img ng-src="{{currentUser.photoUrl}}" class="avatar avatar-big" alt="{{currentUser.userName}}">

@@ -13,9 +13,9 @@ router.post('/auth', function(req, res, next) {
         if (err) {
             return next(err);
         }
-
         if (!user) {
-            res.status(404).json({
+            return res.status(404).json({
+                success: false,
                 message: 'user not found.'
             });
         }

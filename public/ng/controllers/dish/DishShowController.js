@@ -15,8 +15,7 @@ angular.module('spicyTaste')
 
         vm.createComment = function($event) {
             if (!$rootScope.currentUser) {
-                $scope.showLoginDialog($event, true, 'Login/SignUp first to leave a comment').then(function(user) {
-                    $rootScope.currentUser = user;
+                $scope.showLoginDialog($event, true, 'Login/SignUp first to leave a comment').then(function() {
                     saveComment();
                 });
             } else {
