@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .controller('DishShareController', function($scope, DishService, $location, $rootScope) {
+    .controller('DishShareController', function($scope, DishService, $location, $rootScope, $timeout) {
         'use strict';
         var vm = this;
         $scope.$on('logined', function() {
@@ -7,19 +7,37 @@ angular.module('spicyTaste')
         });
 
         function init() {
-            $scope.setMenuBar({});
-            vm.newReciptName = '';
+            $scope.setMenuBar({
+                primaryTheme: true
+            });
+            vm.newRecipt = {
+                name: '',
+                imageUrl: ''
+            };
             vm.showLogin = true;
             vm.isLogined = !angular.isUndefined($rootScope.currentUser) && $rootScope.currentUser !== null;
         }
 
         vm.create = function() {
-            DishService.create({
-                name: vm.newReciptName,
-                createdBy: $rootScope.currentUser._id
-            }).success(function(data) {
+            vm.newRecipt.createdBy = $rootScope.currentUser._id;
+            DishService.create(vm.newRecipt).success(function(data) {
                 $location.path('/me/dishes/' + data.dish._id);
             });
         };
+
+        vm.toggleLogin = function(show) {
+            if (show) {
+                vm.showSignUp = false;
+                $timeout(function() {
+                    vm.showLogin = true;
+                }, 250);
+            } else {
+                vm.showLogin = false;
+                $timeout(function() {
+                    vm.showSignUp = true;
+                }, 250);
+            }
+        };
+
         init();
     });

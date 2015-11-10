@@ -54,5 +54,7 @@ angular.module('spicyTaste')
             .icon('lock', 'svg/ic_lock_outline_48px.svg')
             .icon('user', 'svg/ic_person_outline_48px.svg')
             .icon('go', 'svg/ic_play_circle_fill_48px.svg')
-            .icon('send', 'svg/ic_send_48px.svg');
+            .icon('upload', 'svg/ic_cloud_upload_48px.svg')
+            .icon('send', 'svg/ic_send_48px.svg')
+            .icon('upload-error', 'svg/ic_cloud_off_48px.svg');
     });

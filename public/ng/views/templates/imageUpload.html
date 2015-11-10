@@ -1,0 +1,6 @@
+<div class="image-upload-container" layout layout-align="center center">
+    <input type="file" class="file" ng-disabled="uploadStatus.progress > 0" />
+    <md-icon md-svg-icon="upload" class="big-icon light-icon upload" ng-if="!uploadStatus.error && (uploadStatus.progress === 0 || uploadStatus.done)"></md-icon>
+    <md-progress-circular ng-if="!uploadStatus.error && uploadStatus.progress>0 && !uploadStatus.done" md-model="determinate" value="{{uploadStatus.progress}}"></md-progress-circular>
+    <md-icon md-svg-icon="upload-error" class="big-icon warn-color error" ng-if="uploadStatus.error"></md-icon>
+</div>

@@ -17,14 +17,6 @@ angular.module('spicyTaste')
             });
         };
 
-        vm.newRecipt = function() {
-            DishService.create({
-                name: 'new recipt'
-            }).success(function(data) {
-                $location.path('/me/dishes/' + data.dish._id);
-            });
-        };
-
         $scope.$on('onRepeatLast', function() {
             $timeout(function() {
                 $scope.showSpinner = false;

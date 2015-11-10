@@ -87,6 +87,12 @@ angular.module('spicyTaste')
             //get the dish by id
             DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
                 vm.dish = data;
+                console.log('dish', data);
+
+                var photoCount = vm.dish.photos.length;
+                for (var i = photoCount; i < 5; i++) {
+                    vm.dish.photos.push('');
+                }
             });
             vm.difficulties = DishService.getDifficulties();
         }

@@ -24,7 +24,7 @@
 <body ng-app="spicyTaste" layout-fill ng-controller="MainController as main" ng-cloak>
     <div class="top-menu-bar animation-block" layout="row" ng-hide="main.menuBar.hidden" ng-class="{'primary-bar': main.menuBar.primaryTheme}" layout-align="center center">
         <a ng-href="/" class="logo-link">
-            <img src="images/logo.png" alt="spicy taste" class="responsive-img"></img>
+            <!-- <img src="images/logo.png" alt="spicy taste" class="responsive-img"></img> -->
         </a>
         <span class="md-headline center-text">{{main.menuBar.text}}</span>
         <span flex></span>
@@ -45,7 +45,7 @@
     </div>
     <div class="main" ng-view>
     </div>
-    <div flex class="book-backdrop animate-show" ng-if="shownBook"></div>
+    <script type="text/javascript" src="assets/aws-sdk.min.js"></script>
     <script type="text/javascript" src="assets/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="assets/angular/angular.min.js"></script>
     <script type="text/javascript" src="assets/angular-route/angular-route.min.js"></script>

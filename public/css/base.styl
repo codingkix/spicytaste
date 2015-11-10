@@ -45,16 +45,26 @@ html, body{
 	color: light-font-color;
 }
 
-.medium-icon{
-	width:32px;
-	height:32px;
+.small-icon{
+	height: icon-size; 	//24px;
+	width: icon-size;
 }
 
-.social-icon{
-	height:32px;
-	width:32px;
-	color:light-font-color;
+.medium-icon{
+	width:(icon-size * 4/3);  //32px
+	height:(icon-size * 4/3);
 }
+
+.normal-icon{
+	width: (icon-size * 2);		//48px
+	height: (icon-size * 2);
+}
+
+.big-icon{
+	height: (icon-size * 8/3);   //64px;
+	width: (icon-size * 8/3);
+}
+
 
 .social-shares-container{
 	margin:20px 20px 20px 50px;
@@ -158,11 +168,6 @@ html>body .full-height-content{
 	height: 120px;
 	border-radius: 50%;
 	background-color: rgba(0,0,0,0.3);
-}
-
-.big-icon{
-	height: 48px;
-	width: 48px;
 }
 
 //mobile menu
@@ -375,6 +380,7 @@ html>body .full-height-content{
 	background-size:cover;
 	background-position:center;
 	background-repeat:no-repeat;
+	background-color: grey-background-color;
 	position: relative;
 	
 	h2{
@@ -382,6 +388,21 @@ html>body .full-height-content{
 		z-index:10;
 		line-height:2;
 	}
+}
+
+.blur-hero:before{
+	content: '';
+	position: absolute;
+	background: inherit;
+	width: 100%;
+	height: 100%;
+	filter: blur(10px);
+	-webkit-filter: blur(10px) brightness(0.55);
+}
+
+.blur-hero>*{
+	z-index: 2;
+	color: light-font-color!important;
 }
 
 .hero-mask{
@@ -404,46 +425,6 @@ html>body .full-height-content{
 	height:80px;
 }
 
-.favorite-icon{
-	position:absolute;
-	top:20px;
-	right: 20px;
-}
-
-.blog{
-	margin-bottom: 10px;
-	text-align: justify;
-}
-
-.step{
-	padding-right: 16px;
-}
-
-.dish-hero{
-	position:relative;
-}
-
-.share-buttons{
-	position:absolute;
-	bottom: 20px;
-	left: 20px;
-}
-
-.speed-menu{
-	position:fixed;
-	right: 20px;
-	bottom:40px;
-}
-
-.right-col img{
-	width: 100%;
-	border: 1px solid rgba(0,0,0,0.2)
-}
-
-.related-item{
-	margin-bottom: 10px;
-}
-
 //Dish All Page
 .list-item-container{
 	margin-bottom: 16px;
@@ -464,6 +445,25 @@ html>body .full-height-content{
 
 .plain-tag{
 	margin-right: 5px;
+}
+
+//Image Upload
+.image-upload-container{
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background-color: rgba(0,0,0,0.4);
+	
+	input[type="file"] {
+		cursor: pointer;
+		position: absolute;
+		top: 0;
+		left:0;
+		opacity: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 3;
+	}
 }
 
 //theme edit page

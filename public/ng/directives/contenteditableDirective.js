@@ -1,5 +1,6 @@
 angular.module('spicyTaste')
     .directive('contenteditable', function() {
+        'use strict';
         return {
             require: 'ngModel',
             restrict: 'A',

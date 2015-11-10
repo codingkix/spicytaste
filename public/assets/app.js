@@ -1,11 +1,13 @@
 angular.module('spicyTaste', ['ngRoute', 'angular-md5', 'ngMaterial', 'ngAnimate', 'ngMessages'])
     .constant('CONSTANTS', {
-        "FB_APP_ID": 1563567387253468,
-        "FACEBOOK": "FB",
-        "EMAIL": "EMAIL",
-        "SOCIAL_PASS": "P@ssw0rd",
-        "LOCAL_STORAGE_KEY": "spicyTasteUser",
-        "LATEST_COUNT": 10
+        'FB_APP_ID': 1563567387253468,
+        'FACEBOOK': 'FB',
+        'EMAIL': 'EMAIL',
+        'SOCIAL_PASS': 'P@ssw0rd',
+        'LOCAL_STORAGE_KEY': 'spicyTasteUser',
+        'LATEST_COUNT': 10,
+        'AWS_ACCESS_KEY': 'AKIAIFO27R4VCOI3X5PQ',
+        'AWS_SECRECT_KEY': 'pg7EfhmCaGh3NYSrX5phhPVd8D3Ixe5EfW1fsr7V'
     });
 
 angular.module('spicyTaste')
@@ -64,7 +66,9 @@ angular.module('spicyTaste')
             .icon('lock', 'svg/ic_lock_outline_48px.svg')
             .icon('user', 'svg/ic_person_outline_48px.svg')
             .icon('go', 'svg/ic_play_circle_fill_48px.svg')
-            .icon('send', 'svg/ic_send_48px.svg');
+            .icon('upload', 'svg/ic_cloud_upload_48px.svg')
+            .icon('send', 'svg/ic_send_48px.svg')
+            .icon('upload-error', 'svg/ic_cloud_off_48px.svg');
     }]);
 
 angular.module('spicyTaste')
@@ -429,14 +433,6 @@ angular.module('spicyTaste')
             });
         };
 
-        vm.newRecipt = function() {
-            DishService.create({
-                name: 'new recipt'
-            }).success(function(data) {
-                $location.path('/me/dishes/' + data.dish._id);
-            });
-        };
-
         $scope.$on('onRepeatLast', function() {
             $timeout(function() {
                 $scope.showSpinner = false;
@@ -459,6 +455,7 @@ angular.module('spicyTaste')
 
 angular.module('spicyTaste')
     .directive('contenteditable', function() {
+        'use strict';
         return {
             require: 'ngModel',
             restrict: 'A',
@@ -526,6 +523,54 @@ angular.module('spicyTaste')
             }
         };
     });
+
+angular.module('spicyTaste')
+    .directive('imageUpload', ["UtilityService", function(UtilityService) {
+        'use strict';
+        return {
+            restrict: 'E',
+            scope: {
+                image: '='
+            },
+            replace: true,
+            transclude: false,
+            templateUrl: 'ng/views/templates/imageUpload.html',
+            controller: ["$scope", function($scope) {
+                $scope.uploadStatus = {
+                    progress: 0,
+                    done: false,
+                    error: false,
+                    imageUrl: ''
+                };
+
+                $scope.changeUploadStatus = function(uploadStatus) {
+                    angular.extend($scope.uploadStatus, uploadStatus);
+
+                    if (uploadStatus.imageUrl && uploadStatus.imageUrl.trim() !== '') {
+                        $scope.image = uploadStatus.imageUrl;
+                    }
+
+                    $scope.$apply();
+                };
+            }],
+            link: function($scope, $elements) {
+
+                var fileBtn = $elements.find('input.file');
+
+                fileBtn.on('change', function(event) {
+                    $scope.changeUploadStatus({
+                        progress: 0,
+                        error: false,
+                        done: false
+                    });
+                    var files = event.target.files;
+                    var file = files[0];
+                    UtilityService.awsUpload(file, null, $scope.changeUploadStatus);
+                });
+
+            }
+        };
+    }]);
 
 angular.module('spicyTaste')
     .directive('onLastRepeat', ["$timeout", function($timeout) {
@@ -969,7 +1014,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .factory('UtilityService', function() {
+    .factory('UtilityService', ["CONSTANTS", "$timeout", function(CONSTANTS, $timeout) {
         'use strict';
 
         var utilityFactory = {};
@@ -994,125 +1039,74 @@ angular.module('spicyTaste')
                 }
             };
         };
-        return utilityFactory;
-    });
 
-angular.module('spicyTaste')
-    .controller('ThemeAdminEditController', ["ThemeService", "$routeParams", "$timeout", "DishService", function(ThemeService, $routeParams, $timeout, DishService) {
-        'use strict';
+        utilityFactory.awsUpload = function(file, folder, changeUploadStatus) {
 
-        var vm = this;
+            AWS.config.update({
+                accessKeyId: CONSTANTS.AWS_ACCESS_KEY,
+                secretAccessKey: CONSTANTS.AWS_SECRECT_KEY
+            });
 
-        vm.update = function() {
-            ThemeService.update(vm.theme._id, vm.theme).success(function(data) {
-                if (data.success) {
-                    vm.updateSuccess = true;
+            AWS.config.region = 'us-west-2';
+            console.log('aws config', AWS.config);
+
+            var bucketName = folder === null ? 'spicytaste-tmp-photos' : 'spicytaste-photos/' + folder;
+            var bucket = new AWS.S3({
+                params: {
+                    Bucket: bucketName
+                }
+            });
+
+            var params = {
+                Key: file.name,
+                ContentType: file.type,
+                Body: file,
+                ServerSideEncryption: 'AES256'
+            };
+
+            var request = bucket.putObject(params);
+            setTimeout(request.abort.bind(request), 5000); //abort the request after 5 sec
+
+            if (changeUploadStatus) {
+                request.on('httpError', function(err, response) {
+                    console.log('upload err', err);
+
+                    changeUploadStatus({
+                        error: true
+                    });
 
                     $timeout(function() {
-                        vm.updateSuccess = false;
-                    }, 800);
-                }
+                        changeUploadStatus({
+                            error: false
+                        });
+                    }, 300);
 
-            });
-        };
+                }).on('httpDone', function(response) {
+                    console.log('awsUpload done', response);
+                    changeUploadStatus({
+                        imageUrl: 'https://s3-us-west-2.amazonaws.com/' + bucketName + '/' + file.name
+                    });
 
-        vm.addDish = function(dish) {
-            vm.theme.components.push({
-                title: '',
-                displayOrder: vm.theme.components.length + 1,
-                dish: dish
-            });
-        };
+                    $timeout(function() {
+                        changeUploadStatus({
+                            done: true,
+                            progress: 0
+                        });
+                    }, 300);
 
-        vm.removeComponent = function(index) {
-            vm.theme.components.splice(index, 1);
-        };
+                }).on('httpUploadProgress', function(progress, response) {
+                    changeUploadStatus({
+                        progress: Math.round(progress.loaded / progress.total * 100)
+                    });
 
-        vm.getDisplayOrders = function() {
-            var orders = [];
-            for (var i = 0; i < vm.theme.components.length; i++) {
-                orders.push(i + 1);
+                }).on('error', function(response) {
+                    console.log('aws putObject error', response);
+                }).send();
+            } else {
+                return request;
             }
-
-            return orders;
         };
-
-        function init() {
-            vm.theme = {};
-            vm.dishes = [];
-
-            ThemeService.get($routeParams.id).success(function(data) {
-                vm.theme = data;
-            });
-
-            DishService.all().success(function(data) {
-                vm.dishes = data;
-            });
-        }
-
-        init();
-
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAdminListController', ["ThemeService", "$location", function(ThemeService, $location) {
-        'use strict';
-
-        var vm = this;
-
-        vm.create = function() {
-            ThemeService.create({
-                name: 'new theme'
-            }).success(function(data) {
-                $location.path('/admin/themes/' + data.theme._id);
-            });
-        };
-
-        function init() {
-            vm.themes = {};
-
-            ThemeService.getAll().success(function(data) {
-                vm.themes = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAllController', ["ThemeService", function(ThemeService) {
-        'use strict';
-        var vm = this;
-
-        function init() {
-            ThemeService.getAll().success(function(data) {
-                vm.themes = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeShowController', ["ThemeService", "$routeParams", function(ThemeService, $routeParams) {
-        'use strict';
-        var vm = this;
-
-        function init() {
-            vm.theme = {};
-            ThemeService.searchBy('name=' + $routeParams.name).success(function(data) {
-                if (data && data.length > 0) {
-                    vm.theme = data[0];
-                    vm.theme.slogans = vm.theme.slogan.split('|');
-                }
-            });
-
-            ThemeService.getOthers($routeParams.name, 3).then(function(data) {
-                vm.otherThemes = data;
-            });
-        }
-
-        init();
+        return utilityFactory;
     }]);
 
 angular.module('spicyTaste')
@@ -1279,6 +1273,12 @@ angular.module('spicyTaste')
             //get the dish by id
             DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
                 vm.dish = data;
+                console.log('dish', data);
+
+                var photoCount = vm.dish.photos.length;
+                for (var i = photoCount; i < 5; i++) {
+                    vm.dish.photos.push('');
+                }
             });
             vm.difficulties = DishService.getDifficulties();
         }
@@ -1331,7 +1331,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('DishShareController', ["$scope", "DishService", "$location", "$rootScope", function($scope, DishService, $location, $rootScope) {
+    .controller('DishShareController', ["$scope", "DishService", "$location", "$rootScope", "$timeout", function($scope, DishService, $location, $rootScope, $timeout) {
         'use strict';
         var vm = this;
         $scope.$on('logined', function() {
@@ -1339,20 +1339,38 @@ angular.module('spicyTaste')
         });
 
         function init() {
-            $scope.setMenuBar({});
-            vm.newReciptName = '';
+            $scope.setMenuBar({
+                primaryTheme: true
+            });
+            vm.newRecipt = {
+                name: '',
+                imageUrl: ''
+            };
             vm.showLogin = true;
             vm.isLogined = !angular.isUndefined($rootScope.currentUser) && $rootScope.currentUser !== null;
         }
 
         vm.create = function() {
-            DishService.create({
-                name: vm.newReciptName,
-                createdBy: $rootScope.currentUser._id
-            }).success(function(data) {
+            vm.newRecipt.createdBy = $rootScope.currentUser._id;
+            DishService.create(vm.newRecipt).success(function(data) {
                 $location.path('/me/dishes/' + data.dish._id);
             });
         };
+
+        vm.toggleLogin = function(show) {
+            if (show) {
+                vm.showSignUp = false;
+                $timeout(function() {
+                    vm.showLogin = true;
+                }, 250);
+            } else {
+                vm.showLogin = false;
+                $timeout(function() {
+                    vm.showSignUp = true;
+                }, 250);
+            }
+        };
+
         init();
     }]);
 
@@ -1494,6 +1512,124 @@ angular.module('spicyTaste')
             //get dish's comments count
             CommentService.countByDish($routeParams.dishId).success(function(data) {
                 vm.commentsCount = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAdminEditController', ["ThemeService", "$routeParams", "$timeout", "DishService", function(ThemeService, $routeParams, $timeout, DishService) {
+        'use strict';
+
+        var vm = this;
+
+        vm.update = function() {
+            ThemeService.update(vm.theme._id, vm.theme).success(function(data) {
+                if (data.success) {
+                    vm.updateSuccess = true;
+
+                    $timeout(function() {
+                        vm.updateSuccess = false;
+                    }, 800);
+                }
+
+            });
+        };
+
+        vm.addDish = function(dish) {
+            vm.theme.components.push({
+                title: '',
+                displayOrder: vm.theme.components.length + 1,
+                dish: dish
+            });
+        };
+
+        vm.removeComponent = function(index) {
+            vm.theme.components.splice(index, 1);
+        };
+
+        vm.getDisplayOrders = function() {
+            var orders = [];
+            for (var i = 0; i < vm.theme.components.length; i++) {
+                orders.push(i + 1);
+            }
+
+            return orders;
+        };
+
+        function init() {
+            vm.theme = {};
+            vm.dishes = [];
+
+            ThemeService.get($routeParams.id).success(function(data) {
+                vm.theme = data;
+            });
+
+            DishService.all().success(function(data) {
+                vm.dishes = data;
+            });
+        }
+
+        init();
+
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAdminListController', ["ThemeService", "$location", function(ThemeService, $location) {
+        'use strict';
+
+        var vm = this;
+
+        vm.create = function() {
+            ThemeService.create({
+                name: 'new theme'
+            }).success(function(data) {
+                $location.path('/admin/themes/' + data.theme._id);
+            });
+        };
+
+        function init() {
+            vm.themes = {};
+
+            ThemeService.getAll().success(function(data) {
+                vm.themes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAllController', ["ThemeService", function(ThemeService) {
+        'use strict';
+        var vm = this;
+
+        function init() {
+            ThemeService.getAll().success(function(data) {
+                vm.themes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeShowController', ["ThemeService", "$routeParams", function(ThemeService, $routeParams) {
+        'use strict';
+        var vm = this;
+
+        function init() {
+            vm.theme = {};
+            ThemeService.searchBy('name=' + $routeParams.name).success(function(data) {
+                if (data && data.length > 0) {
+                    vm.theme = data[0];
+                    vm.theme.slogans = vm.theme.slogan.split('|');
+                }
+            });
+
+            ThemeService.getOthers($routeParams.name, 3).then(function(data) {
+                vm.otherThemes = data;
             });
         }
 

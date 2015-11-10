@@ -1,19 +1,9 @@
 @import 'mixins'
 
 .recipt-share-hero{
-	background-color: grey-background-color;
 	background-image: url('../images/share-hero.jpg');
 }
 
-.recipt-share-hero:before{
-	content: '';
-	position: absolute;
-	background: inherit;
-	width: 100%;
-	height: 100%;
-	filter: blur(10px);
-	-webkit-filter: blur(10px) brightness(0.55);
-}
 .msg-container{
 	min-height: 42px;
 }
@@ -21,6 +11,15 @@
 .recipt-share-hero>*{
 	z-index:2;
 	color: light-font-color;
+}
+
+.new-recipt-image{
+	width: 320px;
+	height: 320px;
+	border: 1px solid rgba(250,250,250,0.3);
+	background-size: cover;
+	background-position: center;
+	box-sizing: border-box;
 }
 
 .share-recipt-form{
@@ -34,13 +33,14 @@
 		background:none;
 		margin-bottom: 10px;
 		
-		&.ng-valid.ng-touched{
-			border-bottom: 1px solid theme-color;
-		}
-		
 		&.ng-invalid.ng-touched{
 			border-bottom: 1px solid warn-color;
 		}
+	}
+	
+	button{
+		border: 1px solid rgba(250,250,250,0.3);
+		margin: 6px 0;
 	}
 }
 
