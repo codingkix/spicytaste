@@ -1,96 +1,94 @@
 angular.module('spicyTaste')
-    .controller('DishEditController', function($scope, $mdDialog, $routeParams, DishService, $location, $timeout) {
+    .controller('DishEditController', function($scope, $mdDialog, $mdToast, $routeParams, DishService, $location, $timeout) {
         'use strict';
         var vm = this;
 
-        vm.saveDish = function() {
-            DishService.update($routeParams.dishId, vm.dish).success(function(data) {
-                if (data.success) {
-                    vm.updateSuccess = true;
-                }
-                $timeout(function() {
-                    vm.updateSuccess = false;
-                }, 1000);
-            });
+        vm.submitNext = function(formDirty) {
+            if (formDirty) {
+                DishService.update($routeParams.dishId, vm.dish).success(function(result) {
+                    if (result.success) {
+                        showStatusToast(true, 'Recipt Info Is Updated.');
+                        changeWizardStatus();
+
+                    } else {
+                        showStatusToast(false, 'Error, please try again.');
+                    }
+                });
+            } else {
+                changeWizardStatus();
+            }
+
         };
-        vm.removeInstruction = function(index) {
-            console.log('instructions', vm.dish.instructions[index]);
-            DishService.removeInstruction($routeParams.dishId, vm.dish.instructions[index]._id).success(function(data) {
-                vm.dish.instructions.splice(index, 1);
+
+        vm.submitPhotos = function() {
+            DishService.submitPhotos($routeParams.dishId, vm.dish.photos).success(function(result) {
+                if (result.success) {
+                    if (vm.wizardMode) {
+                        vm.wizardMode = false;
+                    }
+                    vm.showBottomSheet = false;
+                    showStatusToast(true, 'Recipt Photos Are Updated.');
+                } else {
+                    showStatusToast(false, 'Error, please try again.');
+                }
             });
         };
 
         vm.removePhoto = function(index) {
-            vm.dish.photos.splice(index, 1);
-            vm.saveDish();
+            vm.dish.photos[index] = '';
         };
 
-        vm.showAddPhotoDialog = function(evn) {
-            $mdDialog.show({
-                targetEvent: evn,
-                controller: photoDialogController,
-                controllerAs: 'photoDlg',
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/addPhoto.html'
-            }).then(function(newPhoto) {
-                vm.dish.photos.push(newPhoto);
-                vm.saveDish();
-            });
-        };
-
-        vm.showAddInstructionDialog = function(evn) {
-            $mdDialog.show({
-                targetEvent: evn,
-                controller: instructionDialogController,
-                controllerAs: 'instructionDlg',
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/addInstruction.html'
-            }).then(function(newInstruction) {
-                vm.dish.instructions.push(newInstruction);
-                DishService.addInstruction($routeParams.dishId, newInstruction).success(function(data) {
-
-                });
-            });
-        };
-
-        function photoDialogController($mdDialog) {
-            var dvm = this;
-            dvm.newPhoto = '';
-
-            dvm.closeDialog = function() {
-                $mdDialog.cancel();
-            };
-            dvm.submit = function() {
-                $mdDialog.hide(dvm.newPhoto);
-            };
+        function changeWizardStatus() {
+            if (vm.wizardMode) {
+                if (vm.showRightPanel) {
+                    vm.showBottomSheet = true;
+                    vm.showHeroButtons = true;
+                } else if (vm.showLeftPanel) {
+                    vm.showRightPanel = true;
+                }
+            }
         }
 
-        function instructionDialogController($mdDialog) {
-            var dvm = this;
-
-            dvm.newInstruction = {
-                photo: '',
-                text: ''
-            };
-
-            dvm.closeDialog = function() {
-                $mdDialog.cancel();
-            };
-
-            dvm.submit = function() {
-                $mdDialog.hide(dvm.newInstruction);
-            };
+        function showStatusToast(isSuccess, message) {
+            $mdToast.show({
+                controller: function($scope) {
+                    $scope.content = message;
+                    $scope.isSuccess = isSuccess;
+                },
+                templateUrl: 'ng/views/templates/toast.html',
+                hideDelay: 2000,
+                position: 'top right'
+            });
         }
 
         function init() {
             $scope.setMenuBar({});
+
+            vm.showBottomSheet = false;
+
+            //prevent error logs by md-chips
+            vm.dish = {
+                tags: [],
+                ingredients: []
+            };
+
+            if ($location.search().wizardMode === 'true') {
+                vm.wizardMode = true;
+            }
+
+            $timeout(function() {
+                vm.showLeftPanel = true;
+            }, 500);
+
             //get the dish by id
             DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
                 vm.dish = data;
-                console.log('dish', data);
 
+                if (!vm.dish.photos) {
+                    vm.dish.photos = [];
+                }
                 var photoCount = vm.dish.photos.length;
-                for (var i = photoCount; i < 5; i++) {
+                for (var i = photoCount; i < 4; i++) {
                     vm.dish.photos.push('');
                 }
             });
