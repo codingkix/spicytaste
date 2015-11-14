@@ -1,0 +1,50 @@
+<div layout="column">
+    <div class="page-hero blur-hero instruction-edit-hero" layout style="background-image: url('{{instructionEdit.dish.imageUrl}}')">
+        <div flex class="hero-mask" layout="column" layout-align="center center">
+            <a href="/dishes/{{instructionEdit.dish._id}}">
+                <img class="circle-img" ng-src="{{instructionEdit.dish.imageUrl}}" alt="instruction.dish.name" />
+            </a>
+            <h3 class="headline">{{instructionEdit.dish.name}}</h3>
+        </div>
+    </div>
+    <div class="light-bg instruction-tabs-container" ng-cloak flex layout="column">
+        <md-tabs md-dynamic-height flex md-autoselect>
+            <md-tab ng-repeat="instruction in instructionEdit.dish.instructions track by $index">
+                <md-tab-label>
+                    <span>{{$index+1}}</span>
+                </md-tab-label>
+                <md-tab-body>
+                    <div class="instruction-content">
+                        <div class="page-hero image-container" style="background-image: url('{{instruction.photo}}')">
+                            <image-upload image="instructionEdit.dish.instructions[$index].photo"></image-upload>
+                            <div ng-if="instruction.showTips" layout class="sticky-note-container animate-if">
+                                <div ng-if="$odd" class="dummy-note"></div>
+                                <div flex>
+                                    <md-icon md-svg-icon="pin"></md-icon>
+                                    <span class="md-title">Tips:</span>
+                                    <p contenteditable ng-model="instructionEdit.dish.instructions[$index].tips"></p>
+                                </div>
+                            </div>
+                            <md-button ng-if="!instruction.showTips" class="md-fab md-primary" ng-click="instruction.showTips = true">
+                                <md-icon md-svg-icon="tips" class="medium-icon"></md-icon>
+                            </md-button>
+                        </div>
+                        <div class="text-container" layout="column" layout-align="center end">
+                            <div flex layout>
+                                <p flex contenteditable ng-model="instructionEdit.dish.instructions[$index].text"></p>
+                            </div>
+                            <md-button ng-click="instructionEdit.save($index)" class="md-primary md-raised">Save</md-button>
+                        </div>
+                    </div>
+                </md-tab-body>
+            </md-tab>
+            <md-tab md-on-select="instructionEdit.add()">
+                <md-tab-label>
+                    <span>+</span>
+                </md-tab-label>
+                <md-tab-body>
+                </md-tab-body>
+            </md-tab>
+        </md-tabs>
+    </div>
+</div>
