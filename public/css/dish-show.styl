@@ -47,12 +47,16 @@
 .sticky-note-container{
 	margin-top: 160px;
 	margin-bottom: 20px;
-	
+
+	.dummy-note{
+		display:none;
+	}
+		
 	&>div{
 		margin: 12px;
 		position: relative;
 		color: dark-font-color;
-		font-family: 'Reenie Beanie', cursive;
+		font-family: handwriting-font;
 		min-height: 10em;
 		width: 12em;
 		padding:20px;
@@ -204,11 +208,6 @@
 	height:130px;
 	
 	textarea{
-		height:100%;
-		outline: none;
-		resize: none;
-		background:none;
-		border: 0;
 		color: light-font-color;
 	}
 }
