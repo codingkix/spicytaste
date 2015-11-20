@@ -13,8 +13,6 @@ angular.module('spicyTaste')
         };
 
         $scope.showLoginDialog = function(ev, postLogin, title) {
-            console.log('title', title);
-
             var promise = $mdDialog.show({
                 clickOutsideToClose: true,
                 templateUrl: 'ng/views/dialogs/login.html',
@@ -45,7 +43,7 @@ angular.module('spicyTaste')
             if (loginedToken) {
                 console.log('token', loginedToken);
                 $http.defaults.headers.common['X-Auth'] = loginedToken;
-                UserService.getCurrentUser().then(function(user) {
+                UserService.getCurrentUser().success(function(user) {
                     $rootScope.currentUser = user;
                 });
             }

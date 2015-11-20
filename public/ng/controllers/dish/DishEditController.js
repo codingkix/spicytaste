@@ -1,23 +1,25 @@
 angular.module('spicyTaste')
-    .controller('DishEditController', function($scope, $mdDialog, $mdToast, $routeParams, DishService, $location, $timeout) {
+    .controller('DishEditController', function(UtilityService, $scope, $mdDialog, $mdToast, $routeParams, DishService, $location, $timeout) {
         'use strict';
         var vm = this;
 
         vm.submitNext = function(formDirty) {
-            if (formDirty) {
-                DishService.update($routeParams.dishId, vm.dish).success(function(result) {
-                    if (result.success) {
-                        showStatusToast(true, 'Recipt Info Is Updated.');
-                        changeWizardStatus();
 
-                    } else {
-                        showStatusToast(false, 'Error, please try again.');
-                    }
+            //form.$dirty can't track md-chips
+            if (!formDirty) {
+                formDirty = vm.dish.tags.length !== vm.initialTagCount || vm.dish.ingredients.length !== vm.initialIngredientCount;
+            }
+
+            if (formDirty) {
+                DishService.update($routeParams.dishId, vm.dish).success(function() {
+                    UtilityService.showStatusToast(true, 'Recipt Info Is Updated.');
+                    changeWizardStatus();
+                }).error(function() {
+                    UtilityService.showStatusToast(false, 'Error, please try again.');
                 });
             } else {
                 changeWizardStatus();
             }
-
         };
 
         vm.submitPhotos = function() {
@@ -27,9 +29,9 @@ angular.module('spicyTaste')
                         vm.wizardMode = false;
                     }
                     vm.showBottomSheet = false;
-                    showStatusToast(true, 'Recipt Photos Are Updated.');
+                    UtilityService.showStatusToast(true, 'Recipt Photos Are Saved.');
                 } else {
-                    showStatusToast(false, 'Error, please try again.');
+                    UtilityService.showStatusToast(false, 'Error, please try again.');
                 }
             });
         };
@@ -47,18 +49,6 @@ angular.module('spicyTaste')
                     vm.showRightPanel = true;
                 }
             }
-        }
-
-        function showStatusToast(isSuccess, message) {
-            $mdToast.show({
-                controller: function($scope) {
-                    $scope.content = message;
-                    $scope.isSuccess = isSuccess;
-                },
-                templateUrl: 'ng/views/templates/toast.html',
-                hideDelay: 2000,
-                position: 'top right'
-            });
         }
 
         function init() {
@@ -81,7 +71,7 @@ angular.module('spicyTaste')
             }, 500);
 
             //get the dish by id
-            DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
+            DishService.get($routeParams.dishId).success(function(data) {
                 vm.dish = data;
 
                 if (!vm.dish.photos) {
@@ -93,6 +83,8 @@ angular.module('spicyTaste')
                 }
             });
             vm.difficulties = DishService.getDifficulties();
+            vm.initialTagCount = vm.dish.tags.length;
+            vm.initialIngredientCount = vm.dish.ingredients.length;
         }
 
         init();

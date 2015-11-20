@@ -21,7 +21,7 @@ angular.module('spicyTaste')
         vm.create = function() {
             vm.newRecipt.createdBy = $rootScope.currentUser._id;
             DishService.create(vm.newRecipt).success(function(data) {
-                $location.path('/me/dishes/' + data.dish._id);
+                $location.path('/me/dishes/' + data.dish._id + '?wizardMode=true');
             });
         };
 

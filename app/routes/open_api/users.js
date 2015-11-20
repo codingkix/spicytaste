@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../../models/user');
 var bcrypt = require('bcrypt');
+var utils = require('../../utils');
 
 //search user by field
 router.get('/users', function(req, res, next) {
@@ -36,20 +37,18 @@ router.get('/users', function(req, res, next) {
     });
 });
 
-//save a new user
+//create a new user
 router.post('/users', function(req, res, next) {
     'use strict';
-    var user = new User({
-        userName: req.body.userName,
-        email: req.body.email,
-        photoUrl: req.body.photoUrl,
-        linkedSocial: req.body.linkedSocial
-    });
+    var user = new User(req.body);
     bcrypt.hash(req.body.password, 10, function(err, hash) {
         if (err) {
             return next(err);
         }
         user.password = hash;
+        user.role = utils.roles.reader;
+        user.lastLogin = Date.now();
+
         user.save(function(err) {
             if (err) {
                 return next(err);

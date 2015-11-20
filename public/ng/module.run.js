@@ -7,7 +7,8 @@ angular.module('spicyTaste')
                 appId: CONSTANTS.FB_APP_ID,
                 cookie: true, // enable cookies to allow the server to access the session
                 xfbml: true, // parse social plugins on this page
-                version: 'v2.2' // use version 2.2
+                status: true,
+                version: 'v2.5'
             });
         };
 
@@ -28,7 +29,18 @@ angular.module('spicyTaste')
             if (next && next.access) {
                 UserService.authorize(next.access.requirePermissions).then(function(result) {
                     if (!result) {
+                        if (next.access.requirePermissions.indexOf('ADMIN') >= 0) {
+                            $location.path('not-authorize').replace();
+                        } else {
+                            $location.path('/share').replace();
+                        }
+                    }
+                }, function(result) {
+                    console.log('result', result);
+                    if (next.access.requirePermissions.indexOf('ADMIN') >= 0) {
                         $location.path('not-authorize').replace();
+                    } else {
+                        $location.path('/share').replace();
                     }
                 });
             }

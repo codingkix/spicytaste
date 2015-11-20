@@ -8,21 +8,25 @@
         </div>
     </div>
     <div class="light-bg instruction-tabs-container" ng-cloak flex layout="column">
-        <md-tabs md-dynamic-height flex md-autoselect>
+        <md-tabs md-dynamic-height flex md-autoselect md-border-bottom>
             <md-tab ng-repeat="instruction in instructionEdit.dish.instructions track by $index">
                 <md-tab-label>
-                    <span>{{$index+1}}</span>
+                    <span class="step-tab">{{$index+1}}</span>
                 </md-tab-label>
                 <md-tab-body>
                     <div class="instruction-content">
                         <div class="page-hero image-container" style="background-image: url('{{instruction.photo}}')">
-                            <image-upload image="instructionEdit.dish.instructions[$index].photo"></image-upload>
+                            <div class="hero-mask" layout layout-align="center">
+                                <div flex="40" layout="column">
+                                    <image-upload image="instructionEdit.dish.instructions[$index].photo"></image-upload>
+                                </div>
+                            </div>
                             <div ng-if="instruction.showTips" layout class="sticky-note-container animate-if">
                                 <div ng-if="$odd" class="dummy-note"></div>
-                                <div flex>
+                                <div flex layout="column">
                                     <md-icon md-svg-icon="pin"></md-icon>
                                     <span class="md-title">Tips:</span>
-                                    <p contenteditable ng-model="instructionEdit.dish.instructions[$index].tips"></p>
+                                    <textarea flex ng-trim="true" ng-model="instructionEdit.dish.instructions[$index].tips"></textarea>
                                 </div>
                             </div>
                             <md-button ng-if="!instruction.showTips" class="md-fab md-primary" ng-click="instruction.showTips = true">
@@ -31,16 +35,19 @@
                         </div>
                         <div class="text-container" layout="column" layout-align="center end">
                             <div flex layout>
-                                <p flex contenteditable ng-model="instructionEdit.dish.instructions[$index].text"></p>
+                                <textarea autofocus ng-trim="true" rows="4" columns="1" ng-model="instructionEdit.dish.instructions[$index].text"></textarea>
                             </div>
-                            <md-button ng-click="instructionEdit.save($index)" class="md-primary md-raised">Save</md-button>
+                            <div layout>
+                                <md-button ng-click="instructionEdit.remove($index)" class="md-raised">Remove</md-button>
+                                <md-button ng-click="instructionEdit.save($index)" ng-disabled="!instruction.text || instruction.text.trim().length == 0" class="md-primary md-raised">Save</md-button>
+                            </div>
                         </div>
                     </div>
                 </md-tab-body>
             </md-tab>
             <md-tab md-on-select="instructionEdit.add()">
                 <md-tab-label>
-                    <span>+</span>
+                    <span class="step-tab">+</span>
                 </md-tab-label>
                 <md-tab-body>
                 </md-tab-body>

@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .controller('LoginController', function($injector, $rootScope, $scope, $mdDialog, UserService, md5, CONSTANTS, $http, SessionService) {
+    .controller('LoginController', function($rootScope, $scope, $mdDialog, UserService, md5, CONSTANTS, $http, SessionService) {
         'use strict';
 
         var vm = this;
@@ -12,14 +12,16 @@ angular.module('spicyTaste')
                         var fbUser = {
                             userName: response.name,
                             email: response.email,
-                            password: CONSTANTS.SOCIAL_PASS,
                             photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
-                            linkedSocial: CONSTANTS.FACEBOOK
+                            facebook: {
+                                id: response.id
+                            }
                         };
 
-                        UserService.socialLogin(fbUser).then(function(user) {
-                            user.loginType = CONSTANTS.FACEBOOK;
-                            afterAuth(user);
+                        UserService.fbLogin(fbUser).then(function(response) {
+                            afterAuth(response.data);
+                        }, function() {
+                            vm.loginFailed = true;
                         });
 
                     });
@@ -35,9 +37,8 @@ angular.module('spicyTaste')
         };
 
         vm.login = function() {
-            UserService.login(vm.email, vm.password).then(function(user) {
-                user.loginType = CONSTANTS.EMAIL;
-                afterAuth(user);
+            UserService.login(vm.email, vm.password).then(function(response) {
+                afterAuth(response.data);
             }, function() {
                 vm.loginFailed = true;
             });
@@ -48,13 +49,11 @@ angular.module('spicyTaste')
                 userName: vm.userName,
                 email: vm.email,
                 password: vm.password,
-                photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(vm.email),
-                linkedSocial: CONSTANTS.EMAIL
+                photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(vm.email)
             };
 
-            UserService.create(newUser).then(function(user) {
-                user.loginType = CONSTANTS.EMAIL;
-                afterAuth(user);
+            UserService.create(newUser).then(function(response) {
+                afterAuth(response.data);
             });
 
         };
@@ -67,10 +66,12 @@ angular.module('spicyTaste')
             vm.loginFailed = false;
         }
 
-        function afterAuth(user) {
-            var token = $http.defaults.headers.common['X-Auth'];
-            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, token);
-            $rootScope.currentUser = user;
+        function afterAuth(result) {
+            console.log('login result', result);
+
+            $http.defaults.headers.common['X-Auth'] = result.token;
+            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, result.token);
+            $rootScope.currentUser = result.user;
             $mdDialog.hide();
         }
 

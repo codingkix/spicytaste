@@ -68,7 +68,8 @@ angular.module('spicyTaste')
             .icon('go', 'svg/ic_play_circle_fill_48px.svg')
             .icon('upload', 'svg/ic_cloud_upload_48px.svg')
             .icon('send', 'svg/ic_send_48px.svg')
-            .icon('upload-error', 'svg/ic_cloud_off_48px.svg');
+            .icon('upload-error', 'svg/ic_cloud_off_48px.svg')
+            .icon('tips', 'svg/ic_note_add_48px.svg');
     }]);
 
 angular.module('spicyTaste')
@@ -80,7 +81,8 @@ angular.module('spicyTaste')
                 appId: CONSTANTS.FB_APP_ID,
                 cookie: true, // enable cookies to allow the server to access the session
                 xfbml: true, // parse social plugins on this page
-                version: 'v2.2' // use version 2.2
+                status: true,
+                version: 'v2.5'
             });
         };
 
@@ -101,7 +103,18 @@ angular.module('spicyTaste')
             if (next && next.access) {
                 UserService.authorize(next.access.requirePermissions).then(function(result) {
                     if (!result) {
+                        if (next.access.requirePermissions.indexOf('ADMIN') >= 0) {
+                            $location.path('not-authorize').replace();
+                        } else {
+                            $location.path('/share').replace();
+                        }
+                    }
+                }, function(result) {
+                    console.log('result', result);
+                    if (next.access.requirePermissions.indexOf('ADMIN') >= 0) {
                         $location.path('not-authorize').replace();
+                    } else {
+                        $location.path('/share').replace();
                     }
                 });
             }
@@ -161,7 +174,19 @@ angular.module('spicyTaste')
             .when('/me/dishes/:dishId', {
                 templateUrl: 'ng/views/pages/dish/edit.html',
                 controller: 'DishEditController',
-                controllerAs: 'dishManage'
+                controllerAs: 'dishManage',
+                access: {
+                    requirePermissions: ['READER']
+                }
+            })
+            //edit dish instructions page
+            .when('/me/dishes/:dishId/instructions', {
+                templateUrl: 'ng/views/pages/dish/edit-instructions.html',
+                controller: 'DishEditInstructionController',
+                controllerAs: 'instructionEdit',
+                access: {
+                    requirePermissions: ['READER']
+                }
             })
             //login user
             .when('/login', {
@@ -173,7 +198,10 @@ angular.module('spicyTaste')
             .when('/me', {
                 templateUrl: 'ng/views/pages/user/me.html',
                 controller: 'ProfileController',
-                controllerAs: 'profile'
+                controllerAs: 'profile',
+                access: {
+                    requirePermissions: ['READER']
+                }
             })
             .when('/not-authorize', {
                 templateUrl: 'ng/views/pages/not-authorize.html'
@@ -181,7 +209,7 @@ angular.module('spicyTaste')
             .when('/admin', {
                 templateUrl: '/ng/views/pages/admin/index.html',
                 access: {
-                    requirePermissions: ['Admin']
+                    requirePermissions: ['ADMIN']
                 }
             })
             //list admin themes page
@@ -190,7 +218,7 @@ angular.module('spicyTaste')
                 controller: 'ThemeAdminListController',
                 controllerAs: 'themeList',
                 access: {
-                    requirePermissions: ['Admin']
+                    requirePermissions: ['ADMIN']
                 }
             })
             //edit a theme page
@@ -199,14 +227,17 @@ angular.module('spicyTaste')
                 controller: 'ThemeAdminEditController',
                 controllerAs: 'themeEdit',
                 access: {
-                    requirePermissions: ['Admin']
+                    requirePermissions: ['AdMIN']
                 }
             })
             //list admin dish page
             .when('/admin/dishes', {
                 templateUrl: 'ng/views/pages/admin/dish/list.html',
                 controller: 'DishAdminListController',
-                controllerAs: 'dishList'
+                controllerAs: 'dishList',
+                access: {
+                    requirePermissions: ['ADMIN']
+                }
             });
     }]);
 
@@ -280,7 +311,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('LoginController', ["$injector", "$rootScope", "$scope", "$mdDialog", "UserService", "md5", "CONSTANTS", "$http", "SessionService", function($injector, $rootScope, $scope, $mdDialog, UserService, md5, CONSTANTS, $http, SessionService) {
+    .controller('LoginController', ["$rootScope", "$scope", "$mdDialog", "UserService", "md5", "CONSTANTS", "$http", "SessionService", function($rootScope, $scope, $mdDialog, UserService, md5, CONSTANTS, $http, SessionService) {
         'use strict';
 
         var vm = this;
@@ -293,14 +324,16 @@ angular.module('spicyTaste')
                         var fbUser = {
                             userName: response.name,
                             email: response.email,
-                            password: CONSTANTS.SOCIAL_PASS,
                             photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
-                            linkedSocial: CONSTANTS.FACEBOOK
+                            facebook: {
+                                id: response.id
+                            }
                         };
 
-                        UserService.socialLogin(fbUser).then(function(user) {
-                            user.loginType = CONSTANTS.FACEBOOK;
-                            afterAuth(user);
+                        UserService.fbLogin(fbUser).then(function(response) {
+                            afterAuth(response.data);
+                        }, function() {
+                            vm.loginFailed = true;
                         });
 
                     });
@@ -316,9 +349,8 @@ angular.module('spicyTaste')
         };
 
         vm.login = function() {
-            UserService.login(vm.email, vm.password).then(function(user) {
-                user.loginType = CONSTANTS.EMAIL;
-                afterAuth(user);
+            UserService.login(vm.email, vm.password).then(function(response) {
+                afterAuth(response.data);
             }, function() {
                 vm.loginFailed = true;
             });
@@ -329,13 +361,11 @@ angular.module('spicyTaste')
                 userName: vm.userName,
                 email: vm.email,
                 password: vm.password,
-                photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(vm.email),
-                linkedSocial: CONSTANTS.EMAIL
+                photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(vm.email)
             };
 
-            UserService.create(newUser).then(function(user) {
-                user.loginType = CONSTANTS.EMAIL;
-                afterAuth(user);
+            UserService.create(newUser).then(function(response) {
+                afterAuth(response.data);
             });
 
         };
@@ -348,10 +378,12 @@ angular.module('spicyTaste')
             vm.loginFailed = false;
         }
 
-        function afterAuth(user) {
-            var token = $http.defaults.headers.common['X-Auth'];
-            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, token);
-            $rootScope.currentUser = user;
+        function afterAuth(result) {
+            console.log('login result', result);
+
+            $http.defaults.headers.common['X-Auth'] = result.token;
+            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, result.token);
+            $rootScope.currentUser = result.user;
             $mdDialog.hide();
         }
 
@@ -373,8 +405,6 @@ angular.module('spicyTaste')
         };
 
         $scope.showLoginDialog = function(ev, postLogin, title) {
-            console.log('title', title);
-
             var promise = $mdDialog.show({
                 clickOutsideToClose: true,
                 templateUrl: 'ng/views/dialogs/login.html',
@@ -405,7 +435,7 @@ angular.module('spicyTaste')
             if (loginedToken) {
                 console.log('token', loginedToken);
                 $http.defaults.headers.common['X-Auth'] = loginedToken;
-                UserService.getCurrentUser().then(function(user) {
+                UserService.getCurrentUser().success(function(user) {
                     $rootScope.currentUser = user;
                 });
             }
@@ -427,6 +457,10 @@ angular.module('spicyTaste')
         };
 
         vm.getRecipts = function() {
+            if (vm.reciptsCount === 0) {
+                return;
+            }
+
             $scope.showSpinner = true;
             DishService.searchByAuthor($rootScope.currentUser._id).success(function(data) {
                 vm.allRecipts = data;
@@ -446,6 +480,9 @@ angular.module('spicyTaste')
 
             UserService.getProfile().success(function(data) {
                 vm.user = data.user;
+                for (var i = 0; i < vm.user.favouriteDishes.length; i++) {
+                    vm.user.favouriteDishes[i].difficultyText = DishService.getDifficultyText(vm.user.favouriteDishes[i].difficulty);
+                }
                 vm.reciptsCount = data.reciptsCount;
             });
         }
@@ -670,9 +707,28 @@ angular.module('spicyTaste')
             restrict: 'E',
             replace: true,
             templateUrl: 'ng/views/templates/socialShares.html',
+            scope: {
+                recipt: '='
+            },
             link: function($scope, $element, $attr) {
-                $element.find('#btnFB').click(function() {
-                    SocialService.fbShare($location.absUrl());
+                $scope.$watch('recipt', function(newVal) {
+                    if (newVal.name) {
+                        var recipt = newVal;
+                        recipt.description = recipt.blog.length > 200 ? recipt.blog.substring(0, 200) + '...' : recipt.blog;
+
+                        $element.find('#btnFB').click(function() {
+                            var shareObj = {
+                                picture: recipt.imageUrl,
+                                caption: recipt.name,
+                                description: recipt.description,
+                                redirect_uri: $location.absUrl()
+                            };
+                            if ($location.absUrl().indexOf('localhost') < 0) {
+                                shareObj.link = $location.absUrl();
+                            }
+                            SocialService.fbShare(shareObj);
+                        });
+                    }
                 });
 
                 //TODO: other shares
@@ -798,6 +854,11 @@ angular.module('spicyTaste')
             return $http.put(baseUrl + dishId, dish);
         };
 
+        //update dish photos
+        dishFactory.submitPhotos = function(dishId, photos) {
+            return $http.put(baseUrl + dishId + '/photos', photos);
+        };
+
         //delete a dish
         dishFactory.delete = function(dishId) {
             return $http.delete(baseUrl + dishId);
@@ -818,6 +879,11 @@ angular.module('spicyTaste')
             return $http.post(baseUrl + dishId + '/instructions', instruction);
         };
 
+        //update a instruction
+        dishFactory.updateInstruction = function(instruction) {
+            return $http.put('/api/instructions/' + instruction._id, instruction);
+        };
+
         //remove an instruction
         dishFactory.removeInstruction = function(dishId, instructionId) {
             return $http.delete(baseUrl + dishId + '/instructions/' + instructionId);
@@ -826,6 +892,11 @@ angular.module('spicyTaste')
         //get difficulty
         dishFactory.getDifficulties = function() {
             return ['初学', '容易', '一般', '较难', '专业'];
+        };
+
+        //get difficulty text
+        dishFactory.getDifficultyText = function(level) {
+            return dishFactory.getDifficulties()[level - 1];
         };
 
         return dishFactory;
@@ -854,14 +925,19 @@ angular.module('spicyTaste')
 
 angular.module('spicyTaste')
     .factory('SocialService', function() {
+        'use strict';
         var socialFactory = {};
 
-        socialFactory.fbShare = function(link) {
+        socialFactory.fbShare = function(shareObj) {
             FB.ui({
-                method: 'share',
-                href: link,
-            }, function(response) {});
-        }
+                method: 'feed',
+                link: shareObj.link,
+                picture: shareObj.picture,
+                caption: shareObj.caption,
+                description: shareObj.description,
+                redirect_uri: shareObj.redirect_uri
+            }, function() {});
+        };
 
         return socialFactory;
     });
@@ -918,18 +994,10 @@ angular.module('spicyTaste')
 
         var userFactory = {};
         var baseUrl = '/api/users/';
-        //social login
-        userFactory.socialLogin = function(socialUser) {
-            return userFactory.searchBy('email=' + socialUser.email).then(function(data) {
 
-                if (!data.success) {
-                    //not found, then create
-                    return userFactory.create(socialUser);
-                } else {
-                    //found the user with email
-                    return userFactory.login(socialUser.email, CONSTANTS.SOCIAL_PASS);
-                }
-            });
+        //fb login
+        userFactory.fbLogin = function(fbUser) {
+            return $http.post('/api/auth/facebook', fbUser);
         };
 
         //login user
@@ -938,9 +1006,6 @@ angular.module('spicyTaste')
             return $http.post('/api/auth', {
                 email: email,
                 password: password
-            }).then(function(response) {
-                $http.defaults.headers.common['X-Auth'] = response.data.token;
-                return userFactory.getById(response.data.userId);
             });
         };
 
@@ -948,7 +1013,6 @@ angular.module('spicyTaste')
         userFactory.logout = function() {
             delete $http.defaults.headers.common['X-Auth'];
             $window.localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_KEY);
-            userFactory.loginedUser = null;
         };
 
         //search user by field
@@ -959,9 +1023,7 @@ angular.module('spicyTaste')
         };
 
         userFactory.getCurrentUser = function() {
-            return $http.get('/api/me').then(function(response) {
-                return userFactory.getById(response.data);
-            });
+            return $http.get('/api/me');
         };
 
         //get user by id
@@ -991,21 +1053,22 @@ angular.module('spicyTaste')
 
         //collect dish as favourite
         userFactory.collect = function(dishId) {
-            return $http.put(baseUrl + $rootScope.currentUser._id + '/dishes/' + dishId).then(function(response) {
-                return response.data;
-            });
+            return $http.put(baseUrl + $rootScope.currentUser._id + '/dishes/' + dishId);
         };
 
         //authorize user
         userFactory.authorize = function(requirePermissions) {
-            return userFactory.getCurrentUser().then(function(user) {
+            console.log('requirePermissions', requirePermissions);
+            return userFactory.getCurrentUser().success(function(user) {
+                if (user && user.role === 'ADMIN') {
+                    return true;
+                }
                 if (user && requirePermissions.indexOf(user.role) >= 0) {
                     return true;
-                } else {
-                    return false;
                 }
-            }, function(response) {
-                console.log('err', response);
+                return false;
+            }).error(function(err) {
+                console.log('error', err);
                 return false;
             });
         };
@@ -1014,7 +1077,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .factory('UtilityService', ["CONSTANTS", "$timeout", function(CONSTANTS, $timeout) {
+    .factory('UtilityService', ["CONSTANTS", "$timeout", "$mdToast", "$document", function(CONSTANTS, $timeout, $mdToast, $document) {
         'use strict';
 
         var utilityFactory = {};
@@ -1038,6 +1101,19 @@ angular.module('spicyTaste')
                     func.apply(context, args);
                 }
             };
+        };
+
+        utilityFactory.showStatusToast = function(isSuccess, message, parent) {
+            $mdToast.show({
+                controller: ["$scope", function($scope) {
+                    $scope.content = message;
+                    $scope.isSuccess = isSuccess;
+                }],
+                templateUrl: 'ng/views/templates/toast.html',
+                hideDelay: 2000,
+                position: 'top right',
+                parent: $document[0].querySelector(parent)
+            });
         };
 
         utilityFactory.awsUpload = function(file, folder, changeUploadStatus) {
@@ -1150,8 +1226,8 @@ angular.module('spicyTaste')
         function prepareData(data) {
 
             for (var i = 0; i < data.length; i++) {
-                if (data[i].blog && data[i].blog.length > 300) {
-                    data[i].blog = data[i].blog.substring(0, 299) + ' ...';
+                if (data[i].blog && data[i].blog.length > 200) {
+                    data[i].blog = data[i].blog.substring(0, Math.floor(Math.random() * 100) + 100) + ' ...';
                 }
             }
 
@@ -1183,105 +1259,158 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('DishEditController', ["$scope", "$mdDialog", "$routeParams", "DishService", "$location", "$timeout", function($scope, $mdDialog, $routeParams, DishService, $location, $timeout) {
+    .controller('DishEditController', ["UtilityService", "$scope", "$mdDialog", "$mdToast", "$routeParams", "DishService", "$location", "$timeout", function(UtilityService, $scope, $mdDialog, $mdToast, $routeParams, DishService, $location, $timeout) {
         'use strict';
         var vm = this;
 
-        vm.saveDish = function() {
-            DishService.update($routeParams.dishId, vm.dish).success(function(data) {
-                if (data.success) {
-                    vm.updateSuccess = true;
-                }
-                $timeout(function() {
-                    vm.updateSuccess = false;
-                }, 1000);
-            });
+        vm.submitNext = function(formDirty) {
+
+            //form.$dirty can't track md-chips
+            if (!formDirty) {
+                formDirty = vm.dish.tags.length !== vm.initialTagCount || vm.dish.ingredients.length !== vm.initialIngredientCount;
+            }
+
+            if (formDirty) {
+                DishService.update($routeParams.dishId, vm.dish).success(function() {
+                    UtilityService.showStatusToast(true, 'Recipt Info Is Updated.');
+                    changeWizardStatus();
+                }).error(function() {
+                    UtilityService.showStatusToast(false, 'Error, please try again.');
+                });
+            } else {
+                changeWizardStatus();
+            }
         };
-        vm.removeInstruction = function(index) {
-            console.log('instructions', vm.dish.instructions[index]);
-            DishService.removeInstruction($routeParams.dishId, vm.dish.instructions[index]._id).success(function(data) {
-                vm.dish.instructions.splice(index, 1);
+
+        vm.submitPhotos = function() {
+            DishService.submitPhotos($routeParams.dishId, vm.dish.photos).success(function(result) {
+                if (result.success) {
+                    if (vm.wizardMode) {
+                        vm.wizardMode = false;
+                    }
+                    vm.showBottomSheet = false;
+                    UtilityService.showStatusToast(true, 'Recipt Photos Are Saved.');
+                } else {
+                    UtilityService.showStatusToast(false, 'Error, please try again.');
+                }
             });
         };
 
         vm.removePhoto = function(index) {
-            vm.dish.photos.splice(index, 1);
-            vm.saveDish();
+            vm.dish.photos[index] = '';
         };
 
-        vm.showAddPhotoDialog = function(evn) {
-            $mdDialog.show({
-                targetEvent: evn,
-                controller: photoDialogController,
-                controllerAs: 'photoDlg',
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/addPhoto.html'
-            }).then(function(newPhoto) {
-                vm.dish.photos.push(newPhoto);
-                vm.saveDish();
-            });
-        };
-
-        vm.showAddInstructionDialog = function(evn) {
-            $mdDialog.show({
-                targetEvent: evn,
-                controller: instructionDialogController,
-                controllerAs: 'instructionDlg',
-                clickOutsideToClose: true,
-                templateUrl: 'ng/views/dialogs/addInstruction.html'
-            }).then(function(newInstruction) {
-                vm.dish.instructions.push(newInstruction);
-                DishService.addInstruction($routeParams.dishId, newInstruction).success(function(data) {
-
-                });
-            });
-        };
-
-        function photoDialogController($mdDialog) {
-            var dvm = this;
-            dvm.newPhoto = '';
-
-            dvm.closeDialog = function() {
-                $mdDialog.cancel();
-            };
-            dvm.submit = function() {
-                $mdDialog.hide(dvm.newPhoto);
-            };
+        function changeWizardStatus() {
+            if (vm.wizardMode) {
+                if (vm.showRightPanel) {
+                    vm.showBottomSheet = true;
+                    vm.showHeroButtons = true;
+                } else if (vm.showLeftPanel) {
+                    vm.showRightPanel = true;
+                }
+            }
         }
-        photoDialogController.$inject = ["$mdDialog"];
-
-        function instructionDialogController($mdDialog) {
-            var dvm = this;
-
-            dvm.newInstruction = {
-                photo: '',
-                text: ''
-            };
-
-            dvm.closeDialog = function() {
-                $mdDialog.cancel();
-            };
-
-            dvm.submit = function() {
-                $mdDialog.hide(dvm.newInstruction);
-            };
-        }
-        instructionDialogController.$inject = ["$mdDialog"];
 
         function init() {
             $scope.setMenuBar({});
-            //get the dish by id
-            DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
-                vm.dish = data;
-                console.log('dish', data);
 
+            vm.showBottomSheet = false;
+
+            //prevent error logs by md-chips
+            vm.dish = {
+                tags: [],
+                ingredients: []
+            };
+
+            if ($location.search().wizardMode === 'true') {
+                vm.wizardMode = true;
+            }
+
+            $timeout(function() {
+                vm.showLeftPanel = true;
+            }, 500);
+
+            //get the dish by id
+            DishService.get($routeParams.dishId).success(function(data) {
+                vm.dish = data;
+
+                if (!vm.dish.photos) {
+                    vm.dish.photos = [];
+                }
                 var photoCount = vm.dish.photos.length;
-                for (var i = photoCount; i < 5; i++) {
+                for (var i = photoCount; i < 4; i++) {
                     vm.dish.photos.push('');
                 }
             });
             vm.difficulties = DishService.getDifficulties();
+            vm.initialTagCount = vm.dish.tags.length;
+            vm.initialIngredientCount = vm.dish.ingredients.length;
         }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('DishEditInstructionController', ["$scope", "DishService", "$routeParams", "UtilityService", function($scope, DishService, $routeParams, UtilityService) {
+        'use strict';
+
+        var vm = this;
+
+        function init() {
+            $scope.setMenuBar({
+                primaryTheme: true
+            });
+
+            vm.newInstruction = {
+                text: '',
+                photo: ''
+            };
+
+            DishService.getDishWithInstructions($routeParams.dishId).success(function(data) {
+                vm.dish = data;
+                for (var i = 0; i < vm.dish.instructions.length; i++) {
+                    vm.dish.instructions[i].showTips = angular.isString(vm.dish.instructions[i].tips) && vm.dish.instructions[i].tips !== '';
+                }
+            });
+        }
+
+        vm.save = function(index) {
+            var item = vm.dish.instructions[index];
+            item.showTips = item.tips !== '';
+            if (item._id) {
+                DishService.updateInstruction(item).success(function() {
+                    UtilityService.showStatusToast(true, 'Instruction Info Is Updated.', 'md-tabs');
+                }).error(function() {
+                    UtilityService.showStatusToast(false, 'Error, please try again.', 'md-tabs');
+                });
+            } else {
+                DishService.addInstruction($routeParams.dishId, item).success(function(data) {
+                    vm.dish.instructions[index]._id = data._id;
+                    UtilityService.showStatusToast(true, 'Instruction Is Saved.', 'md-tabs');
+                }).error(function() {
+                    UtilityService.showStatusToast(false, 'Error, please try again.', 'md-tabs');
+                });
+            }
+
+        };
+
+        vm.remove = function(index) {
+            var item = vm.dish.instructions[index];
+            if (item._id) {
+                DishService.removeInstruction($routeParams.dishId, vm.dish.instructions[index]._id).success(function() {
+                    vm.dish.instructions.splice(index, 1);
+                }).error(function() {
+                    UtilityService.showStatusToast(false, 'Error, please try again.', 'md-tabs');
+                });
+            } else {
+                vm.dish.instructions.splice(index, 1);
+            }
+
+        };
+
+        vm.add = function() {
+            vm.dish.instructions.push({});
+        };
 
         init();
     }]);
@@ -1353,7 +1482,7 @@ angular.module('spicyTaste')
         vm.create = function() {
             vm.newRecipt.createdBy = $rootScope.currentUser._id;
             DishService.create(vm.newRecipt).success(function(data) {
-                $location.path('/me/dishes/' + data.dish._id);
+                $location.path('/me/dishes/' + data.dish._id + '?wizardMode=true');
             });
         };
 
@@ -1375,11 +1504,17 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('DishShowController', ["DishService", "CommentService", "$interval", "$timeout", "$routeParams", "$filter", "$rootScope", "$scope", function(DishService, CommentService, $interval, $timeout, $routeParams, $filter, $rootScope, $scope) {
+    .controller('DishShowController', ["DishService", "UserService", "CommentService", "$interval", "$timeout", "$routeParams", "$filter", "$rootScope", "$scope", function(DishService, UserService, CommentService, $interval, $timeout, $routeParams, $filter, $rootScope, $scope) {
         'use strict';
 
         var vm = this;
         var commentInterval;
+
+        vm.collect = function() {
+            UserService.collect(vm.dish._id).success(function() {
+                vm.dish.isCollected = true;
+            });
+        };
 
         vm.getAllComments = function() {
             CommentService.getByDish($routeParams.dishId, null).success(function(data) {
@@ -1448,7 +1583,7 @@ angular.module('spicyTaste')
                 vm.dish = data;
                 vm.dish.isCollected = false;
                 vm.backgroundImage = vm.dish.imageUrl;
-                vm.dish.difficultyText = 'Difficulty: ' + DishService.getDifficulties()[vm.dish.difficulty - 1];
+                vm.dish.difficultyText = 'Difficulty: ' + DishService.getDifficultyText(vm.dish.difficulty);
 
                 if (vm.dish.photos && vm.dish.photos.length > 0) {
                     vm.dish.photos.push(vm.dish.imageUrl);
@@ -1466,18 +1601,14 @@ angular.module('spicyTaste')
                     vm.progress += 2;
                 }, 50, n, true);
 
-                $timeout(function() {
-                    vm.showDifficulty = false;
-                }, 3000);
+                if (vm.dish.instructions.length > 0) {
+                    $timeout(function() {
+                        vm.showDifficulty = false;
+                    }, 3000);
+                }
 
                 if ($rootScope.currentUser) {
-                    var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
-                        _id: vm.dish._id
-                    }, true);
-
-                    if (found.length) {
-                        vm.dish.isCollected = true;
-                    }
+                    vm.dish.isCollected = $rootScope.currentUser.favouriteDishes.indexOf(vm.dish._id) >= 0;
                 }
 
                 //get the 3 related dishes

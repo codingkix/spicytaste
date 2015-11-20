@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .factory('UtilityService', function(CONSTANTS, $timeout) {
+    .factory('UtilityService', function(CONSTANTS, $timeout, $mdToast, $document) {
         'use strict';
 
         var utilityFactory = {};
@@ -23,6 +23,19 @@ angular.module('spicyTaste')
                     func.apply(context, args);
                 }
             };
+        };
+
+        utilityFactory.showStatusToast = function(isSuccess, message, parent) {
+            $mdToast.show({
+                controller: function($scope) {
+                    $scope.content = message;
+                    $scope.isSuccess = isSuccess;
+                },
+                templateUrl: 'ng/views/templates/toast.html',
+                hideDelay: 2000,
+                position: 'top right',
+                parent: $document[0].querySelector(parent)
+            });
         };
 
         utilityFactory.awsUpload = function(file, folder, changeUploadStatus) {

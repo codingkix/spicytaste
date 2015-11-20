@@ -13,7 +13,7 @@ router.param('dishId', function(req, res, next, dishId) {
     'use strict';
     Dish.findById(dishId).exec(function(err, dish) {
         if (err) {
-            next(err);
+            return next(err);
         }
         if (!dish) {
             return next({
@@ -21,10 +21,7 @@ router.param('dishId', function(req, res, next, dishId) {
                 status: 404
             });
         }
-
-
         req.dish = dish;
-
         return next();
     });
 });
@@ -36,7 +33,6 @@ router.post('/dishes', function(req, res, next) {
 
     var dish = new Dish(); // create a new instance of the dish model
     utility.extend(dish, req.body);
-    console.log('dish', dish);
 
     dish.save(function(err, dish) {
         if (err) {
@@ -44,9 +40,7 @@ router.post('/dishes', function(req, res, next) {
         } else {
             // return the saved dish
             res.status(201).json({
-                dish: dish,
-                success: true,
-                message: 'Dish created!'
+                dish: dish
             });
         }
     });
@@ -59,34 +53,20 @@ router.route('/dishes/:dishId')
     //update the dish with the id
     .put(function(req, res, next) {
         'use strict';
-
-        Dish.findById(req.params.dishId).exec(function(err, dish) {
+        var dish = req.dish;
+        if (typeof req.body.createdBy === 'object') {
+            req.body.createdBy = req.body.createdBy._id;
+        }
+        req.body.photos = dish.photos;
+        utility.extend(dish, req.body);
+        dish.save(function(err) {
             if (err) {
                 return next(err);
             }
 
-            if (dish) {
-                dish.name = req.body.name ? req.body.name : dish.name; // set the dish name (comes from the request)
-                dish.tags = req.body.tags ? req.body.tags : dish.tags; // set the dish tags (comes from the request)
-                dish.imageUrl = req.body.imageUrl ? req.body.imageUrl : dish.imageUrl; // set the dish imageUrl (comes from the request)
-                dish.blog = req.body.blog ? req.body.blog : dish.blog;
-                dish.ingredients = req.body.ingredients ? req.body.ingredients : dish.ingredients;
-                dish.photos = req.body.photos ? req.body.photos : dish.photos;
-                dish.prepTime = req.body.prepTime ? req.body.prepTime : dish.prepTime;
-                dish.totalTime = req.body.totalTime ? req.body.totalTime : dish.totalTime;
-                dish.difficulty = req.body.difficulty ? req.body.difficulty : dish.difficulty;
-
-                dish.save(function(err) {
-                    if (err) {
-                        return next(err);
-                    }
-
-                    res.json({
-                        success: true,
-                        message: 'Dish updated!'
-                    });
-                });
-            }
+            return res.json({
+                success: true
+            });
         });
 
     })
@@ -96,16 +76,39 @@ router.route('/dishes/:dishId')
 
         Dish.remove({
             _id: req.params.dishId
-        }, function(err, dish) {
+        }, function(err) {
             if (err) {
-                next(err);
+                return next(err);
             }
-            res.json({
-                success: true,
-                message: 'Dish deleted'
+            return res.json({
+                success: true
             });
         });
     });
+
+
+// on routes that end in /api/dishes/:dishId/photos
+// ----------------------------------------------------
+router.put('/dishes/:dishId/photos', function(req, res, next) {
+    'use strict';
+
+    var photos = [];
+    for (var i = 0; i < req.body.length; i++) {
+        if (req.body[i].trim() !== '') {
+            photos.push(req.body[i].trim());
+        }
+    }
+
+    req.dish.photos = photos;
+    req.dish.save(function(err) {
+        if (err) {
+            return next(err);
+        }
+        return res.json({
+            success: true
+        });
+    });
+});
 
 // on routes that end in /api/dishes/:dishId/comments
 // ----------------------------------------------------
@@ -118,7 +121,7 @@ router.post('/dishes/:dishId/comments', function(req, res, next) {
     if (req.body.replyTo) {
         User.findById(req.body.replyTo).exec(function(err, user) {
             if (err) {
-                next(err);
+                return next(err);
             }
             comment.replyTo = user;
         });
@@ -128,7 +131,7 @@ router.post('/dishes/:dishId/comments', function(req, res, next) {
 
     User.findById(auth.userId).exec(function(err, user) {
         if (err) {
-            next(err);
+            return next(err);
         }
         comment.author = user;
         comment.dish = req.dish;
@@ -142,9 +145,9 @@ router.post('/dishes/:dishId/comments', function(req, res, next) {
                 path: 'author replyTo'
             }, function(err, comment) {
                 if (err) {
-                    next(err);
+                    return next(err);
                 }
-                res.status(200).json(comment);
+                return res.status(200).json(comment);
             });
         });
     });
@@ -155,20 +158,40 @@ router.post('/dishes/:dishId/comments', function(req, res, next) {
 router.post('/dishes/:dishId/instructions', function(req, res, next) {
     'use strict';
 
-    var instruction = new Instruction({
-        text: req.body.text,
-        photo: req.body.photo
-    });
-
+    var instruction = new Instruction(req.body);
     instruction.save(function(err, instruction) {
-        if (err) return next(err);
+        if (err) {
+            return next(err);
+        }
         req.dish.instructions.push(instruction);
-        req.dish.save(function(err, dish) {
-            if (err) return next(err);
+        req.dish.save(function(err) {
+            if (err) {
+                return next(err);
+            }
+
+            res.json(instruction);
+        });
+    });
+});
+
+// on routes that end in '/api/instructions/:instructionId'
+// ----------------------------------------------------
+router.put('/instructions/:instructionId', function(req, res, next) {
+    'use strict';
+    Instruction.findById(req.params.instructionId).exec(function(err, instruction) {
+        if (err) {
+            return next(err);
+        }
+
+        utility.extend(instruction, req.body);
+
+        instruction.save(function(err) {
+            if (err) {
+                return next(err);
+            }
 
             res.json({
-                success: true,
-                message: 'Dish Instruction Added!'
+                success: true
             });
         });
     });
@@ -190,16 +213,19 @@ router.delete('/dishes/:dishId/instructions/:instructionId', function(req, res, 
                 }
             }
         },
-        function(err, dish) {
-            if (err) return next(err);
+        function(err) {
+            if (err) {
+                return next(err);
+            }
 
             Instruction.remove({
                 _id: instructionId
-            }, function(err, data) {
-                if (err) return next(err);
+            }, function(err) {
+                if (err) {
+                    return next(err);
+                }
                 return res.json({
-                    success: true,
-                    message: 'Dish instruction deleted'
+                    success: true
                 });
             });
         }

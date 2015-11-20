@@ -4,18 +4,10 @@ angular.module('spicyTaste')
 
         var userFactory = {};
         var baseUrl = '/api/users/';
-        //social login
-        userFactory.socialLogin = function(socialUser) {
-            return userFactory.searchBy('email=' + socialUser.email).then(function(data) {
 
-                if (!data.success) {
-                    //not found, then create
-                    return userFactory.create(socialUser);
-                } else {
-                    //found the user with email
-                    return userFactory.login(socialUser.email, CONSTANTS.SOCIAL_PASS);
-                }
-            });
+        //fb login
+        userFactory.fbLogin = function(fbUser) {
+            return $http.post('/api/auth/facebook', fbUser);
         };
 
         //login user
@@ -24,9 +16,6 @@ angular.module('spicyTaste')
             return $http.post('/api/auth', {
                 email: email,
                 password: password
-            }).then(function(response) {
-                $http.defaults.headers.common['X-Auth'] = response.data.token;
-                return userFactory.getById(response.data.userId);
             });
         };
 
@@ -34,7 +23,6 @@ angular.module('spicyTaste')
         userFactory.logout = function() {
             delete $http.defaults.headers.common['X-Auth'];
             $window.localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_KEY);
-            userFactory.loginedUser = null;
         };
 
         //search user by field
@@ -45,9 +33,7 @@ angular.module('spicyTaste')
         };
 
         userFactory.getCurrentUser = function() {
-            return $http.get('/api/me').then(function(response) {
-                return userFactory.getById(response.data);
-            });
+            return $http.get('/api/me');
         };
 
         //get user by id
@@ -77,21 +63,22 @@ angular.module('spicyTaste')
 
         //collect dish as favourite
         userFactory.collect = function(dishId) {
-            return $http.put(baseUrl + $rootScope.currentUser._id + '/dishes/' + dishId).then(function(response) {
-                return response.data;
-            });
+            return $http.put(baseUrl + $rootScope.currentUser._id + '/dishes/' + dishId);
         };
 
         //authorize user
         userFactory.authorize = function(requirePermissions) {
-            return userFactory.getCurrentUser().then(function(user) {
+            console.log('requirePermissions', requirePermissions);
+            return userFactory.getCurrentUser().success(function(user) {
+                if (user && user.role === 'ADMIN') {
+                    return true;
+                }
                 if (user && requirePermissions.indexOf(user.role) >= 0) {
                     return true;
-                } else {
-                    return false;
                 }
-            }, function(response) {
-                console.log('err', response);
+                return false;
+            }).error(function(err) {
+                console.log('error', err);
                 return false;
             });
         };

@@ -28,9 +28,9 @@
                 </md-tab-label>
                 <md-tab-body layout="column">
                     <md-content>
-                        <md-list>
+                        <md-list ng-if="profile.user.favouriteDishes.length > 0">
                             <md-list-item layout layout-align="center center" class="md-3-line favourite-item" ng-repeat="dish in profile.user.favouriteDishes">
-                                <div flex="40">
+                                <div flex="20">
                                     <a ng-href="dishes/{{dish._id}}"><img class="circle-img" ng-src="{{dish.imageUrl}}" alt="{{dish.name}}"></a>
                                 </div>
                                 <div flex class="md-list-item-text">
@@ -40,6 +40,10 @@
                                 </div>
                             </md-list-item>
                         </md-list>
+                        <div ng-if="profile.user.favouriteDishes.length == 0" class="layout-padding">
+                            <p>You can collect your favourite recipts, in case you'd like to learn to cook it later.</p>
+                            <p>Go ahead check out the delicious inventoury <a href="/recipts">HERE.</a></p>
+                        </div>
                     </md-content>
                 </md-tab-body>
             </md-tab>
@@ -52,7 +56,10 @@
                 </md-tab-label>
                 <md-tab-body>
                     <md-content layout layout-wrap>
-                        <p class="center-text" ng-if="!profile.allRecipts">You haven't share any work yet.</p>
+                        <div class="layout-padding" ng-if="profile.reciptsCount == 0">
+                            <p>You haven't shared any recipt yet.</p>
+                            <p>Dont' be shy, and go ahead write down your yummy memory <a href="/share">HERE.</a></p>
+                        </div>
                         <div ng-if="showSpinner" class="spinner-container" layout layout-align="center center">
                             <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                         </div>

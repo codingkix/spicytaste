@@ -1,9 +1,15 @@
 angular.module('spicyTaste')
-    .controller('DishShowController', function(DishService, CommentService, $interval, $timeout, $routeParams, $filter, $rootScope, $scope) {
+    .controller('DishShowController', function(DishService, UserService, CommentService, $interval, $timeout, $routeParams, $filter, $rootScope, $scope) {
         'use strict';
 
         var vm = this;
         var commentInterval;
+
+        vm.collect = function() {
+            UserService.collect(vm.dish._id).success(function() {
+                vm.dish.isCollected = true;
+            });
+        };
 
         vm.getAllComments = function() {
             CommentService.getByDish($routeParams.dishId, null).success(function(data) {
@@ -72,7 +78,7 @@ angular.module('spicyTaste')
                 vm.dish = data;
                 vm.dish.isCollected = false;
                 vm.backgroundImage = vm.dish.imageUrl;
-                vm.dish.difficultyText = 'Difficulty: ' + DishService.getDifficulties()[vm.dish.difficulty - 1];
+                vm.dish.difficultyText = 'Difficulty: ' + DishService.getDifficultyText(vm.dish.difficulty);
 
                 if (vm.dish.photos && vm.dish.photos.length > 0) {
                     vm.dish.photos.push(vm.dish.imageUrl);
@@ -90,18 +96,14 @@ angular.module('spicyTaste')
                     vm.progress += 2;
                 }, 50, n, true);
 
-                $timeout(function() {
-                    vm.showDifficulty = false;
-                }, 3000);
+                if (vm.dish.instructions.length > 0) {
+                    $timeout(function() {
+                        vm.showDifficulty = false;
+                    }, 3000);
+                }
 
                 if ($rootScope.currentUser) {
-                    var found = $filter('filter')($rootScope.currentUser.favouriteDishes, {
-                        _id: vm.dish._id
-                    }, true);
-
-                    if (found.length) {
-                        vm.dish.isCollected = true;
-                    }
+                    vm.dish.isCollected = $rootScope.currentUser.favouriteDishes.indexOf(vm.dish._id) >= 0;
                 }
 
                 //get the 3 related dishes

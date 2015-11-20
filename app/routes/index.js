@@ -22,7 +22,8 @@ router.use('/api', function(req, res, next) {
         //verify secret and checks
         jwt.verify(token, config.secret, function(err, decoded) {
             if (err) {
-                return res.status(401).json('failed to authenticate token.');
+                res.status(401).json('failed to authenticate token.');
+                next(err);
             } else {
                 //token is verified so move next
                 req.decoded = decoded;
@@ -31,7 +32,8 @@ router.use('/api', function(req, res, next) {
         });
     } else {
         //if there is no token
-        return res.status(403).json('No token provided.');
+        res.status(403).json('No token provided.');
+        next(new Error('No Token'));
     }
 });
 

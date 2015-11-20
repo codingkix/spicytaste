@@ -18,8 +18,8 @@ angular.module('spicyTaste')
         function prepareData(data) {
 
             for (var i = 0; i < data.length; i++) {
-                if (data[i].blog && data[i].blog.length > 300) {
-                    data[i].blog = data[i].blog.substring(0, 299) + ' ...';
+                if (data[i].blog && data[i].blog.length > 200) {
+                    data[i].blog = data[i].blog.substring(0, Math.floor(Math.random() * 100) + 100) + ' ...';
                 }
             }
 

@@ -19,6 +19,9 @@ var extend = function(deep) {
     for (++i; i < args.length; ++i) {
 
         for (key in args[i]) {
+            if (key === '__v') {
+                continue;
+            }
 
             if (deep === true &&
                 target[key] &&
@@ -37,6 +40,13 @@ var extend = function(deep) {
     return target;
 };
 
+var userRoles = {
+    reader: 'READER',
+    admin: 'ADMIN',
+    editor: 'EDITOR'
+};
+
 module.exports = {
-    extend: extend
+    extend: extend,
+    roles: userRoles
 };

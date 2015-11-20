@@ -58,6 +58,11 @@ angular.module('spicyTaste')
             return $http.put(baseUrl + dishId, dish);
         };
 
+        //update dish photos
+        dishFactory.submitPhotos = function(dishId, photos) {
+            return $http.put(baseUrl + dishId + '/photos', photos);
+        };
+
         //delete a dish
         dishFactory.delete = function(dishId) {
             return $http.delete(baseUrl + dishId);
@@ -78,6 +83,11 @@ angular.module('spicyTaste')
             return $http.post(baseUrl + dishId + '/instructions', instruction);
         };
 
+        //update a instruction
+        dishFactory.updateInstruction = function(instruction) {
+            return $http.put('/api/instructions/' + instruction._id, instruction);
+        };
+
         //remove an instruction
         dishFactory.removeInstruction = function(dishId, instructionId) {
             return $http.delete(baseUrl + dishId + '/instructions/' + instructionId);
@@ -86,6 +96,11 @@ angular.module('spicyTaste')
         //get difficulty
         dishFactory.getDifficulties = function() {
             return ['初学', '容易', '一般', '较难', '专业'];
+        };
+
+        //get difficulty text
+        dishFactory.getDifficultyText = function(level) {
+            return dishFactory.getDifficulties()[level - 1];
         };
 
         return dishFactory;

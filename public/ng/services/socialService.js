@@ -1,13 +1,18 @@
 angular.module('spicyTaste')
     .factory('SocialService', function() {
+        'use strict';
         var socialFactory = {};
 
-        socialFactory.fbShare = function(link) {
+        socialFactory.fbShare = function(shareObj) {
             FB.ui({
-                method: 'share',
-                href: link,
-            }, function(response) {});
-        }
+                method: 'feed',
+                link: shareObj.link,
+                picture: shareObj.picture,
+                caption: shareObj.caption,
+                description: shareObj.description,
+                redirect_uri: shareObj.redirect_uri
+            }, function() {});
+        };
 
         return socialFactory;
     });

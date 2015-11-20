@@ -11,6 +11,10 @@ angular.module('spicyTaste')
         };
 
         vm.getRecipts = function() {
+            if (vm.reciptsCount === 0) {
+                return;
+            }
+
             $scope.showSpinner = true;
             DishService.searchByAuthor($rootScope.currentUser._id).success(function(data) {
                 vm.allRecipts = data;
@@ -30,6 +34,9 @@ angular.module('spicyTaste')
 
             UserService.getProfile().success(function(data) {
                 vm.user = data.user;
+                for (var i = 0; i < vm.user.favouriteDishes.length; i++) {
+                    vm.user.favouriteDishes[i].difficultyText = DishService.getDifficultyText(vm.user.favouriteDishes[i].difficulty);
+                }
                 vm.reciptsCount = data.reciptsCount;
             });
         }

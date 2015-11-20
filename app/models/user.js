@@ -12,20 +12,24 @@ var UserSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         select: false
     },
-    linkedSocial: [],
     photoUrl: String,
+    role: String,
+    facebook: {
+        id: String
+    },
     favouriteDishes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Dish'
     }],
-    role: String,
     createdDate: {
         type: Date,
         required: true,
         default: Date.now
+    },
+    lastLogin: {
+        type: Date
     }
 });
 

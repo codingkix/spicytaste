@@ -1,0 +1,96 @@
+@import 'mixins'
+
+.instruction-tabs-container{
+	padding: 40px;
+}
+
+.instruction-edit-hero{
+	margin-top: 64px;
+	height: 240px;
+	overflow: hidden;
+	
+	h3{
+		margin: 5px auto;
+	}
+	
+	.hero-mask{
+		background:none;
+		
+		a{
+			text-decoration: none;
+			color: transparent;
+			height:120px;
+			width:120px;
+			border-radius: 50%;
+			background-color: grey-background-color;
+		}
+	}
+	
+	.circle-img{
+		border: 3px solid light-font-color;
+		transition: all .3s ease;
+		box-sizing: border-box;
+		
+		&:hover{
+			transform: scale(1.2);
+		}
+	}
+}
+
+.step-tab{
+	font-size: 16px;
+}
+
+.instruction-content{
+	padding: 20px;
+	
+	.image-container{
+		height: 480px;
+		position: relative;
+
+		.image-upload-container{
+			background:none;
+		}
+		
+		button.md-fab{
+			position: absolute;
+			bottom: 8px;
+			right: 8px;
+		}
+	}
+
+	.text-container{
+		min-height: 200px;
+
+		>div:first-child{
+			width: 100%;
+			padding: 20px;
+			border-radius: 10px;
+			border: 1px solid rgba(0,0,0,0.3);
+			margin-top: 20px;
+		}
+	}
+	
+	.sticky-note-container{
+		position: absolute;
+		right: 20px;
+		top: 20px;
+		width: 240px;
+		margin:0;
+		z-index: 20;
+		
+		>div{
+			height: 180px;	
+			padding-bottom: 16px;
+		}
+		
+		.dummy-note{
+			display:none;
+		}
+		
+		textarea{
+			font-family: handwriting-font;
+		}
+	}
+}
+

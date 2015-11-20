@@ -1,9 +1,12 @@
 <div class="full-height-content dish-show-hero" style="background-image: url('{{dishShow.backgroundImage}}') ">
     <div layout class="hero-mask" ng-class="{'slide-right':dishShow.showAllComments}">
         <div layout="column" layout-align="start center" flex="60">
-            <h3 class="md-display-1 accent-font dish-title">{{dishShow.dish.name}}
-                <md-icon ng-if="dishShow.dish.isCollected" md-svg-icon="favorite"></md-icon>
-            </h3>
+            <div layout layout-align="center center" class="dish-title">
+                <h3 class="md-display-1 accent-font">{{dishShow.dish.name}}</h3>
+                <md-button class="md-icon-button" ng-class="{'md-primary': dishShow.dish.isCollected}" ng-click="!dishShow.dish.isCollected && dishShow.collect()">
+                    <md-icon md-svg-icon="favorite" class="medium-icon light-icon"></md-icon>
+                </md-button>
+            </div>
             <div layout="column" class="dish-blog-container">
                 <md-content flex>
                     {{dishShow.dish.blog}}
@@ -11,7 +14,7 @@
             </div>
             <div flex>
             </div>
-            <social-shares></social-shares>
+            <social-shares recipt="dishShow.dish"></social-shares>
         </div>
         <div flex layout="column" layout-align="start center">
             <div layout class="sticky-note-container">

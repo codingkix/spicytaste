@@ -47,7 +47,19 @@ angular.module('spicyTaste')
             .when('/me/dishes/:dishId', {
                 templateUrl: 'ng/views/pages/dish/edit.html',
                 controller: 'DishEditController',
-                controllerAs: 'dishManage'
+                controllerAs: 'dishManage',
+                access: {
+                    requirePermissions: ['READER']
+                }
+            })
+            //edit dish instructions page
+            .when('/me/dishes/:dishId/instructions', {
+                templateUrl: 'ng/views/pages/dish/edit-instructions.html',
+                controller: 'DishEditInstructionController',
+                controllerAs: 'instructionEdit',
+                access: {
+                    requirePermissions: ['READER']
+                }
             })
             //login user
             .when('/login', {
@@ -59,7 +71,10 @@ angular.module('spicyTaste')
             .when('/me', {
                 templateUrl: 'ng/views/pages/user/me.html',
                 controller: 'ProfileController',
-                controllerAs: 'profile'
+                controllerAs: 'profile',
+                access: {
+                    requirePermissions: ['READER']
+                }
             })
             .when('/not-authorize', {
                 templateUrl: 'ng/views/pages/not-authorize.html'
@@ -67,7 +82,7 @@ angular.module('spicyTaste')
             .when('/admin', {
                 templateUrl: '/ng/views/pages/admin/index.html',
                 access: {
-                    requirePermissions: ['Admin']
+                    requirePermissions: ['ADMIN']
                 }
             })
             //list admin themes page
@@ -76,7 +91,7 @@ angular.module('spicyTaste')
                 controller: 'ThemeAdminListController',
                 controllerAs: 'themeList',
                 access: {
-                    requirePermissions: ['Admin']
+                    requirePermissions: ['ADMIN']
                 }
             })
             //edit a theme page
@@ -85,13 +100,16 @@ angular.module('spicyTaste')
                 controller: 'ThemeAdminEditController',
                 controllerAs: 'themeEdit',
                 access: {
-                    requirePermissions: ['Admin']
+                    requirePermissions: ['AdMIN']
                 }
             })
             //list admin dish page
             .when('/admin/dishes', {
                 templateUrl: 'ng/views/pages/admin/dish/list.html',
                 controller: 'DishAdminListController',
-                controllerAs: 'dishList'
+                controllerAs: 'dishList',
+                access: {
+                    requirePermissions: ['ADMIN']
+                }
             });
     });

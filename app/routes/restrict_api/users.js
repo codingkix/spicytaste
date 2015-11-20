@@ -2,27 +2,31 @@ var express = require('express');
 var router = express.Router();
 var User = require('../../models/user');
 var Dish = require('../../models/dish');
-var jwt = require('jsonwebtoken');
-var config = require('../../../config');
 
 //get current login user
-router.get('/me', function(req, res) {
+router.get('/me', function(req, res, next) {
     'use strict';
-    var auth = jwt.verify(req.headers['x-auth'], config.secret);
-    res.send(auth.userId);
+
+    User.findById(req.decoded.userId, function(err, user) {
+        if (err) {
+            return next(err);
+        }
+
+        return res.status(200).json(user);
+    });
 });
 
 //get user full profile
 router.get('/me/profile', function(req, res, next) {
     'use strict';
-    var auth = jwt.verify(req.headers['x-auth'], config.secret);
-    User.findById(auth.userId).populate('favouriteDishes').exec(function(err, user) {
+
+    User.findById(req.decoded.userId).populate('favouriteDishes').exec(function(err, user) {
         if (err) {
             next(err);
         }
 
         Dish.count({
-            createdBy: auth.userId
+            createdBy: req.decoded.userId
         }, function(err, count) {
             if (err) {
                 next(err);
@@ -83,39 +87,17 @@ router.put('/users/:userId', function(req, res, next) {
 //save dish as favorite
 router.put('/users/:userId/dishes/:dishId', function(req, res, next) {
     'use strict';
-    var query = User.findById(req.params.userId);
-    query.populate('favouriteDishes').exec(function(err, user) {
+    User.findByIdAndUpdate(req.params.userId, {
+        $addToSet: {
+            favouriteDishes: req.params.dishId
+        }
+    }, function(err) {
         if (err) {
             return next(err);
         }
 
-        //if user already have it, return true
-        user.favouriteDishes.forEach(function(item) {
-            if (item._id === req.params.dishId) {
-                res.json({
-                    success: true
-                });
-            }
-        });
-
-        Dish.findById(req.params.dishId).exec(function(err, dish) {
-            if (err) {
-                next(err);
-            }
-            if (dish) {
-                user.favouriteDishes.push(dish);
-                user.save(function(err) {
-                    if (err) {
-                        next(err);
-                        res.json({
-                            success: false
-                        });
-                    }
-                    res.json({
-                        success: true
-                    });
-                });
-            }
+        res.json({
+            success: true
         });
     });
 
