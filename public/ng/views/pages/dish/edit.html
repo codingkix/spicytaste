@@ -39,7 +39,7 @@
                 <div class="dish-blog-container">
                     <textarea ng-model="dishManage.dish.blog" ng-trim="true"></textarea>
                 </div>
-                <p class="md-body-2">Input some key words about the recipt for easy seaching</p>
+                <p class="md-body-2">Input some key words about the recipe for easy seaching</p>
                 <div layout>
                     <md-chips ng-model="dishManage.dish.tags" placeholder="Enter a tag" secondary-placeholder="+Tag" delete-button-label="Remove Tag"></md-chips>
                 </div>
@@ -56,7 +56,7 @@
     </div>
     <div layout="column" class="recipt-edit-bottomsheet" ng-class="{'slide-up': dishManage.showBottomSheet}">
         <div layout>
-            <p flex class="md-subhead">Upload extra photos to show off your recipt</p>
+            <p flex class="md-subhead">Upload extra photos to show off your recipe</p>
             <md-button flex class="md-icon-button md-primary" ng-click="dishManage.submitPhotos()">
                 <md-icon md-svg-icon="arrow-down" class="medium-icon"></md-icon>
             </md-button>

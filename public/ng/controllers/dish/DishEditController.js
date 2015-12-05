@@ -12,7 +12,7 @@ angular.module('spicyTaste')
 
             if (formDirty) {
                 DishService.update($routeParams.dishId, vm.dish).success(function() {
-                    UtilityService.showStatusToast(true, 'Recipt Info Is Updated.');
+                    UtilityService.showStatusToast(true, 'Recipe Info Is Updated.');
                     changeWizardStatus();
                 }).error(function() {
                     UtilityService.showStatusToast(false, 'Error, please try again.');
@@ -29,7 +29,7 @@ angular.module('spicyTaste')
                         vm.wizardMode = false;
                     }
                     vm.showBottomSheet = false;
-                    UtilityService.showStatusToast(true, 'Recipt Photos Are Saved.');
+                    UtilityService.showStatusToast(true, 'Recipe Photos Are Saved.');
                 } else {
                     UtilityService.showStatusToast(false, 'Error, please try again.');
                 }
