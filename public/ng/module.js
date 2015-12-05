@@ -3,9 +3,8 @@ angular.module('spicyTaste', ['ngRoute', 'angular-md5', 'ngMaterial', 'ngAnimate
         'FB_APP_ID': 1563567387253468,
         'FACEBOOK': 'FB',
         'EMAIL': 'EMAIL',
-        'SOCIAL_PASS': 'P@ssw0rd',
         'LOCAL_STORAGE_KEY': 'spicyTasteUser',
         'LATEST_COUNT': 10,
-        'AWS_ACCESS_KEY': 'AKIAIFO27R4VCOI3X5PQ',
-        'AWS_SECRECT_KEY': 'pg7EfhmCaGh3NYSrX5phhPVd8D3Ixe5EfW1fsr7V'
+        'AWS_ACCESS_KEY': 'AKIAISDEEB5CEMMQTZPA',
+        'AWS_SECRECT_KEY': 'S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB'
     });

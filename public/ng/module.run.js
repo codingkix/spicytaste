@@ -10,6 +10,8 @@ angular.module('spicyTaste')
                 status: true,
                 version: 'v2.5'
             });
+
+            UserService.watchFBAuthChange();
         };
 
         // Load the SDK asynchronously
@@ -24,6 +26,24 @@ angular.module('spicyTaste')
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
 
+        window.pAsyncInit = function() {
+            PDK.init({
+                appId: '4803431288025393530',
+                cookie: true
+            });
+        };
+
+        (function(d, s, id) {
+            var js, pjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = '//assets.pinterest.com/sdk/sdk.js';
+            pjs.parentNode.insertBefore(js, pjs);
+        }(document, 'script', 'pinterest-jssdk'));
+
         //Check Authorization
         $rootScope.$on('$routeChangeStart', function(event, next) {
             if (next && next.access) {
@@ -35,8 +55,7 @@ angular.module('spicyTaste')
                             $location.path('/share').replace();
                         }
                     }
-                }, function(result) {
-                    console.log('result', result);
+                }, function() {
                     if (next.access.requirePermissions.indexOf('ADMIN') >= 0) {
                         $location.path('not-authorize').replace();
                     } else {

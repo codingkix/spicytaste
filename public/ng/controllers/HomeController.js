@@ -4,6 +4,8 @@ angular.module('spicyTaste')
         var vm = this;
 
         function init() {
+            $scope.setMenuBar({});
+
             vm.recipeTiles = [];
             $scope.$watch(function() {
                 return $mdMedia('sm');

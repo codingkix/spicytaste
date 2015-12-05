@@ -41,7 +41,7 @@ angular.module('spicyTaste')
                     userFactory.getFBUserInfo().then(function(fbUser) {
                         if (!$rootScope.currentUser) {
                             authFB(fbUser);
-                        } else {
+                        } else if (!$rootScope.currentUser.facebook) {
                             userFactory.updateInfo($rootScope.currentUser._id, 'facebook', fbUser.facebook);
                         }
                     });

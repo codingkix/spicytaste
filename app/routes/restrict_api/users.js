@@ -56,32 +56,25 @@ router.get('/users/:userId/recipts', function(req, res, next) {
     });
 });
 
-//update user
-router.put('/users/:userId', function(req, res, next) {
+//update user specific field
+router.put('/users/:userId/field', function(req, res, next) {
     'use strict';
-    User.findById(req.params.userId, function(err, user) {
-        if (!user) {
-            res.json({
-                success: false,
-                message: 'no user is found.'
-            });
-        } else {
-            user.userName = req.body.userName;
-            user.photoUrl = req.body.photoUrl;
-            user.linkedSocial = req.body.linkedSocial;
-            user.save(function(err) {
-                if (err) {
-                    next(err);
-                }
+    var updateObj = {};
+    console.log('body', req.body);
+    updateObj[req.body.field] = req.body.newValue;
+    console.log('updateObj', updateObj);
 
-                res.json({
-                    success: true,
-                    user: user
-                });
-            });
+    User.findByIdAndUpdate(req.params.userId, {
+        $set: updateObj
+    }, function(err) {
+        if (err) {
+            return next(err);
         }
-    });
 
+        res.json({
+            success: true
+        });
+    });
 });
 
 //save dish as favorite

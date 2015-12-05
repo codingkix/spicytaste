@@ -17,7 +17,8 @@ var UserSchema = mongoose.Schema({
     photoUrl: String,
     role: String,
     facebook: {
-        id: String
+        id: String,
+        email: String
     },
     favouriteDishes: [{
         type: mongoose.Schema.Types.ObjectId,

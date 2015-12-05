@@ -1,13 +1,13 @@
 angular.module('spicyTaste')
-    .controller('ProfileController', function($location, $scope, $rootScope, $timeout, UserService, DishService) {
+    .controller('ProfileController', function(UtilityService, $location, $scope, $rootScope, $timeout, UserService, DishService) {
         'use strict';
 
         var vm = this;
 
         vm.logout = function() {
-            UserService.logout();
-            $rootScope.currentUser = null;
-            $location.path('/');
+            UserService.logout().then(function() {
+                $location.path('/');
+            });
         };
 
         vm.getRecipts = function() {
@@ -25,6 +25,14 @@ angular.module('spicyTaste')
             $timeout(function() {
                 $scope.showSpinner = false;
             }, 400);
+        });
+
+        $scope.$on('uploaded', function(event, newPhoto) {
+            UserService.updateInfo(vm.user._id, 'photoUrl', newPhoto).success(function() {
+                $rootScope.currentUser.photoUrl = newPhoto;
+            }).error(function() {
+                UtilityService.showStatusToast(false, 'Error, try upload the photo again.');
+            });
         });
 
         function init() {

@@ -46,7 +46,6 @@ angular.module('spicyTaste')
             });
 
             AWS.config.region = 'us-west-2';
-            console.log('aws config', AWS.config);
 
             var bucketName = folder === null ? 'spicytaste-tmp-photos' : 'spicytaste-photos/' + folder;
             var bucket = new AWS.S3({
@@ -80,7 +79,6 @@ angular.module('spicyTaste')
                     }, 300);
 
                 }).on('httpDone', function(response) {
-                    console.log('awsUpload done', response);
                     changeUploadStatus({
                         imageUrl: 'https://s3-us-west-2.amazonaws.com/' + bucketName + '/' + file.name
                     });

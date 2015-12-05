@@ -8,12 +8,15 @@ angular.module('spicyTaste')
             scope: {
                 recipt: '='
             },
-            link: function($scope, $element, $attr) {
+            link: function($scope, $element) {
                 $scope.$watch('recipt', function(newVal) {
                     if (newVal.name) {
                         var recipt = newVal;
-                        recipt.description = recipt.blog.length > 200 ? recipt.blog.substring(0, 200) + '...' : recipt.blog;
-
+                        if (recipt.blog) {
+                            recipt.description = recipt.blog.length > 200 ? recipt.blog.substring(0, 200) + '...' : recipt.blog;
+                        } else {
+                            recipt.description = 'Come to try this delicious';
+                        }
                         $element.find('#btnFB').click(function() {
                             var shareObj = {
                                 picture: recipt.imageUrl,
@@ -25,6 +28,12 @@ angular.module('spicyTaste')
                                 shareObj.link = $location.absUrl();
                             }
                             SocialService.fbShare(shareObj);
+                        });
+
+                        $element.find('#btnPinterest').click(function() {
+                            PDK.pin(recipt.imageUrl, recipt.name, $location.absUrl(), function() {
+                                //do something like badges
+                            });
                         });
                     }
                 });

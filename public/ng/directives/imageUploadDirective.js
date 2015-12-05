@@ -22,6 +22,7 @@ angular.module('spicyTaste')
 
                     if (uploadStatus.imageUrl && uploadStatus.imageUrl.trim() !== '') {
                         $scope.image = uploadStatus.imageUrl;
+                        $scope.$emit('uploaded', uploadStatus.imageUrl);
                     }
 
                     $scope.$apply();

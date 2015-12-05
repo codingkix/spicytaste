@@ -5,10 +5,21 @@ angular.module('spicyTaste')
         var vm = this;
         var commentInterval;
 
-        vm.collect = function() {
-            UserService.collect(vm.dish._id).success(function() {
-                vm.dish.isCollected = true;
-            });
+        vm.collect = function(event) {
+            if (!$rootScope.currentUser) {
+                $scope.showLoginDialog(event, true, 'Login or sign up an account to save this recipt as your favourite.').then(function() {
+                    UserService.collect(vm.dish._id).success(function() {
+                        $rootScope.currentUser.favouriteDishes.push(vm.dish._id);
+                        vm.dish.isCollected = true;
+                    });
+                });
+            } else {
+                UserService.collect(vm.dish._id).success(function() {
+                    $rootScope.currentUser.favouriteDishes.push(vm.dish._id);
+                    vm.dish.isCollected = true;
+                });
+            }
+
         };
 
         vm.getAllComments = function() {

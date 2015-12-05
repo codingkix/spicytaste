@@ -9,7 +9,6 @@ var utils = require('../../utils');
 router.post('/auth/facebook', function(req, res, next) {
     'use strict';
     var fbUser = req.body;
-
     User.findOne({
         'facebook.id': fbUser.facebook.id
     }, function(err, user) {
@@ -20,6 +19,7 @@ router.post('/auth/facebook', function(req, res, next) {
             user = new User(fbUser);
             user.role = utils.roles.reader;
         }
+
         user.lastLogin = Date.now();
 
         user.save(function(err, user) {

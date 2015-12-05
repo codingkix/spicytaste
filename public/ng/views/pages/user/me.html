@@ -1,7 +1,7 @@
 <div layout="row" layout-sm="column" layout-padding layout-align="center start" class="profile-container">
     <div flex="30" layout="column" layout-align="center center" class="profile-left-col">
-        <div>
-            <img ng-src="{{profile.user.photoUrl}}" alt="{{profile.user.userName}}" class="responsive-img">
+        <div class="profile-photo-container" style="background-image:url('{{profile.user.photoUrl}}')">
+            <image-upload image="profile.user.photoUrl"></image-upload>
         </div>
         <p class="md-title">{{profile.user.userName}}</p>
         <md-divider></md-divider>

@@ -3,11 +3,10 @@ angular.module('spicyTaste', ['ngRoute', 'angular-md5', 'ngMaterial', 'ngAnimate
         'FB_APP_ID': 1563567387253468,
         'FACEBOOK': 'FB',
         'EMAIL': 'EMAIL',
-        'SOCIAL_PASS': 'P@ssw0rd',
         'LOCAL_STORAGE_KEY': 'spicyTasteUser',
         'LATEST_COUNT': 10,
-        'AWS_ACCESS_KEY': 'AKIAIFO27R4VCOI3X5PQ',
-        'AWS_SECRECT_KEY': 'pg7EfhmCaGh3NYSrX5phhPVd8D3Ixe5EfW1fsr7V'
+        'AWS_ACCESS_KEY': 'AKIAISDEEB5CEMMQTZPA',
+        'AWS_SECRECT_KEY': 'S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB'
     });
 
 angular.module('spicyTaste')
@@ -84,6 +83,8 @@ angular.module('spicyTaste')
                 status: true,
                 version: 'v2.5'
             });
+
+            UserService.watchFBAuthChange();
         };
 
         // Load the SDK asynchronously
@@ -98,6 +99,24 @@ angular.module('spicyTaste')
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
 
+        window.pAsyncInit = function() {
+            PDK.init({
+                appId: '4803431288025393530',
+                cookie: true
+            });
+        };
+
+        (function(d, s, id) {
+            var js, pjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = '//assets.pinterest.com/sdk/sdk.js';
+            pjs.parentNode.insertBefore(js, pjs);
+        }(document, 'script', 'pinterest-jssdk'));
+
         //Check Authorization
         $rootScope.$on('$routeChangeStart', function(event, next) {
             if (next && next.access) {
@@ -109,8 +128,7 @@ angular.module('spicyTaste')
                             $location.path('/share').replace();
                         }
                     }
-                }, function(result) {
-                    console.log('result', result);
+                }, function() {
                     if (next.access.requirePermissions.indexOf('ADMIN') >= 0) {
                         $location.path('not-authorize').replace();
                     } else {
@@ -247,6 +265,8 @@ angular.module('spicyTaste')
         var vm = this;
 
         function init() {
+            $scope.setMenuBar({});
+
             vm.recipeTiles = [];
             $scope.$watch(function() {
                 return $mdMedia('sm');
@@ -311,46 +331,19 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('LoginController', ["$rootScope", "$scope", "$mdDialog", "UserService", "md5", "CONSTANTS", "$http", "SessionService", function($rootScope, $scope, $mdDialog, UserService, md5, CONSTANTS, $http, SessionService) {
+    .controller('LoginController', ["$rootScope", "$scope", "$mdDialog", "UserService", "md5", function($rootScope, $scope, $mdDialog, UserService, md5) {
         'use strict';
 
         var vm = this;
 
         vm.fbLogin = function() {
-            FB.login(function(response) {
-                if (response.status === 'connected') {
-                    // Logged into your app and Facebook.
-                    FB.api('/me', function(response) {
-                        var fbUser = {
-                            userName: response.name,
-                            email: response.email,
-                            photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
-                            facebook: {
-                                id: response.id
-                            }
-                        };
-
-                        UserService.fbLogin(fbUser).then(function(response) {
-                            afterAuth(response.data);
-                        }, function() {
-                            vm.loginFailed = true;
-                        });
-
-                    });
-                } else if (response.status === 'not_authorized') {
-                    // The person is logged into Facebook, but not your app.
-                } else {
-                    // The person is not logged into Facebook, so we're not sure if
-                    // they are logged into this app or not.
-                }
-            }, {
-                scope: 'public_profile,email'
-            });
+            UserService.fbLogin();
+            $mdDialog.hide();
         };
 
         vm.login = function() {
-            UserService.login(vm.email, vm.password).then(function(response) {
-                afterAuth(response.data);
+            UserService.login(vm.email, vm.password).then(function() {
+                $mdDialog.hide();
             }, function() {
                 vm.loginFailed = true;
             });
@@ -364,8 +357,10 @@ angular.module('spicyTaste')
                 photoUrl: 'http://www.gravatar.com/avatar/' + md5.createHash(vm.email)
             };
 
-            UserService.create(newUser).then(function(response) {
-                afterAuth(response.data);
+            UserService.create(newUser).then(function() {
+                $mdDialog.hide();
+            }, function() {
+                vm.loginFailed = true;
             });
 
         };
@@ -376,15 +371,6 @@ angular.module('spicyTaste')
             vm.password = '';
             vm.userName = '';
             vm.loginFailed = false;
-        }
-
-        function afterAuth(result) {
-            console.log('login result', result);
-
-            $http.defaults.headers.common['X-Auth'] = result.token;
-            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, result.token);
-            $rootScope.currentUser = result.user;
-            $mdDialog.hide();
         }
 
         init();
@@ -445,15 +431,15 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('ProfileController', ["$location", "$scope", "$rootScope", "$timeout", "UserService", "DishService", function($location, $scope, $rootScope, $timeout, UserService, DishService) {
+    .controller('ProfileController', ["UtilityService", "$location", "$scope", "$rootScope", "$timeout", "UserService", "DishService", function(UtilityService, $location, $scope, $rootScope, $timeout, UserService, DishService) {
         'use strict';
 
         var vm = this;
 
         vm.logout = function() {
-            UserService.logout();
-            $rootScope.currentUser = null;
-            $location.path('/');
+            UserService.logout().then(function() {
+                $location.path('/');
+            });
         };
 
         vm.getRecipts = function() {
@@ -471,6 +457,14 @@ angular.module('spicyTaste')
             $timeout(function() {
                 $scope.showSpinner = false;
             }, 400);
+        });
+
+        $scope.$on('uploaded', function(event, newPhoto) {
+            UserService.updateInfo(vm.user._id, 'photoUrl', newPhoto).success(function() {
+                $rootScope.currentUser.photoUrl = newPhoto;
+            }).error(function() {
+                UtilityService.showStatusToast(false, 'Error, try upload the photo again.');
+            });
         });
 
         function init() {
@@ -585,6 +579,7 @@ angular.module('spicyTaste')
 
                     if (uploadStatus.imageUrl && uploadStatus.imageUrl.trim() !== '') {
                         $scope.image = uploadStatus.imageUrl;
+                        $scope.$emit('uploaded', uploadStatus.imageUrl);
                     }
 
                     $scope.$apply();
@@ -710,12 +705,15 @@ angular.module('spicyTaste')
             scope: {
                 recipt: '='
             },
-            link: function($scope, $element, $attr) {
+            link: function($scope, $element) {
                 $scope.$watch('recipt', function(newVal) {
                     if (newVal.name) {
                         var recipt = newVal;
-                        recipt.description = recipt.blog.length > 200 ? recipt.blog.substring(0, 200) + '...' : recipt.blog;
-
+                        if (recipt.blog) {
+                            recipt.description = recipt.blog.length > 200 ? recipt.blog.substring(0, 200) + '...' : recipt.blog;
+                        } else {
+                            recipt.description = 'Come to try this delicious';
+                        }
                         $element.find('#btnFB').click(function() {
                             var shareObj = {
                                 picture: recipt.imageUrl,
@@ -727,6 +725,12 @@ angular.module('spicyTaste')
                                 shareObj.link = $location.absUrl();
                             }
                             SocialService.fbShare(shareObj);
+                        });
+
+                        $element.find('#btnPinterest').click(function() {
+                            PDK.pin(recipt.imageUrl, recipt.name, $location.absUrl(), function() {
+                                //do something like badges
+                            });
                         });
                     }
                 });
@@ -989,15 +993,81 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .factory('UserService', ["$http", "$rootScope", "$window", "CONSTANTS", function($http, $rootScope, $window, CONSTANTS) {
+    .factory('UserService', ["$http", "$rootScope", "$q", "$window", "CONSTANTS", "SessionService", function($http, $rootScope, $q, $window, CONSTANTS, SessionService) {
         'use strict';
 
         var userFactory = {};
         var baseUrl = '/api/users/';
 
+        function afterAuth(result) {
+            $http.defaults.headers.common['X-Auth'] = result.token;
+            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, result.token);
+            $rootScope.currentUser = result.user;
+            return true;
+        }
+
+        function authFB(fbUser) {
+
+            return $http.post('/api/auth/facebook', fbUser).then(function(response) {
+                return afterAuth(response.data);
+            }, function() {});
+        }
+
         //fb login
-        userFactory.fbLogin = function(fbUser) {
-            return $http.post('/api/auth/facebook', fbUser);
+        userFactory.fbLogin = function() {
+            FB.login(function(response) {
+                if (response.status === 'connected') {
+
+                } else if (response.status === 'not_authorized') {
+                    // The person is logged into Facebook, but not your app.
+                } else {
+                    // The person is not logged into Facebook, so we're not sure if
+                    // they are logged into this app or not.
+                }
+            }, {
+                scope: 'public_profile,email'
+            });
+        };
+
+        userFactory.watchFBAuthChange = function() {
+            FB.Event.subscribe('auth.authResponseChange', function(res) {
+                if (res.status === 'connected') {
+                    userFactory.getFBUserInfo().then(function(fbUser) {
+                        if (!$rootScope.currentUser) {
+                            authFB(fbUser);
+                        } else if (!$rootScope.currentUser.facebook) {
+                            userFactory.updateInfo($rootScope.currentUser._id, 'facebook', fbUser.facebook);
+                        }
+                    });
+                } else {}
+
+            });
+        };
+
+        userFactory.getFBUserInfo = function() {
+            var deffered = $q.defer();
+
+            FB.api('/me', {
+                fields: 'id, name, email'
+            }, function(response) {
+                if (!response || response.error) {
+                    deffered.reject('FB api/me error');
+                }
+
+                var fbUser = {
+                    userName: response.name,
+                    email: response.email,
+                    photoUrl: 'http://graph.facebook.com/' + response.id + '/picture?type=large',
+                    facebook: {
+                        id: response.id,
+                        email: response.email
+                    }
+                };
+                deffered.resolve(fbUser);
+
+            });
+
+            return deffered.promise;
         };
 
         //login user
@@ -1006,13 +1076,31 @@ angular.module('spicyTaste')
             return $http.post('/api/auth', {
                 email: email,
                 password: password
+            }).then(function(response) {
+                return afterAuth(response.data);
+            }, function() {
+                return false;
             });
         };
 
         //logout user
         userFactory.logout = function() {
+            var deffered = $q.defer();
             delete $http.defaults.headers.common['X-Auth'];
             $window.localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_KEY);
+
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    FB.logout(function() {
+                        deffered.resolve();
+                    });
+                } else {
+                    deffered.resolve();
+                }
+            });
+
+            $rootScope.currentUser = null;
+            return deffered.promise;
         };
 
         //search user by field
@@ -1046,8 +1134,13 @@ angular.module('spicyTaste')
 
         //update user
         userFactory.update = function(user) {
-            return $http.put(baseUrl + user.userId, user).then(function(response) {
-                return response.data;
+            return $http.put(baseUrl + user.userId, user);
+        };
+
+        userFactory.updateInfo = function(userId, field, newValue) {
+            return $http.put(baseUrl + userId + '/field', {
+                field: field,
+                newValue: newValue
             });
         };
 
@@ -1058,7 +1151,6 @@ angular.module('spicyTaste')
 
         //authorize user
         userFactory.authorize = function(requirePermissions) {
-            console.log('requirePermissions', requirePermissions);
             return userFactory.getCurrentUser().success(function(user) {
                 if (user && user.role === 'ADMIN') {
                     return true;
@@ -1124,7 +1216,6 @@ angular.module('spicyTaste')
             });
 
             AWS.config.region = 'us-west-2';
-            console.log('aws config', AWS.config);
 
             var bucketName = folder === null ? 'spicytaste-tmp-photos' : 'spicytaste-photos/' + folder;
             var bucket = new AWS.S3({
@@ -1158,7 +1249,6 @@ angular.module('spicyTaste')
                     }, 300);
 
                 }).on('httpDone', function(response) {
-                    console.log('awsUpload done', response);
                     changeUploadStatus({
                         imageUrl: 'https://s3-us-west-2.amazonaws.com/' + bucketName + '/' + file.name
                     });
@@ -1510,10 +1600,21 @@ angular.module('spicyTaste')
         var vm = this;
         var commentInterval;
 
-        vm.collect = function() {
-            UserService.collect(vm.dish._id).success(function() {
-                vm.dish.isCollected = true;
-            });
+        vm.collect = function(event) {
+            if (!$rootScope.currentUser) {
+                $scope.showLoginDialog(event, true, 'Login or sign up an account to save this recipt as your favourite.').then(function() {
+                    UserService.collect(vm.dish._id).success(function() {
+                        $rootScope.currentUser.favouriteDishes.push(vm.dish._id);
+                        vm.dish.isCollected = true;
+                    });
+                });
+            } else {
+                UserService.collect(vm.dish._id).success(function() {
+                    $rootScope.currentUser.favouriteDishes.push(vm.dish._id);
+                    vm.dish.isCollected = true;
+                });
+            }
+
         };
 
         vm.getAllComments = function() {
