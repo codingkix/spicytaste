@@ -14,7 +14,7 @@ var ngConfig = require('gulp-ng-config');
 gulp.task('config', function() {
     gulp.src('public/ng/app.config.json')
         .pipe(ngConfig('spicyTaste', {
-            environment: process.env.NODE_ENV,
+            environment: 'production',
             createModule: false
         }))
         .pipe(gulp.dest('public/ng'));
@@ -82,7 +82,7 @@ gulp.task('dev:server', function() {
         ext: 'js',
         ignore: ['public/ng*', 'public/assets*'],
         env: {
-            'NODE_ENV': 'development'
+            'NODE_ENV': 'production'
         }
     });
 });

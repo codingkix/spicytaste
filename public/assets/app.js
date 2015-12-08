@@ -1,7 +1,7 @@
 angular.module('spicyTaste', ['ngRoute', 'angular-md5', 'ngMaterial', 'ngAnimate', 'ngMessages']);
 
 angular.module('spicyTaste')
-.constant('CONFIG', {"FacebookAppId":"1659855794291293","AWS_ACCESS_KEY":"AKIAISDEEB5CEMMQTZPA","AWS_SECRECT_KEY":"S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB","LATEST_COUNT":10,"LOCAL_STORAGE_KEY":"spicyTasteUser"});
+.constant('CONFIG', {"FacebookAppId":"1563567387253468","AWS_ACCESS_KEY":"AKIAISDEEB5CEMMQTZPA","AWS_SECRECT_KEY":"S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB","LATEST_COUNT":10,"LOCAL_STORAGE_KEY":"spicyTasteUser"});
 
 angular.module('spicyTaste')
     .config(["$mdThemingProvider", "$mdIconProvider", function($mdThemingProvider, $mdIconProvider) {
@@ -1270,6 +1270,124 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
+    .controller('ThemeAdminEditController', ["ThemeService", "$routeParams", "$timeout", "DishService", function(ThemeService, $routeParams, $timeout, DishService) {
+        'use strict';
+
+        var vm = this;
+
+        vm.update = function() {
+            ThemeService.update(vm.theme._id, vm.theme).success(function(data) {
+                if (data.success) {
+                    vm.updateSuccess = true;
+
+                    $timeout(function() {
+                        vm.updateSuccess = false;
+                    }, 800);
+                }
+
+            });
+        };
+
+        vm.addDish = function(dish) {
+            vm.theme.components.push({
+                title: '',
+                displayOrder: vm.theme.components.length + 1,
+                dish: dish
+            });
+        };
+
+        vm.removeComponent = function(index) {
+            vm.theme.components.splice(index, 1);
+        };
+
+        vm.getDisplayOrders = function() {
+            var orders = [];
+            for (var i = 0; i < vm.theme.components.length; i++) {
+                orders.push(i + 1);
+            }
+
+            return orders;
+        };
+
+        function init() {
+            vm.theme = {};
+            vm.dishes = [];
+
+            ThemeService.get($routeParams.id).success(function(data) {
+                vm.theme = data;
+            });
+
+            DishService.all().success(function(data) {
+                vm.dishes = data;
+            });
+        }
+
+        init();
+
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAdminListController', ["ThemeService", "$location", function(ThemeService, $location) {
+        'use strict';
+
+        var vm = this;
+
+        vm.create = function() {
+            ThemeService.create({
+                name: 'new theme'
+            }).success(function(data) {
+                $location.path('/admin/themes/' + data.theme._id);
+            });
+        };
+
+        function init() {
+            vm.themes = {};
+
+            ThemeService.getAll().success(function(data) {
+                vm.themes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeAllController', ["ThemeService", function(ThemeService) {
+        'use strict';
+        var vm = this;
+
+        function init() {
+            ThemeService.getAll().success(function(data) {
+                vm.themes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
+    .controller('ThemeShowController', ["ThemeService", "$routeParams", function(ThemeService, $routeParams) {
+        'use strict';
+        var vm = this;
+
+        function init() {
+            vm.theme = {};
+            ThemeService.searchBy('name=' + $routeParams.name).success(function(data) {
+                if (data && data.length > 0) {
+                    vm.theme = data[0];
+                    vm.theme.slogans = vm.theme.slogan.split('|');
+                }
+            });
+
+            ThemeService.getOthers($routeParams.name, 3).then(function(data) {
+                vm.otherThemes = data;
+            });
+        }
+
+        init();
+    }]);
+
+angular.module('spicyTaste')
     //controller applied to dish list page
     .controller('DishAdminListController', ["DishService", function(DishService) {
         'use strict';
@@ -1738,124 +1856,6 @@ angular.module('spicyTaste')
             //get dish's comments count
             CommentService.countByDish($routeParams.dishId).success(function(data) {
                 vm.commentsCount = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAdminEditController', ["ThemeService", "$routeParams", "$timeout", "DishService", function(ThemeService, $routeParams, $timeout, DishService) {
-        'use strict';
-
-        var vm = this;
-
-        vm.update = function() {
-            ThemeService.update(vm.theme._id, vm.theme).success(function(data) {
-                if (data.success) {
-                    vm.updateSuccess = true;
-
-                    $timeout(function() {
-                        vm.updateSuccess = false;
-                    }, 800);
-                }
-
-            });
-        };
-
-        vm.addDish = function(dish) {
-            vm.theme.components.push({
-                title: '',
-                displayOrder: vm.theme.components.length + 1,
-                dish: dish
-            });
-        };
-
-        vm.removeComponent = function(index) {
-            vm.theme.components.splice(index, 1);
-        };
-
-        vm.getDisplayOrders = function() {
-            var orders = [];
-            for (var i = 0; i < vm.theme.components.length; i++) {
-                orders.push(i + 1);
-            }
-
-            return orders;
-        };
-
-        function init() {
-            vm.theme = {};
-            vm.dishes = [];
-
-            ThemeService.get($routeParams.id).success(function(data) {
-                vm.theme = data;
-            });
-
-            DishService.all().success(function(data) {
-                vm.dishes = data;
-            });
-        }
-
-        init();
-
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAdminListController', ["ThemeService", "$location", function(ThemeService, $location) {
-        'use strict';
-
-        var vm = this;
-
-        vm.create = function() {
-            ThemeService.create({
-                name: 'new theme'
-            }).success(function(data) {
-                $location.path('/admin/themes/' + data.theme._id);
-            });
-        };
-
-        function init() {
-            vm.themes = {};
-
-            ThemeService.getAll().success(function(data) {
-                vm.themes = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeAllController', ["ThemeService", function(ThemeService) {
-        'use strict';
-        var vm = this;
-
-        function init() {
-            ThemeService.getAll().success(function(data) {
-                vm.themes = data;
-            });
-        }
-
-        init();
-    }]);
-
-angular.module('spicyTaste')
-    .controller('ThemeShowController', ["ThemeService", "$routeParams", function(ThemeService, $routeParams) {
-        'use strict';
-        var vm = this;
-
-        function init() {
-            vm.theme = {};
-            ThemeService.searchBy('name=' + $routeParams.name).success(function(data) {
-                if (data && data.length > 0) {
-                    vm.theme = data[0];
-                    vm.theme.slogans = vm.theme.slogan.split('|');
-                }
-            });
-
-            ThemeService.getOthers($routeParams.name, 3).then(function(data) {
-                vm.otherThemes = data;
             });
         }
 
