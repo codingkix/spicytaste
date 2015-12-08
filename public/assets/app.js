@@ -1,13 +1,7 @@
-angular.module('spicyTaste', ['ngRoute', 'angular-md5', 'ngMaterial', 'ngAnimate', 'ngMessages'])
-    .constant('CONSTANTS', {
-        'FB_APP_ID': 1563567387253468,
-        'FACEBOOK': 'FB',
-        'EMAIL': 'EMAIL',
-        'LOCAL_STORAGE_KEY': 'spicyTasteUser',
-        'LATEST_COUNT': 10,
-        'AWS_ACCESS_KEY': 'AKIAISDEEB5CEMMQTZPA',
-        'AWS_SECRECT_KEY': 'S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB'
-    });
+angular.module('spicyTaste', ['ngRoute', 'angular-md5', 'ngMaterial', 'ngAnimate', 'ngMessages']);
+
+angular.module('spicyTaste')
+.constant('CONFIG', {"FacebookAppId":"1659855794291293","AWS_ACCESS_KEY":"AKIAISDEEB5CEMMQTZPA","AWS_SECRECT_KEY":"S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB","LATEST_COUNT":10,"LOCAL_STORAGE_KEY":"spicyTasteUser"});
 
 angular.module('spicyTaste')
     .config(["$mdThemingProvider", "$mdIconProvider", function($mdThemingProvider, $mdIconProvider) {
@@ -72,12 +66,12 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .run(["$rootScope", "$location", "$window", "CONSTANTS", "UserService", function($rootScope, $location, $window, CONSTANTS, UserService) {
+    .run(["$rootScope", "$location", "$window", "UserService", "CONFIG", function($rootScope, $location, $window, UserService, CONFIG) {
         'use strict';
 
         $window.fbAsyncInit = function() {
             FB.init({
-                appId: CONSTANTS.FB_APP_ID,
+                appId: CONFIG.FacebookAppId,
                 cookie: true, // enable cookies to allow the server to access the session
                 xfbml: true, // parse social plugins on this page
                 status: true,
@@ -260,7 +254,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('HomeController', ["$scope", "$mdMedia", "DishService", "CONSTANTS", function($scope, $mdMedia, DishService, CONSTANTS) {
+    .controller('HomeController', ["$scope", "$mdMedia", "DishService", "CONFIG", function($scope, $mdMedia, DishService, CONFIG) {
         'use strict';
         var vm = this;
 
@@ -278,7 +272,7 @@ angular.module('spicyTaste')
         }
 
         function buildGrid() {
-            DishService.limit(CONSTANTS.LATEST_COUNT).success(function(dishes) {
+            DishService.limit(CONFIG.LATEST_COUNT).success(function(dishes) {
                 angular.forEach(dishes, function(dish, index) {
                     var tile = {
                         image: dish.imageUrl,
@@ -377,7 +371,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .controller('MainController', ["$rootScope", "$scope", "$location", "$mdDialog", "$http", "SessionService", "UserService", "CONSTANTS", function($rootScope, $scope, $location, $mdDialog, $http, SessionService, UserService, CONSTANTS) {
+    .controller('MainController', ["$rootScope", "$scope", "$location", "$mdDialog", "$http", "SessionService", "UserService", "CONFIG", function($rootScope, $scope, $location, $mdDialog, $http, SessionService, UserService, CONFIG) {
         'use strict';
         var vm = this;
 
@@ -417,7 +411,7 @@ angular.module('spicyTaste')
             };
             vm.menuBar = vm.defaultMenu;
 
-            var loginedToken = SessionService.getLocal(CONSTANTS.LOCAL_STORAGE_KEY);
+            var loginedToken = SessionService.getLocal(CONFIG.LOCAL_STORAGE_KEY);
             if (loginedToken) {
                 console.log('token', loginedToken);
                 $http.defaults.headers.common['X-Auth'] = loginedToken;
@@ -993,7 +987,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .factory('UserService', ["$http", "$rootScope", "$q", "$window", "CONSTANTS", "SessionService", function($http, $rootScope, $q, $window, CONSTANTS, SessionService) {
+    .factory('UserService', ["$http", "$rootScope", "$q", "$window", "SessionService", "CONFIG", function($http, $rootScope, $q, $window, SessionService, CONFIG) {
         'use strict';
 
         var userFactory = {};
@@ -1001,7 +995,7 @@ angular.module('spicyTaste')
 
         function afterAuth(result) {
             $http.defaults.headers.common['X-Auth'] = result.token;
-            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, result.token);
+            SessionService.setLocal(CONFIG.LOCAL_STORAGE_KEY, result.token);
             $rootScope.currentUser = result.user;
             return true;
         }
@@ -1087,7 +1081,7 @@ angular.module('spicyTaste')
         userFactory.logout = function() {
             var deffered = $q.defer();
             delete $http.defaults.headers.common['X-Auth'];
-            $window.localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_KEY);
+            $window.localStorage.removeItem(CONFIG.LOCAL_STORAGE_KEY);
 
             FB.getLoginStatus(function(response) {
                 if (response.status === 'connected') {
@@ -1169,7 +1163,7 @@ angular.module('spicyTaste')
     }]);
 
 angular.module('spicyTaste')
-    .factory('UtilityService', ["CONSTANTS", "$timeout", "$mdToast", "$document", function(CONSTANTS, $timeout, $mdToast, $document) {
+    .factory('UtilityService', ["$timeout", "$mdToast", "$document", "CONFIG", function($timeout, $mdToast, $document, CONFIG) {
         'use strict';
 
         var utilityFactory = {};
@@ -1211,8 +1205,8 @@ angular.module('spicyTaste')
         utilityFactory.awsUpload = function(file, folder, changeUploadStatus) {
 
             AWS.config.update({
-                accessKeyId: CONSTANTS.AWS_ACCESS_KEY,
-                secretAccessKey: CONSTANTS.AWS_SECRECT_KEY
+                accessKeyId: CONFIG.AWS_ACCESS_KEY,
+                secretAccessKey: CONFIG.AWS_SECRECT_KEY
             });
 
             AWS.config.region = 'us-west-2';
@@ -1362,7 +1356,7 @@ angular.module('spicyTaste')
 
             if (formDirty) {
                 DishService.update($routeParams.dishId, vm.dish).success(function() {
-                    UtilityService.showStatusToast(true, 'Recipt Info Is Updated.');
+                    UtilityService.showStatusToast(true, 'Recipe Info Is Updated.');
                     changeWizardStatus();
                 }).error(function() {
                     UtilityService.showStatusToast(false, 'Error, please try again.');
@@ -1379,7 +1373,7 @@ angular.module('spicyTaste')
                         vm.wizardMode = false;
                     }
                     vm.showBottomSheet = false;
-                    UtilityService.showStatusToast(true, 'Recipt Photos Are Saved.');
+                    UtilityService.showStatusToast(true, 'Recipe Photos Are Saved.');
                 } else {
                     UtilityService.showStatusToast(false, 'Error, please try again.');
                 }

@@ -1,10 +1,10 @@
 angular.module('spicyTaste')
-    .run(function($rootScope, $location, $window, CONSTANTS, UserService) {
+    .run(function($rootScope, $location, $window, UserService, CONFIG) {
         'use strict';
 
         $window.fbAsyncInit = function() {
             FB.init({
-                appId: CONSTANTS.FB_APP_ID,
+                appId: CONFIG.FacebookAppId,
                 cookie: true, // enable cookies to allow the server to access the session
                 xfbml: true, // parse social plugins on this page
                 status: true,

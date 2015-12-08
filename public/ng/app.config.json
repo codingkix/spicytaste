@@ -1,0 +1,20 @@
+{
+    "production": {
+        "CONFIG": {
+            "FacebookAppId": "1563567387253468",
+            "AWS_ACCESS_KEY": "AKIAISDEEB5CEMMQTZPA",
+            "AWS_SECRECT_KEY": "S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB",
+            "LATEST_COUNT": 10,
+            "LOCAL_STORAGE_KEY": "spicyTasteUser"
+        }
+    },
+    "development": {
+        "CONFIG": {
+            "FacebookAppId": "1659855794291293",
+            "AWS_ACCESS_KEY": "AKIAISDEEB5CEMMQTZPA",
+            "AWS_SECRECT_KEY": "S197rM/ivjnDW51R8kJJC6jP+Yi8hCZDuG1HHBmB",
+            "LATEST_COUNT": 10,
+            "LOCAL_STORAGE_KEY": "spicyTasteUser"
+        }
+    }
+}

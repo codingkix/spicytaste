@@ -9,6 +9,16 @@ var livereload = require('gulp-livereload');
 var childProcess = require('child_process');
 var rename = require('gulp-rename');
 var nib = require('nib');
+var ngConfig = require('gulp-ng-config');
+
+gulp.task('config', function() {
+    gulp.src('public/ng/app.config.json')
+        .pipe(ngConfig('spicyTaste', {
+            environment: process.env.NODE_ENV,
+            createModule: false
+        }))
+        .pipe(gulp.dest('public/ng'));
+});
 
 //script task
 gulp.task('js', function() {
@@ -70,9 +80,12 @@ gulp.task('dev:server', function() {
     nodemon({
         script: 'server.js',
         ext: 'js',
-        ignore: ['public/ng*', 'public/assets*']
+        ignore: ['public/ng*', 'public/assets*'],
+        env: {
+            'NODE_ENV': 'development'
+        }
     });
 });
 
 //dev task
-gulp.task('dev', ['watch:css', 'watch:js', 'watch:html', 'dev:server']);
+gulp.task('dev', ['dev:server', 'config', 'watch:css', 'watch:js', 'watch:html']);

@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .controller('HomeController', function($scope, $mdMedia, DishService, CONSTANTS) {
+    .controller('HomeController', function($scope, $mdMedia, DishService, CONFIG) {
         'use strict';
         var vm = this;
 
@@ -17,7 +17,7 @@ angular.module('spicyTaste')
         }
 
         function buildGrid() {
-            DishService.limit(CONSTANTS.LATEST_COUNT).success(function(dishes) {
+            DishService.limit(CONFIG.LATEST_COUNT).success(function(dishes) {
                 angular.forEach(dishes, function(dish, index) {
                     var tile = {
                         image: dish.imageUrl,

@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .factory('UserService', function($http, $rootScope, $q, $window, CONSTANTS, SessionService) {
+    .factory('UserService', function($http, $rootScope, $q, $window, SessionService, CONFIG) {
         'use strict';
 
         var userFactory = {};
@@ -7,7 +7,7 @@ angular.module('spicyTaste')
 
         function afterAuth(result) {
             $http.defaults.headers.common['X-Auth'] = result.token;
-            SessionService.setLocal(CONSTANTS.LOCAL_STORAGE_KEY, result.token);
+            SessionService.setLocal(CONFIG.LOCAL_STORAGE_KEY, result.token);
             $rootScope.currentUser = result.user;
             return true;
         }
@@ -93,7 +93,7 @@ angular.module('spicyTaste')
         userFactory.logout = function() {
             var deffered = $q.defer();
             delete $http.defaults.headers.common['X-Auth'];
-            $window.localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_KEY);
+            $window.localStorage.removeItem(CONFIG.LOCAL_STORAGE_KEY);
 
             FB.getLoginStatus(function(response) {
                 if (response.status === 'connected') {

@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .factory('UtilityService', function(CONSTANTS, $timeout, $mdToast, $document) {
+    .factory('UtilityService', function($timeout, $mdToast, $document, CONFIG) {
         'use strict';
 
         var utilityFactory = {};
@@ -41,8 +41,8 @@ angular.module('spicyTaste')
         utilityFactory.awsUpload = function(file, folder, changeUploadStatus) {
 
             AWS.config.update({
-                accessKeyId: CONSTANTS.AWS_ACCESS_KEY,
-                secretAccessKey: CONSTANTS.AWS_SECRECT_KEY
+                accessKeyId: CONFIG.AWS_ACCESS_KEY,
+                secretAccessKey: CONFIG.AWS_SECRECT_KEY
             });
 
             AWS.config.region = 'us-west-2';

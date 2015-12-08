@@ -1,5 +1,5 @@
 angular.module('spicyTaste')
-    .controller('MainController', function($rootScope, $scope, $location, $mdDialog, $http, SessionService, UserService, CONSTANTS) {
+    .controller('MainController', function($rootScope, $scope, $location, $mdDialog, $http, SessionService, UserService, CONFIG) {
         'use strict';
         var vm = this;
 
@@ -39,7 +39,7 @@ angular.module('spicyTaste')
             };
             vm.menuBar = vm.defaultMenu;
 
-            var loginedToken = SessionService.getLocal(CONSTANTS.LOCAL_STORAGE_KEY);
+            var loginedToken = SessionService.getLocal(CONFIG.LOCAL_STORAGE_KEY);
             if (loginedToken) {
                 console.log('token', loginedToken);
                 $http.defaults.headers.common['X-Auth'] = loginedToken;
