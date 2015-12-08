@@ -14,7 +14,7 @@ var ngConfig = require('gulp-ng-config');
 gulp.task('config', function() {
     gulp.src('public/ng/app.config.json')
         .pipe(ngConfig('spicyTaste', {
-            environment: 'production',
+            environment: 'development',
             createModule: false
         }))
         .pipe(gulp.dest('public/ng'));
