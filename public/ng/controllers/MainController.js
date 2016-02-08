@@ -31,7 +31,7 @@ angular.module('spicyTaste')
 
         function init() {
             vm.showMobileMenu = false;
-            vm.scrollTargetReached = false;
+            vm. = false;
             vm.defaultMenu = {
                 primaryTheme: false,
                 hidden: false,

@@ -10,6 +10,7 @@ var childProcess = require('child_process');
 var rename = require('gulp-rename');
 var nib = require('nib');
 var ngConfig = require('gulp-ng-config');
+var karma = require('gulp-karma');
 
 gulp.task('config', function() {
     gulp.src('public/ng/app.config.json')
@@ -18,6 +19,28 @@ gulp.task('config', function() {
             createModule: false
         }))
         .pipe(gulp.dest('public/ng'));
+});
+
+
+gulp.task('test', function() {
+    // Be sure to return the stream
+    // NOTE: Using the fake './foobar' so as to run the files
+    // listed in karma.conf.js INSTEAD of what was passed to
+    // gulp.src !
+    return gulp.src('./foobar')
+        .pipe(karma({
+            configFile: 'karma.conf.js',
+            action: 'run'
+        }))
+        .on('error', function(err) {
+            // Make sure failed tests cause gulp to exit non-zero
+            console.log(err);
+            this.emit('end'); //instead of erroring the stream, end it
+        });
+});
+
+gulp.task('autotest', function() {
+    return gulp.watch(['public/ng/**/*.js', 'public/test/unit/*.js'], ['test']);
 });
 
 //script task
